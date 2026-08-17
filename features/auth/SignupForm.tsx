@@ -1,0 +1,51 @@
+"use client";
+
+import { useActionState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { GrowthCard } from "@/components/growth/GrowthCard";
+import { signUpAction, type SignUpState } from "@/app/actions/auth";
+
+const initialState: SignUpState = {};
+
+export function SignupForm({ domain }: { domain?: string }) {
+  const [state, formAction, isPending] = useActionState(signUpAction, initialState);
+
+  if (state.success) {
+    return (
+      <GrowthCard className="mx-auto max-w-md text-center">
+        <h2 className="text-lg font-semibold text-foreground">Revisa tu email</h2>
+        <p className="mt-2 text-sm text-zinc-600">
+          Te hemos enviado un enlace de confirmación. Al abrirlo, seguimos con tu análisis.
+        </p>
+      </GrowthCard>
+    );
+  }
+
+  return (
+    <GrowthCard className="mx-auto w-full max-w-md">
+      <h1 className="text-xl font-semibold text-foreground">Crea tu cuenta gratis</h1>
+      <p className="mt-1 text-sm text-zinc-600">
+        {domain ? `Vamos a analizar ${domain} en cuanto confirmes tu cuenta.` : "Empieza a hacer crecer tu negocio."}
+      </p>
+
+      <form action={formAction} className="mt-6 flex flex-col gap-3">
+        {domain && <input type="hidden" name="domain" value={domain} />}
+        <Input name="name" placeholder="Tu nombre" required autoComplete="name" />
+        <Input name="email" type="email" placeholder="Email" required autoComplete="email" />
+        <Input
+          name="password"
+          type="password"
+          placeholder="Contraseña"
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
+        {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+        <Button type="submit" disabled={isPending} className="mt-2 w-full">
+          {isPending ? "Creando cuenta…" : "Crear cuenta"}
+        </Button>
+      </form>
+    </GrowthCard>
+  );
+}
