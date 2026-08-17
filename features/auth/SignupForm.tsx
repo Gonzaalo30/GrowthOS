@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { GrowthCard } from "@/components/growth/GrowthCard";
@@ -46,6 +47,13 @@ export function SignupForm({ domain }: { domain?: string }) {
           {isPending ? "Creando cuenta…" : "Crear cuenta"}
         </Button>
       </form>
+
+      <p className="mt-4 text-center text-sm text-zinc-600">
+        ¿Ya tienes cuenta?{" "}
+        <Link href="/login" className="font-medium text-brand-600">
+          Inicia sesión
+        </Link>
+      </p>
     </GrowthCard>
   );
 }

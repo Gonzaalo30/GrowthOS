@@ -35,3 +35,11 @@ Registro de decisiones de arquitectura. Cada entrada: **decisión**, **alternati
 **Por qué:** Next 16 introduce cambios que rompen compatibilidad con el conocimiento de referencia usado para escribir código (el propio scaffold de Next 16 generaba un aviso interno de "APIs pueden diferir de tu entrenamiento, lee los docs antes de escribir código"). El fundador pidió explícitamente Next.js 15. Para minimizar riesgo de bugs por asunciones incorrectas de API en un MVP construido con asistencia de IA, se prioriza estabilidad y precisión sobre estar en la última versión.
 
 **Riesgo aceptado:** `npm audit` reporta 3 vulnerabilidades "high" (PostCSS XSS/path traversal vía sourceMappingURL, y CVEs de libvips en `sharp`) cuyo único fix es subir a Next 16. Vectores de explotación requieren CSS no controlado por nosotros o procesamiento de imágenes subidas por usuarios (aún no implementado). **Revisar este riesgo antes de: (a) implementar subida de fotos por usuarios, (b) lanzar a producción.**
+
+## 2026-08-17 — Email de confirmación de Supabase (built-in) no sirve para producción
+
+**Hallazgo:** al probar el registro real en producción (`https://growth-os-smoky-eta.vercel.app`), Supabase devolvió `email rate limit exceeded` en el segundo intento. El servicio de email por defecto de Supabase (SMTP compartido) está limitado a unos pocos envíos por hora — pensado solo para desarrollo/pruebas, no para usuarios reales.
+
+**Por qué importa:** con el límite por defecto, cualquier pico de registros (ej. una campaña de lanzamiento) rompería el alta de nuevos usuarios.
+
+**Decisión:** aceptar la limitación durante el Sprint 1 (uso interno/pruebas). **Antes de abrir el registro al público**, configurar Resend como proveedor SMTP personalizado en Supabase (Authentication → Settings → SMTP Settings) — Resend ya está planeado en el stack para los Growth Reports semanales (Sprint 3), así que resolver esto junto con esa integración evita configurar dos proveedores de email distintos.

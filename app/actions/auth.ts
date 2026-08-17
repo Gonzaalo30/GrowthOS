@@ -1,11 +1,37 @@
 "use server";
 
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export interface SignUpState {
   error?: string;
   success?: boolean;
+}
+
+export interface LoginState {
+  error?: string;
+}
+
+export async function loginAction(
+  _prevState: LoginState,
+  formData: FormData,
+): Promise<LoginState> {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+
+  if (!email || !password) {
+    return { error: "Introduce tu email y contraseña." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    return { error: "Email o contraseña incorrectos." };
+  }
+
+  redirect("/dashboard");
 }
 
 export async function signUpAction(
