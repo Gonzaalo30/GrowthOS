@@ -14,9 +14,10 @@ Regla: no se avanza al siguiente sprint hasta dejar el anterior funcional y limp
 Verificado de extremo a extremo en producción real (no local): registro, login, onboarding, creación de negocio, siembra de misiones y completado de misión, todo persistido en Supabase. Pendiente antes de abrir al público: SMTP propio vía Resend (ver docs/DECISIONS.md, el email de confirmación de Supabase por defecto está muy limitado en volumen).
 
 ## Sprint 2 — Gamificación
-- Sistema de XP (persistido, se suma al completar misiones)
-- Niveles (Starter → Scale) y `LevelBadge`
-- Misión semanal (`MissionCard` variante de alto impacto)
+- [x] Sistema de XP (persistido en `businesses.xp`, incremento atómico vía `increment_business_xp`, se suma al completar misiones)
+- [x] Niveles (Starter → Scale) y `LevelBadge` + `XPBar` con progreso hacia el siguiente nivel
+- Misión semanal (`MissionCard` variante de alto impacto) — ya existe la mecánica base desde Sprint 1, revisar si necesita distinción visual adicional
+- Marketplace de mejoras con precio cerrado (`OpportunityCard`)
 - Marketplace de mejoras con precio cerrado (`OpportunityCard`)
 - Streak de crecimiento (racha diaria + recompensas de contenido desbloqueable)
 - **Rotación de misiones diarias**: hoy las 3+1 se siembran una única vez en el alta (`lib/missionTemplates.ts`, 36 diarias + 12 semanales con prioridad alta/media/baja). Falta el sistema que sirva misiones *nuevas* cada día sin repetir las ya completadas hasta agotar la variedad, respetando el orden alta → media → baja. Seguir ampliando la librería de contenido en paralelo (más "tonterías" y más profundidad por sector) — feedback del fundador: con 3 misiones/día x 90 días (270 huecos) la librería debe seguir creciendo.

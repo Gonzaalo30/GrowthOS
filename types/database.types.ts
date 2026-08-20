@@ -33,6 +33,7 @@ export interface Database {
           company_size: string | null;
           growth_score: number;
           growth_potential: string | null;
+          xp: number;
           created_at: string;
         };
         Insert: {
@@ -44,6 +45,7 @@ export interface Database {
           company_size?: string | null;
           growth_score?: number;
           growth_potential?: string | null;
+          xp?: number;
           created_at?: string;
         };
         Update: Partial<{
@@ -53,6 +55,7 @@ export interface Database {
           company_size: string | null;
           growth_score: number;
           growth_potential: string | null;
+          xp: number;
         }>;
         Relationships: [];
       };
@@ -92,7 +95,12 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment_business_xp: {
+        Args: { p_business_id: string; p_amount: number };
+        Returns: undefined;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

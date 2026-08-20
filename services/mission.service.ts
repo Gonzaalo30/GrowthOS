@@ -54,11 +54,23 @@ export async function getMissionsForBusiness(supabase: Client, businessId: strin
 }
 
 export async function completeMission(supabase: Client, missionId: string) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("missions")
     .update({ completed_at: new Date().toISOString() })
     .eq("id", missionId)
-    .is("completed_at", null);
+    .is("completed_at", null)
+    .select("business_id, xp_reward")
+    .maybeSingle();
 
   if (error) throw error;
+
+  // Si no se actualizó ninguna fila, la misión ya estaba completada antes:
+  // no volvemos a sumar XP (evita duplicar XP con dobles clics o reintentos).
+  if (!data) return;
+
+  const { error: xpError } = await supabase.rpc("increment_business_xp", {
+    p_business_id: data.business_id,
+    p_amount: data.xp_reward,
+  });
+  if (xpError) throw xpError;
 }
