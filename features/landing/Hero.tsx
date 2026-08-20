@@ -14,7 +14,7 @@ export function Hero() {
     e.preventDefault();
     const clean = normalizeDomain(domain);
     if (!clean) return;
-    router.push(`/signup?domain=${encodeURIComponent(clean)}`);
+    router.push(`/analisis?domain=${encodeURIComponent(clean)}`);
   }
 
   return (

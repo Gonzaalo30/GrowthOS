@@ -2,6 +2,14 @@
 
 Registro de decisiones de arquitectura. Cada entrada: **decisión**, **alternativas consideradas**, **por qué**.
 
+## 2026-08-20 — Registro opcional: se ve un resultado real antes de pedir cuenta
+
+**Decisión:** la landing ya no redirige directo a `/signup` al introducir un dominio. Ahora pasa por `/analisis`, una página pública (sin sesión) que ejecuta un análisis rápido real (`lib/quickAudit.ts`): SSL, título, meta descripción, H1 y viewport móvil, con petición `fetch` server-side directa al dominio introducido. Solo se pide cuenta cuando el usuario quiere guardar el resultado y ver sus misiones.
+
+**Por qué:** feedback directo del fundador tras probar el Sprint 1 — forzar registro antes de mostrar cualquier valor generaba fricción y "echaba para atrás". Encaja además con la especificación original del producto ("Después de analizar → Crear cuenta"). La alternativa de "modo invitado completo" (usar todo el dashboard sin cuenta) se descartó por ahora por complejidad added (persistencia sin usuario, fusión de datos al registrarse después).
+
+**Nota de seguridad:** al ser un endpoint público que hace `fetch` a una URL controlada por el usuario, se añadió protección SSRF en `lib/quickAudit.ts` — resuelve el DNS del dominio antes de conectar y rechaza rangos de IP privados/loopback/link-local (incluye el caso de metadata de cloud, 169.254.169.254).
+
 ## 2026-08-17 — Stack base
 
 **Decisión:** Next.js 15 (App Router) + TypeScript + Tailwind CSS + Supabase (Auth + Postgres) + Stripe + Resend + Vercel + Claude/OpenAI API + Framer Motion.

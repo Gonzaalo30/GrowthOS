@@ -27,7 +27,9 @@ export function SignupForm({ domain }: { domain?: string }) {
     <GrowthCard className="mx-auto w-full max-w-md">
       <h1 className="text-xl font-semibold text-foreground">Crea tu cuenta gratis</h1>
       <p className="mt-1 text-sm text-zinc-600">
-        {domain ? `Vamos a analizar ${domain} en cuanto confirmes tu cuenta.` : "Empieza a hacer crecer tu negocio."}
+        {domain
+          ? `Guarda el análisis de ${domain} y desbloquea tus misiones de hoy.`
+          : "Empieza a hacer crecer tu negocio."}
       </p>
 
       <form action={formAction} className="mt-6 flex flex-col gap-3">
