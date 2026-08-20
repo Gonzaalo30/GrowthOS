@@ -31,6 +31,8 @@ export interface MissionTemplate {
   appliesTo: BusinessType[] | "all";
   /** Si el check del análisis rápido con este id falla, esta misión sube de prioridad */
   auditTrigger?: QuickAuditCheck["id"];
+  /** Pasos cortos para hacerlo uno mismo, gratis */
+  tutorial: string[];
 }
 
 // Librería de misiones diarias. El motor de auditoría completo (Sprint 3) añadirá
@@ -51,6 +53,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "reputacion",
     priority: "alta",
     appliesTo: "all",
+    tutorial: [
+      "Busca tu negocio en Google y entra en tu ficha (o accede directamente a Google Business Profile).",
+      "Ve a la pestaña \"Reseñas\".",
+      "Elige la más reciente sin respuesta y pulsa \"Responder\".",
+      "Da las gracias, y si es negativa, discúlpate sin excusas y ofrece solucionarlo fuera de la reseña.",
+    ],
   },
   {
     id: "daily-update-title",
@@ -65,6 +73,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     priority: "alta",
     appliesTo: "all",
     auditTrigger: "title",
+    tutorial: [
+      "Entra en el editor de tu web (WordPress, Wix, Squarespace...) o pide acceso a quien la gestione.",
+      "Busca el campo \"Título SEO\" o \"Título de la página\" (a veces está en \"Configuración > SEO\").",
+      "Escribe: qué eres + dónde estás. Ejemplo: \"Clínica Dental Sonrisa — Madrid Centro\".",
+      "Guarda y comprueba en Google (búscate a ti mismo) que el cambio se refleja en 24-48h.",
+    ],
   },
   {
     id: "daily-meta-description",
@@ -79,6 +93,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     priority: "alta",
     appliesTo: "all",
     auditTrigger: "description",
+    tutorial: [
+      "En el editor de tu web, busca el campo \"Meta descripción\" o \"Descripción SEO\" de tu página principal.",
+      "Escribe 1-2 frases (unos 150 caracteres) explicando qué ofreces y por qué elegirte.",
+      "Incluye tu ciudad o zona si trabajas de forma local.",
+      "Guarda los cambios.",
+    ],
   },
   {
     id: "daily-check-ssl",
@@ -93,6 +113,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     priority: "alta",
     appliesTo: "all",
     auditTrigger: "ssl",
+    tutorial: [
+      "Entra en el panel de tu proveedor de hosting (donde contrataste tu web y dominio).",
+      "Busca la sección \"SSL\" o \"Certificados\" — casi todos ofrecen uno gratis (Let's Encrypt).",
+      "Actívalo si está desactivado. Si no lo encuentras, escribe a soporte del hosting y pide que activen el SSL.",
+      "Una vez activo, comprueba que tu web carga con \"https://\" y el candado en el navegador.",
+    ],
   },
   {
     id: "daily-check-mobile",
@@ -107,6 +133,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     priority: "alta",
     appliesTo: "all",
     auditTrigger: "mobile",
+    tutorial: [
+      "Abre tu web desde tu propio móvil (no solo desde el ordenador).",
+      "Comprueba que el texto se lee sin hacer zoom y que los botones son fáciles de pulsar con el dedo.",
+      "Prueba tu formulario de contacto o botón de llamada desde el móvil.",
+      "Si algo se ve roto o muy pequeño, anótalo para tu diseñador web o gestor de la página.",
+    ],
   },
   {
     id: "daily-update-hours",
@@ -120,6 +152,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "local",
     priority: "alta",
     appliesTo: "all",
+    tutorial: [
+      "Busca tu negocio en Google Maps o entra en Google Business Profile.",
+      "Pulsa \"Editar perfil\" → \"Horario\".",
+      "Revisa cada día de la semana y corrige lo que no coincida con tu horario real.",
+      "No olvides los festivos o cierres especiales (\"Horario especial\").",
+    ],
   },
   {
     id: "daily-visible-phone",
@@ -133,6 +171,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "alta",
     appliesTo: "all",
+    tutorial: [
+      "Abre tu web y cuenta cuánto tardas en encontrar tu teléfono sin usar Ctrl+F.",
+      "Si tarda más de 5 segundos, añádelo en la cabecera (arriba del todo) y en el pie de página.",
+      "En móvil, considera que el teléfono sea pulsable (que abra directamente la llamada).",
+    ],
   },
   {
     id: "daily-contact-form-test",
@@ -146,6 +189,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "alta",
     appliesTo: "all",
+    tutorial: [
+      "Ve al formulario de contacto de tu propia web.",
+      "Rellénalo con tus datos y un mensaje de prueba, y envíalo.",
+      "Comprueba que te llega el email (revisa también la carpeta de spam).",
+      "Si no llega nada en unos minutos, avisa a quien gestione tu web — el formulario está roto.",
+    ],
   },
 
   // --- Universales, prioridad media ---
@@ -161,6 +210,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Haz una foto con buena luz de tu local, producto o equipo (con el móvil vale).",
+      "Entra en Google Business Profile → \"Fotos\" → \"Añadir foto\".",
+      "Súbela y clasifícala (interior, exterior, equipo...).",
+    ],
   },
   {
     id: "daily-compress-image",
@@ -174,6 +228,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "rendimiento",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Identifica una imagen grande en tu web (normalmente la de portada o cabecera).",
+      "Descárgala y súbela a una herramienta gratuita como squoosh.app o tinypng.com.",
+      "Descarga la versión comprimida (suele pesar 60-80% menos sin notarse la diferencia).",
+      "Vuelve a subirla a tu web sustituyendo la original.",
+    ],
   },
   {
     id: "daily-cta-button",
@@ -187,6 +247,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Entra en tu web y localiza tu botón de acción principal (llamar, reservar, pedir cita...).",
+      "Pregúntate: ¿lo ves en los primeros 3 segundos sin hacer scroll?",
+      "Si no, en el editor de tu web súbelo más arriba o cámbialo a un color que destaque más.",
+    ],
   },
   {
     id: "daily-social-links",
@@ -199,6 +264,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Copia los enlaces de tus perfiles activos (Instagram, Facebook...).",
+      "En el editor de tu web, ve al pie de página o cabecera.",
+      "Añade los iconos o enlaces de texto a cada red.",
+      "Comprueba que cada enlace abre el perfil correcto (no una página de inicio genérica).",
+    ],
   },
   {
     id: "daily-whatsapp-link",
@@ -211,6 +282,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Genera tu enlace en wa.me/34TUNUMERO (sustituye por tu número con prefijo de país, sin espacios).",
+      "Puedes añadir un mensaje predefinido: wa.me/34TUNUMERO?text=Hola,%20quería%20preguntar...",
+      "Añade ese enlace como botón en tu web (cabecera, pie o flotante).",
+      "Pruébalo tú mismo desde el móvil para confirmar que abre WhatsApp correctamente.",
+    ],
   },
   {
     id: "daily-faq-add",
@@ -223,6 +300,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Piensa en la pregunta que más te repiten tus clientes por teléfono o WhatsApp.",
+      "Escribe la pregunta tal cual la hacen, y una respuesta clara y corta.",
+      "Añádela a tu web (si no tienes sección de FAQ, puedes ponerla en la página de contacto por ahora).",
+    ],
   },
   {
     id: "daily-google-map-check",
@@ -235,6 +317,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "local",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Busca tu negocio en Google Maps.",
+      "Comprueba que el pin está exactamente en tu puerta, no en la manzana de al lado.",
+      "Si está mal, entra en Google Business Profile → \"Editar perfil\" → \"Ubicación\" y arrastra el pin al sitio correcto.",
+    ],
   },
   {
     id: "daily-testimonial-add",
@@ -247,6 +334,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Busca una reseña positiva reciente (Google, redes sociales) o pide permiso a un cliente satisfecho.",
+      "Copia el texto (o pídeselo por escrito si es de palabra).",
+      "Añádelo a tu web con el nombre de pila del cliente (con su permiso).",
+    ],
   },
 
   // --- Universales, prioridad baja ("tonterías" para más adelante) ---
@@ -262,6 +354,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "baja",
     appliesTo: "all",
+    tutorial: [
+      "Haz una foto rápida de algo de hoy en tu negocio (producto, equipo, cliente si da permiso).",
+      "Publícala en tu red social principal con 1-2 frases.",
+      "Añade tu ciudad o barrio como ubicación si la app lo permite.",
+    ],
   },
   {
     id: "daily-alt-text",
@@ -274,6 +371,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "seo",
     priority: "baja",
     appliesTo: "all",
+    tutorial: [
+      "En el editor de tu web, selecciona una imagen (empieza por la de portada).",
+      "Busca el campo \"Texto alternativo\" o \"Alt text\" en sus propiedades.",
+      "Describe la imagen de forma simple: qué es y, si aplica, tu ciudad. Ej: \"Fachada de la clínica en Madrid\".",
+    ],
   },
   {
     id: "daily-favicon",
@@ -286,6 +388,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "baja",
     appliesTo: "all",
+    tutorial: [
+      "Coge tu logo (si no lo tienes en formato cuadrado, recórtalo con cualquier editor gratuito).",
+      "Súbelo a favicon.io para generar el archivo en el formato correcto.",
+      "En el panel de tu web, busca \"Favicon\" o \"Icono del sitio\" y súbelo.",
+    ],
   },
   {
     id: "daily-footer-copyright",
@@ -298,6 +405,10 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "baja",
     appliesTo: "all",
+    tutorial: [
+      "Ve al pie de página de tu web.",
+      "Si el año de copyright está desactualizado, edítalo (o pon un rango, ej. \"2020-2026\", para no tener que tocarlo cada año).",
+    ],
   },
   {
     id: "daily-spelling-check",
@@ -310,6 +421,10 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "baja",
     appliesTo: "all",
+    tutorial: [
+      "Copia el texto de tu página principal y pégalo en un corrector como el de Google Docs o LanguageTool.",
+      "Revisa las sugerencias y corrige lo que aplique en tu web.",
+    ],
   },
   {
     id: "daily-image-filename",
@@ -322,6 +437,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "seo",
     priority: "baja",
     appliesTo: "all",
+    tutorial: [
+      "Elige una imagen de tu web con nombre genérico (IMG_1234.jpg y similares).",
+      "Descárgala, renómbrala describiendo qué es + tu ciudad, separado por guiones (ej. \"taller-mecanico-valencia.jpg\").",
+      "Vuelve a subirla sustituyendo la original.",
+    ],
   },
 
   // --- Restaurante ---
@@ -336,6 +456,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "alta",
     appliesTo: ["Restaurante"],
+    tutorial: [
+      "Elige tu plato más pedido o más vistoso.",
+      "Hazle una foto con luz natural, a ser posible antes de que se enfríe.",
+      "Súbela a Google Business Profile → \"Fotos\" → \"Comida y bebida\".",
+    ],
   },
   {
     id: "daily-restaurant-reserve-button",
@@ -348,6 +473,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "alta",
     appliesTo: ["Restaurante"],
+    tutorial: [
+      "Entra en Google Business Profile → \"Editar perfil\" → busca \"Reservas\".",
+      "Si tienes un sistema de reservas online (o WhatsApp), enlázalo ahí.",
+      "Si no tienes ninguno, de momento puedes enlazar tu número de teléfono como \"reserva por llamada\".",
+    ],
   },
   {
     id: "daily-restaurant-menu-update",
@@ -360,6 +490,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: ["Restaurante"],
+    tutorial: [
+      "Escribe o fotografía el menú de hoy.",
+      "Publícalo en tu web (sección menú) y en tus redes sociales.",
+      "Si usas Google Business Profile, también puedes añadirlo como publicación del día.",
+    ],
   },
   {
     id: "daily-restaurant-allergens",
@@ -372,6 +507,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: ["Restaurante"],
+    tutorial: [
+      "Revisa la lista oficial de los 14 alérgenos de declaración obligatoria (gluten, lácteos, frutos secos...).",
+      "Para cada plato de tu carta, marca qué alérgenos contiene.",
+      "Añade esta información a tu menú online, con un símbolo o nota junto a cada plato.",
+    ],
   },
 
   // --- Clínica (incluye dental, fisioterapia y similares) ---
@@ -386,6 +526,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "local",
     priority: "alta",
     appliesTo: ["Clínica"],
+    tutorial: [
+      "Entra en Google Business Profile → \"Editar perfil\" → \"Servicios\" o \"Descripción\".",
+      "Lista tus especialidades concretas (ej. \"ortodoncia\", \"fisioterapia deportiva\", en vez de solo \"clínica\").",
+      "Guarda los cambios.",
+    ],
   },
   {
     id: "daily-clinic-booking-form",
@@ -398,6 +543,12 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "alta",
     appliesTo: ["Clínica"],
+    tutorial: [
+      "Ve a tu web y localiza el formulario o botón de pedir cita.",
+      "Rellena una solicitud de prueba con tus propios datos.",
+      "Comprueba que te llega la notificación (email, SMS o donde corresponda).",
+      "Si falla, avisa a quien gestione tu web o tu sistema de citas cuanto antes.",
+    ],
   },
   {
     id: "daily-clinic-team-photo",
@@ -410,6 +561,10 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: ["Clínica"],
+    tutorial: [
+      "Haz una foto del equipo (con su permiso) o de una sala limpia y ordenada.",
+      "Súbela a Google Business Profile y a tu web, en la sección \"Sobre nosotros\" o similar.",
+    ],
   },
   {
     id: "daily-clinic-health-tip",
@@ -422,6 +577,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: ["Clínica"],
+    tutorial: [
+      "Piensa en una duda o consejo que repitas a menudo a tus pacientes.",
+      "Escríbelo en 3-4 frases sencillas, sin tecnicismos.",
+      "Publícalo en tus redes sociales o en el blog de tu web si tienes.",
+    ],
   },
 
   // --- Inmobiliaria ---
@@ -436,6 +596,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "alta",
     appliesTo: ["Inmobiliaria"],
+    tutorial: [
+      "Elige una de tus propiedades más vistas o destacadas.",
+      "Compara el precio publicado en tu web con el precio real actual.",
+      "Corrígelo si hace falta, y aprovecha para comprobar que sigue disponible.",
+    ],
   },
   {
     id: "daily-inmobiliaria-more-photos",
@@ -448,6 +613,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "media",
     appliesTo: ["Inmobiliaria"],
+    tutorial: [
+      "Elige una propiedad con menos de 8 fotos.",
+      "Si puedes, haz fotos nuevas con luz natural (abre persianas/cortinas) desde varios ángulos por habitación.",
+      "Súbelas a la ficha de la propiedad en tu web o portal inmobiliario.",
+    ],
   },
 
   // --- Taller ---
@@ -462,6 +632,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "alta",
     appliesTo: ["Taller"],
+    tutorial: [
+      "Revisa la lista de servicios en tu web y en Google Business Profile.",
+      "Añade los que falten (ej. \"cambio de neumáticos\", \"ITV\", \"diagnosis electrónica\").",
+      "Quita los que ya no ofrezcas.",
+    ],
   },
   {
     id: "daily-taller-brands",
@@ -474,6 +649,10 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "local",
     priority: "media",
     appliesTo: ["Taller"],
+    tutorial: [
+      "Haz una lista de las marcas de coche o moto con las que trabajas habitualmente.",
+      "Añádelas a la descripción de tu ficha de Google Business y a tu web.",
+    ],
   },
 
   // --- Hotel ---
@@ -488,6 +667,11 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "alta",
     appliesTo: ["Hotel"],
+    tutorial: [
+      "Elige una habitación limpia y bien iluminada (luz natural si es posible).",
+      "Haz varias fotos: general, cama, baño.",
+      "Súbelas a Google Business Profile y a tu web/portal de reservas.",
+    ],
   },
   {
     id: "daily-hotel-amenities",
@@ -500,6 +684,10 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "local",
     priority: "media",
     appliesTo: ["Hotel"],
+    tutorial: [
+      "Haz una lista de todos tus servicios (piscina, desayuno, parking, wifi, mascotas...).",
+      "En Google Business Profile → \"Editar perfil\" → \"Servicios\", marca cada uno que ofrezcas.",
+    ],
   },
 ];
 
@@ -516,6 +704,12 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "seo",
     priority: "alta",
     appliesTo: "all",
+    tutorial: [
+      "Ve a technicalseo.com/tools/schema-markup-generator/ y elige el tipo \"LocalBusiness\".",
+      "Rellena nombre, dirección, teléfono y horario de tu negocio.",
+      "Copia el código generado (JSON-LD).",
+      "Pégalo en el `<head>` de tu página principal (pide ayuda a quien gestione tu web si no sabes acceder al código).",
+    ],
   },
   {
     id: "weekly-analytics",
@@ -529,6 +723,12 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "analitica",
     priority: "alta",
     appliesTo: "all",
+    tutorial: [
+      "Entra en analytics.google.com y crea una cuenta gratuita con tu email.",
+      "Crea una \"Propiedad\" con el nombre de tu negocio y tu web.",
+      "Copia el ID de medición (empieza por \"G-\").",
+      "Pégalo en tu web (muchos gestores como WordPress lo piden en un plugin o en \"Configuración > Analítica\").",
+    ],
   },
   {
     id: "weekly-search-console",
@@ -542,6 +742,11 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "analitica",
     priority: "alta",
     appliesTo: "all",
+    tutorial: [
+      "Entra en search.google.com/search-console y añade tu dominio como propiedad.",
+      "Verifica la propiedad siguiendo el método que te ofrezca (normalmente subir un archivo o añadir un registro DNS).",
+      "Una vez verificado, envía tu sitemap si lo tienes (o pídeselo a quien gestione tu web).",
+    ],
   },
   {
     id: "weekly-speed",
@@ -555,6 +760,12 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     priority: "alta",
     appliesTo: "all",
     auditTrigger: "mobile",
+    tutorial: [
+      "Ve a pagespeed.web.dev e introduce tu web.",
+      "Revisa las recomendaciones marcadas en rojo/naranja (suelen ser imágenes pesadas o scripts innecesarios).",
+      "Empieza por comprimir imágenes grandes (ver la misión diaria de comprimir imágenes).",
+      "Si tu web es lenta por el propio hosting, considera pedir presupuesto de mejora — es donde más ayuda un profesional.",
+    ],
   },
   {
     id: "weekly-tag-manager",
@@ -568,6 +779,12 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "analitica",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Entra en tagmanager.google.com y crea una cuenta con el nombre de tu negocio.",
+      "Crea un \"Contenedor\" para tu web y copia los dos fragmentos de código que te da.",
+      "Pégalos en tu web: uno justo después de `<head>` y otro justo después de `<body>`.",
+      "Si no te sientes cómodo tocando el código, es un buen momento para pedir ayuda técnica puntual.",
+    ],
   },
   {
     id: "weekly-heatmap",
@@ -581,6 +798,12 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Crea una cuenta gratuita en hotjar.com.",
+      "Añade tu web como \"sitio\" y copia el código de instalación.",
+      "Pégalo en tu web (o en Google Tag Manager si ya lo tienes instalado).",
+      "Espera unos días de tráfico y revisa el mapa de calor de tu página principal.",
+    ],
   },
   {
     id: "weekly-directories",
@@ -594,6 +817,11 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "local",
     priority: "media",
     appliesTo: "all",
+    tutorial: [
+      "Busca 3-5 directorios relevantes para tu sector y ciudad (páginas amarillas, cámaras de comercio locales, directorios del sector).",
+      "Registra tu negocio en cada uno con los mismos datos exactos (nombre, dirección, teléfono) que en Google.",
+      "Enlaza tu web en cada ficha si te lo permiten.",
+    ],
   },
   {
     id: "weekly-faq-page",
@@ -606,6 +834,11 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "contenido",
     priority: "baja",
     appliesTo: "all",
+    tutorial: [
+      "Reúne las 8-10 preguntas que más te hacen tus clientes (teléfono, WhatsApp, email).",
+      "Escribe una respuesta clara y corta para cada una.",
+      "Crea una nueva página en tu web llamada \"Preguntas frecuentes\" y organízalas por tema.",
+    ],
   },
   {
     id: "weekly-restaurant-online-booking",
@@ -619,6 +852,11 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "alta",
     appliesTo: ["Restaurante"],
+    tutorial: [
+      "Elige una herramienta gratuita o económica de reservas (ej. la que ya integre tu TPV, o alternativas gratuitas para empezar).",
+      "Crea tu cuenta y configura tus horarios y aforo por turno.",
+      "Añade el botón o widget de reserva en tu web y en tu ficha de Google Business.",
+    ],
   },
   {
     id: "weekly-clinic-online-booking",
@@ -631,6 +869,11 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "alta",
     appliesTo: ["Clínica"],
+    tutorial: [
+      "Busca una herramienta de citas online adecuada a tu tamaño (muchas tienen plan gratuito para empezar).",
+      "Configura tu agenda, duración de cita y huecos disponibles.",
+      "Añade el enlace o widget de reserva en tu web y en Google Business Profile.",
+    ],
   },
   {
     id: "weekly-hotel-booking-engine",
@@ -643,6 +886,11 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "alta",
     appliesTo: ["Hotel"],
+    tutorial: [
+      "Haz tú mismo una reserva de prueba de principio a fin en tu web.",
+      "Cuenta cuántos pasos/clics necesitas hasta confirmar.",
+      "Si hay pasos que no son imprescindibles (registro obligatorio, demasiados campos), pide a quien gestione tu web que los reduzca.",
+    ],
   },
   {
     id: "weekly-inmobiliaria-virtual-tour",
@@ -655,6 +903,11 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "conversion",
     priority: "media",
     appliesTo: ["Inmobiliaria"],
+    tutorial: [
+      "Graba un vídeo con el móvil recorriendo la propiedad con calma (o usa una app de tour 360° gratuita).",
+      "Sube el vídeo a YouTube (puede ser \"no listado\") o directamente a tu web.",
+      "Enlázalo en la ficha de esa propiedad.",
+    ],
   },
 ];
 
@@ -686,4 +939,12 @@ export function selectWeeklyMission(businessType: BusinessType, failedChecks: Se
     (a, b) => scoreTemplate(b, businessType, failedChecks) - scoreTemplate(a, businessType, failedChecks),
   );
   return candidates[0];
+}
+
+export function findTemplateById(templateId: string | null): MissionTemplate | undefined {
+  if (!templateId) return undefined;
+  return (
+    DAILY_MISSION_TEMPLATES.find((t) => t.id === templateId) ??
+    WEEKLY_MISSION_TEMPLATES.find((t) => t.id === templateId)
+  );
 }

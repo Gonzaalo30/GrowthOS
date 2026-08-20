@@ -2,6 +2,20 @@
 
 Registro de decisiones de arquitectura. Cada entrada: **decisión**, **alternativas consideradas**, **por qué**.
 
+## 2026-08-20 — Plan Autopilot: 99€/mes, precio propuesto por el CTO
+
+**Decisión:** suscripción mensual "Plan Autopilot" a 99€/mes, cubre implementación de las misiones diarias + semanal, no incluye Growth Sprints (que siguen siendo proyectos de 1.000-5.000€ aparte).
+
+**Por qué ese precio:** por debajo de comprar 1-2 mejoras sueltas del marketplace en un mes (149-299€ cada una), para que compense suscribirse en vez de ir comprando suelto si ya hay intención de pagar por que lo hagan por ti. Aun con precio bajo, deja margen real de trabajo humano (regla explícita del fundador: nunca regalar trabajo humano gratis). El fundador pidió que propusiera el precio; puede ajustarse cuando haya datos reales de cuánto trabajo humano implica cada misión al mes.
+
+**Pendiente de decidir (no bloquea el lanzamiento del checkout):** qué pasa exactamente en el dashboard de un negocio con `subscription_status = active` — ¿las misiones se marcan completadas automáticamente cuando el equipo las implementa? ¿Sigue viendo "Marcar como hecha" o cambia la UI? Esto necesita un flujo operativo real (quién ejecuta las misiones del lado de GrowthOS) antes de programarlo, así que de momento el webhook solo guarda el estado de la suscripción, sin cambiar el comportamiento del dashboard.
+
+## 2026-08-20 — Tutoriales de misión y Plan Autopilot adelantados desde Sprint 4
+
+**Decisión:** cada plantilla de misión (`lib/missionTemplates.ts`) ahora incluye `tutorial: string[]` con pasos concretos para hacerlo uno mismo gratis, visible en `MissionCard` tras pulsar "¿Cómo lo hago?". Desde ahí se enlaza al Plan Autopilot para quien prefiera pagar en vez de hacerlo.
+
+**Por qué:** petición directa del fundador, con la idea de que cada misión incite tanto al camino gratuito (con instrucciones reales) como al de pago (Plan Autopilot), en vez de solo mostrar el problema sin ninguna salida. Esto reordena el plan original: Stripe estaba en Sprint 4, se adelanta aquí porque el fundador quiso construirlo ya en vez de esperar.
+
 ## 2026-08-20 — Bug de rotación: misiones duplicadas al recargar, corregido
 
 **Hallazgo:** al probar la rotación de misiones (`ensureDailyMissions`) recargando el dashboard varias veces seguidas sin completar nada, aparecían tarjetas duplicadas de la misma misión pendiente. Causa: la lógica de "repetir cuando se agota la variedad" excluía las plantillas ya elegidas *en esa misma llamada*, pero no las que ya tenían una misión pendiente sin completar de una llamada anterior.

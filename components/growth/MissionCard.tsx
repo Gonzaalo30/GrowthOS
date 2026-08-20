@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { completeMissionAction } from "@/app/actions/missions";
+import { findTemplateById } from "@/lib/missionTemplates";
 import type { Database } from "@/types/database.types";
 
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
@@ -19,6 +21,7 @@ const DIFFICULTY_LABEL: Record<Mission["difficulty"], string> = {
 export function MissionCard({ mission }: { mission: Mission }) {
   const [isPending, startTransition] = useTransition();
   const [justCompleted, setJustCompleted] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
   const isCompleted = Boolean(mission.completed_at) || justCompleted;
 
   function handleComplete() {
@@ -29,6 +32,7 @@ export function MissionCard({ mission }: { mission: Mission }) {
   }
 
   const isWeekly = mission.type === "weekly";
+  const template = findTemplateById(mission.template_id);
 
   return (
     <GrowthCard
@@ -56,6 +60,16 @@ export function MissionCard({ mission }: { mission: Mission }) {
               {mission.expected_impact}
             </p>
           )}
+
+          {template && (
+            <button
+              type="button"
+              onClick={() => setShowTutorial((v) => !v)}
+              className="mt-2 text-xs font-medium text-zinc-500 underline decoration-dotted underline-offset-2 hover:text-foreground"
+            >
+              {showTutorial ? "Ocultar cómo hacerlo" : "¿Cómo lo hago?"}
+            </button>
+          )}
         </div>
 
         <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
@@ -69,6 +83,28 @@ export function MissionCard({ mission }: { mission: Mission }) {
           </Button>
         </div>
       </div>
+
+      {template && showTutorial && (
+        <div className="mt-4 rounded-xl bg-surface-muted p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Hazlo tú, paso a paso</p>
+          <ol className="mt-2 flex flex-col gap-2">
+            {template.tutorial.map((step, i) => (
+              <li key={i} className="flex gap-2 text-sm text-zinc-600">
+                <span className="font-semibold text-brand-600">{i + 1}.</span>
+                {step}
+              </li>
+            ))}
+          </ol>
+          <div className="mt-3 border-t border-border pt-3">
+            <p className="text-sm text-zinc-600">
+              ¿Prefieres no ocuparte de esto?{" "}
+              <Link href="/plan-autopilot" className="font-medium text-brand-600 underline underline-offset-2">
+                Que lo hagamos nosotros por ti
+              </Link>
+            </p>
+          </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {justCompleted && (

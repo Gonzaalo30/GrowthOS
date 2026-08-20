@@ -25,6 +25,13 @@ Verificado de extremo a extremo en producción real (no local): registro, login,
 
 **Seguir ampliando en paralelo:** la librería de misiones (36 diarias + 12 semanales) sigue siendo pequeña frente a 3 misiones/día × 90 días = 270 huecos; seguirá creciendo con el feedback del fundador.
 
+## Sprint 2.5 — Tutoriales por misión + Plan Autopilot (EN CURSO 2026-08-20)
+Adelantado desde Sprint 4 por petición directa del fundador: cada misión necesita un tutorial de "hazlo tú" y una vía de pago para "que lo hagamos nosotros", en vez de esperar al sprint de monetización completo.
+- [x] Tutorial paso a paso en las 48 plantillas de misión (`MissionTemplate.tutorial`), desplegable en `MissionCard` ("¿Cómo lo hago?")
+- [x] Plan Autopilot: suscripción mensual (99 €/mes, cubre misiones diarias + semanal, no Growth Sprints) — `/plan-autopilot`, checkout de Stripe (`app/actions/subscription.ts`), webhook (`app/api/stripe/webhook`) que actualiza `businesses.subscription_status`
+- [ ] Pendiente: claves reales de Stripe (secret key + price ID + webhook secret) y migración `0004_subscriptions.sql` — sin esto el botón de suscripción muestra un aviso en vez de romperse, ya verificado
+- [ ] Pendiente: probar el ciclo completo de pago una vez haya claves (checkout → webhook → `subscription_status = active` → gating real de qué pasa con las misiones de un negocio en Autopilot, aún no decidido cómo se refleja en el dashboard)
+
 ## Sprint 3 — Auditoría automática + IA
 - Motor de auditoría (SSL, meta tags, H1, schema, robots, sitemap, velocidad, mobile, cookies, enlaces rotos)
 - Persistencia de resultados en Supabase
@@ -32,7 +39,7 @@ Verificado de extremo a extremo en producción real (no local): registro, login,
 - Emails automáticos semanales (Resend) — Growth Report
 
 ## Sprint 4 — Monetización
-- Stripe (checkout de mejoras del marketplace y Growth Sprints)
+- Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€)
 - Roadmap 90 días generado por IA (3 fases, tareas verde/naranja/roja)
 - Comparador de competidores (2 competidores → tabla IA)

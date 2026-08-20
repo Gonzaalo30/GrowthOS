@@ -37,6 +37,9 @@ export interface Database {
           xp: number;
           streak_count: number;
           last_activity_date: string | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          subscription_status: string;
           created_at: string;
         };
         Insert: {
@@ -51,6 +54,9 @@ export interface Database {
           xp?: number;
           streak_count?: number;
           last_activity_date?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          subscription_status?: string;
           created_at?: string;
         };
         Update: Partial<{
@@ -63,6 +69,9 @@ export interface Database {
           xp: number;
           streak_count: number;
           last_activity_date: string | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          subscription_status: string;
         }>;
         Relationships: [];
       };
