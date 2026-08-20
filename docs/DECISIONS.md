@@ -2,6 +2,16 @@
 
 Registro de decisiones de arquitectura. Cada entrada: **decisión**, **alternativas consideradas**, **por qué**.
 
+## 2026-08-20 — Misiones seleccionadas por tipo de negocio + análisis real, no fijas
+
+**Decisión:** `lib/missionTemplates.ts` pasa de 3 misiones diarias + 1 semanal fijas para todos, a una librería (16 diarias + 8 semanales) etiquetada por categoría, tipo de negocio (`appliesTo`) y check de auditoría que la dispara (`auditTrigger`). En el alta (`app/actions/onboarding.ts`), se ejecuta `runQuickAudit(domain)` (el mismo análisis de `/analisis`) y `services/mission.service.ts` elige las misiones con mayor puntuación: +2 si coincide con un check fallido real, +1 si es específica del tipo de negocio. El Growth Score guardado en `businesses` también pasa a ser el resultado real de ese análisis (antes era 50 fijo para todos).
+
+**Alternativas consideradas:** mostrar todas las misiones disponibles de golpe — descartado porque rompe el diseño de juego tipo Duolingo (dosis pequeñas diarias) que el propio producto pide explícitamente.
+
+**Por qué:** feedback del fundador — quiere que las misiones reflejen de verdad el negocio (vertical) y su situación (hallazgos del análisis), no una lista estática. Verificado con dos casos reales: negocio "Restaurante" prioriza misiones de restaurante; un negocio con problema real de título (wikipedia.org como dominio de prueba) prioriza la misión de título por encima de las específicas del sector.
+
+**Pendiente para Sprint 2/3:** rotación de misiones a lo largo del tiempo (hoy solo se siembran una vez, en el alta) y ampliar `auditTrigger` con las señales del motor de auditoría completo (velocidad real, schema, robots, sitemap, enlaces rotos).
+
 ## 2026-08-20 — Registro opcional: se ve un resultado real antes de pedir cuenta
 
 **Decisión:** la landing ya no redirige directo a `/signup` al introducir un dominio. Ahora pasa por `/analisis`, una página pública (sin sesión) que ejecuta un análisis rápido real (`lib/quickAudit.ts`): SSL, título, meta descripción, H1 y viewport móvil, con petición `fetch` server-side directa al dominio introducido. Solo se pide cuenta cuando el usuario quiere guardar el resultado y ver sus misiones.

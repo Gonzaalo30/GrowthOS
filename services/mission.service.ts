@@ -1,12 +1,22 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
-import { DEFAULT_DAILY_MISSIONS, DEFAULT_WEEKLY_MISSION } from "@/lib/missionTemplates";
+import { selectDailyMissions, selectWeeklyMission, type BusinessType } from "@/lib/missionTemplates";
+import type { QuickAuditResult } from "@/lib/quickAudit";
 
 type Client = SupabaseClient<Database>;
 
-export async function seedDefaultMissions(supabase: Client, businessId: string) {
+export async function seedMissionsForBusiness(
+  supabase: Client,
+  businessId: string,
+  businessType: BusinessType,
+  audit: QuickAuditResult,
+) {
+  const failedChecks = new Set(audit.checks.filter((c) => !c.passed).map((c) => c.id));
+  const dailyMissions = selectDailyMissions(businessType, failedChecks);
+  const weeklyMission = selectWeeklyMission(businessType, failedChecks);
+
   const rows = [
-    ...DEFAULT_DAILY_MISSIONS.map((m) => ({
+    ...dailyMissions.map((m) => ({
       business_id: businessId,
       type: "daily" as const,
       title: m.title,
@@ -19,12 +29,12 @@ export async function seedDefaultMissions(supabase: Client, businessId: string) 
     {
       business_id: businessId,
       type: "weekly" as const,
-      title: DEFAULT_WEEKLY_MISSION.title,
-      description: DEFAULT_WEEKLY_MISSION.description,
-      difficulty: DEFAULT_WEEKLY_MISSION.difficulty,
-      time_estimate_minutes: DEFAULT_WEEKLY_MISSION.timeEstimateMinutes,
-      xp_reward: DEFAULT_WEEKLY_MISSION.xpReward,
-      expected_impact: DEFAULT_WEEKLY_MISSION.expectedImpact,
+      title: weeklyMission.title,
+      description: weeklyMission.description,
+      difficulty: weeklyMission.difficulty,
+      time_estimate_minutes: weeklyMission.timeEstimateMinutes,
+      xp_reward: weeklyMission.xpReward,
+      expected_impact: weeklyMission.expectedImpact,
     },
   ];
 

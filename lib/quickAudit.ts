@@ -151,3 +151,7 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
 
   return { domain, score, checks };
 }
+
+export function growthPotentialLabel(score: number): string {
+  return score < 70 ? "Alto" : "Medio";
+}

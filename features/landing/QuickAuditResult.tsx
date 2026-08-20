@@ -3,7 +3,7 @@ import { ScoreCircle } from "@/components/growth/ScoreCircle";
 import { CheckItem } from "@/components/growth/CheckItem";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
-import { runQuickAudit } from "@/lib/quickAudit";
+import { runQuickAudit, growthPotentialLabel } from "@/lib/quickAudit";
 
 export async function QuickAuditResult({ domain }: { domain: string }) {
   const result = await runQuickAudit(domain);
@@ -29,7 +29,7 @@ export async function QuickAuditResult({ domain }: { domain: string }) {
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6">
       <GrowthCard className="flex flex-col items-center gap-4 text-center">
         <span className="text-sm text-zinc-500">Resultado para {domain}</span>
-        <ScoreCircle score={result.score} potential={result.score < 70 ? "Alto" : "Medio"} />
+        <ScoreCircle score={result.score} potential={growthPotentialLabel(result.score)} />
         <p className="text-sm text-zinc-600">
           Cumples {passedCount} de {result.checks.length} puntos básicos. Crea tu cuenta gratis para
           ver el plan completo de mejoras y tus misiones de hoy.
