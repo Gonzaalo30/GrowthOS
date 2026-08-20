@@ -2,14 +2,16 @@
 
 Regla: no se avanza al siguiente sprint hasta dejar el anterior funcional y limpio (sin mocks fingiendo ser features reales).
 
-## Sprint 1 — Fundación (EN CURSO)
-- [ ] Scaffold Next.js 15 + TypeScript + Tailwind + estructura de carpetas (`/app /components /features /lib /hooks /types /services /supabase`)
-- [ ] Supabase: proyecto, schema (`profiles`, `businesses`, `missions`), Auth (email/password)
-- [ ] Landing page (hero + input de URL + CTA "Analizar gratis")
-- [ ] Registro (signup real contra Supabase Auth)
-- [ ] Onboarding (dominio, tipo de negocio, ciudad, tamaño)
-- [ ] Dashboard básico: `ScoreCircle` con Growth Score, lista de misiones diarias (`MissionCard`) marcables como completadas
-- [ ] Deploy inicial a Vercel
+## Sprint 1 — Fundación (COMPLETADO 2026-08-17)
+- [x] Scaffold Next.js 15 + TypeScript + Tailwind + estructura de carpetas (`/app /components /features /lib /hooks /types /services /supabase`)
+- [x] Supabase: proyecto, schema (`profiles`, `businesses`, `missions`), Auth (email/password)
+- [x] Landing page (hero + input de URL + CTA "Analizar gratis")
+- [x] Registro (signup real contra Supabase Auth) + Login (añadido fuera del plan original — necesario para que un usuario recurrente pueda volver a entrar)
+- [x] Onboarding (dominio, tipo de negocio, ciudad, tamaño)
+- [x] Dashboard básico: `ScoreCircle` con Growth Score, lista de misiones diarias (`MissionCard`) marcables como completadas
+- [x] Deploy inicial a Vercel — [growth-os-smoky-eta.vercel.app](https://growth-os-smoky-eta.vercel.app)
+
+Verificado de extremo a extremo en producción real (no local): registro, login, onboarding, creación de negocio, siembra de misiones y completado de misión, todo persistido en Supabase. Pendiente antes de abrir al público: SMTP propio vía Resend (ver docs/DECISIONS.md, el email de confirmación de Supabase por defecto está muy limitado en volumen).
 
 ## Sprint 2 — Gamificación
 - Sistema de XP (persistido, se suma al completar misiones)
