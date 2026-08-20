@@ -30,7 +30,7 @@ export function MissionCard({ mission }: { mission: Mission }) {
 
   return (
     <GrowthCard className={cn("relative overflow-visible", isCompleted && "bg-brand-50/40")}>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             <span>{mission.type === "daily" ? "Misión diaria" : "Misión semanal"}</span>
@@ -48,7 +48,7 @@ export function MissionCard({ mission }: { mission: Mission }) {
           )}
         </div>
 
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
           <span className="text-xs font-semibold text-brand-600">+{mission.xp_reward} XP</span>
           <Button
             variant={isCompleted ? "secondary" : "primary"}
