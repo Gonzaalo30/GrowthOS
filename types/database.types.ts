@@ -1,5 +1,6 @@
 export type MissionType = "daily" | "weekly";
 export type MissionDifficulty = "easy" | "medium" | "hard";
+export type OpportunityRequestStatus = "pending" | "contacted" | "done";
 
 export interface Database {
   public: {
@@ -34,6 +35,8 @@ export interface Database {
           growth_score: number;
           growth_potential: string | null;
           xp: number;
+          streak_count: number;
+          last_activity_date: string | null;
           created_at: string;
         };
         Insert: {
@@ -46,6 +49,8 @@ export interface Database {
           growth_score?: number;
           growth_potential?: string | null;
           xp?: number;
+          streak_count?: number;
+          last_activity_date?: string | null;
           created_at?: string;
         };
         Update: Partial<{
@@ -56,6 +61,8 @@ export interface Database {
           growth_score: number;
           growth_potential: string | null;
           xp: number;
+          streak_count: number;
+          last_activity_date: string | null;
         }>;
         Relationships: [];
       };
@@ -71,6 +78,7 @@ export interface Database {
           xp_reward: number;
           expected_impact: string | null;
           price_cents: number | null;
+          template_id: string | null;
           completed_at: string | null;
           created_at: string;
         };
@@ -85,6 +93,7 @@ export interface Database {
           xp_reward: number;
           expected_impact?: string | null;
           price_cents?: number | null;
+          template_id?: string | null;
           completed_at?: string | null;
           created_at?: string;
         };
@@ -93,11 +102,39 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      opportunity_requests: {
+        Row: {
+          id: string;
+          business_id: string;
+          opportunity_id: string;
+          title: string;
+          price_cents: number;
+          status: OpportunityRequestStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          opportunity_id: string;
+          title: string;
+          price_cents: number;
+          status?: OpportunityRequestStatus;
+          created_at?: string;
+        };
+        Update: Partial<{
+          status: OpportunityRequestStatus;
+        }>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
       increment_business_xp: {
         Args: { p_business_id: string; p_amount: number };
+        Returns: undefined;
+      };
+      register_business_activity: {
+        Args: { p_business_id: string };
         Returns: undefined;
       };
     };

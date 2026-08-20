@@ -28,12 +28,22 @@ export function MissionCard({ mission }: { mission: Mission }) {
     });
   }
 
+  const isWeekly = mission.type === "weekly";
+
   return (
-    <GrowthCard className={cn("relative overflow-visible", isCompleted && "bg-brand-50/40")}>
+    <GrowthCard
+      className={cn(
+        "relative overflow-visible",
+        isWeekly && "border-2 border-brand-200 bg-gradient-to-br from-brand-50/60 to-transparent",
+        isCompleted && "bg-brand-50/40",
+      )}
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 text-xs text-zinc-500">
-            <span>{mission.type === "daily" ? "Misión diaria" : "Misión semanal"}</span>
+            <span className={cn(isWeekly && "font-semibold text-brand-600")}>
+              {isWeekly ? "⭐ Misión semanal · Alto impacto" : "Misión diaria"}
+            </span>
             <span>·</span>
             <span>{DIFFICULTY_LABEL[mission.difficulty]}</span>
             <span>·</span>

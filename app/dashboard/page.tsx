@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessByOwner } from "@/services/business.service";
-import { getMissionsForBusiness } from "@/services/mission.service";
+import { ensureDailyMissions, getMissionsForBusiness } from "@/services/mission.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
+import { BUSINESS_TYPES } from "@/lib/businessTypes";
+import type { BusinessType } from "@/lib/missionTemplates";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -15,7 +17,13 @@ export default async function DashboardPage() {
   const business = await getBusinessByOwner(supabase, user.id);
   if (!business) redirect("/onboarding");
 
-  const missions = await getMissionsForBusiness(supabase, business.id);
+  let missions = await getMissionsForBusiness(supabase, business.id);
+
+  if ((BUSINESS_TYPES as readonly string[]).includes(business.business_type)) {
+    const businessType = business.business_type as BusinessType;
+    await ensureDailyMissions(supabase, business.id, businessType, new Set(), missions);
+    missions = await getMissionsForBusiness(supabase, business.id);
+  }
 
   return <DashboardView business={business} missions={missions} />;
 }

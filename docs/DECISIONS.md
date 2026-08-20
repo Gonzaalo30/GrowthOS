@@ -2,6 +2,14 @@
 
 Registro de decisiones de arquitectura. Cada entrada: **decisión**, **alternativas consideradas**, **por qué**.
 
+## 2026-08-20 — Bug de rotación: misiones duplicadas al recargar, corregido
+
+**Hallazgo:** al probar la rotación de misiones (`ensureDailyMissions`) recargando el dashboard varias veces seguidas sin completar nada, aparecían tarjetas duplicadas de la misma misión pendiente. Causa: la lógica de "repetir cuando se agota la variedad" excluía las plantillas ya elegidas *en esa misma llamada*, pero no las que ya tenían una misión pendiente sin completar de una llamada anterior.
+
+**Corrección:** se añadió `pendingTemplateIds` (plantillas con una misión activa ahora mismo) y se excluye tanto de la selección de "frescas" como de la de "repetidas". Las repeticiones solo pueden reutilizar plantillas cuya instancia anterior ya esté *completada*, nunca una que siga pendiente.
+
+**Por qué importa:** este bug solo se detectó probando el flujo real varias veces seguidas en el navegador, no con una sola pasada — recordatorio de por qué se verifica cada feature en el navegador antes de darla por cerrada, no solo con `tsc`/`eslint`.
+
 ## 2026-08-20 — Misiones seleccionadas por tipo de negocio + análisis real, no fijas
 
 **Decisión:** `lib/missionTemplates.ts` pasa de 3 misiones diarias + 1 semanal fijas para todos, a una librería (16 diarias + 8 semanales) etiquetada por categoría, tipo de negocio (`appliesTo`) y check de auditoría que la dispara (`auditTrigger`). En el alta (`app/actions/onboarding.ts`), se ejecuta `runQuickAudit(domain)` (el mismo análisis de `/analisis`) y `services/mission.service.ts` elige las misiones con mayor puntuación: +2 si coincide con un check fallido real, +1 si es específica del tipo de negocio. El Growth Score guardado en `businesses` también pasa a ser el resultado real de ese análisis (antes era 50 fijo para todos).

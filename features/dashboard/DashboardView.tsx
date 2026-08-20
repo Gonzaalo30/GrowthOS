@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { ScoreCircle } from "@/components/growth/ScoreCircle";
 import { MissionCard } from "@/components/growth/MissionCard";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { LevelBadge } from "@/components/growth/LevelBadge";
 import { XPBar } from "@/components/growth/XPBar";
+import { StreakBadge } from "@/components/growth/StreakBadge";
 import { getLevelProgress } from "@/lib/levels";
 import type { Database } from "@/types/database.types";
 
@@ -30,6 +32,7 @@ export function DashboardView({
             <div className="flex flex-col items-center gap-2 sm:flex-row">
               <h1 className="text-lg font-semibold text-foreground">{business.domain}</h1>
               <LevelBadge level={levelProgress.level} />
+              <StreakBadge days={business.streak_count} />
             </div>
             <p className="mt-1 text-sm text-zinc-600">
               Hoy tienes <span className="font-medium text-foreground">{pendingDaily} misiones diarias</span>
@@ -63,6 +66,16 @@ export function DashboardView({
           <MissionCard mission={weeklyMission} />
         </div>
       )}
+
+      <Link href="/marketplace">
+        <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-300">
+          <div>
+            <h2 className="font-medium text-foreground">Marketplace</h2>
+            <p className="mt-1 text-sm text-zinc-600">Mejoras con precio cerrado, cuando quieras ir más rápido.</p>
+          </div>
+          <span className="text-brand-600">→</span>
+        </GrowthCard>
+      </Link>
     </div>
   );
 }
