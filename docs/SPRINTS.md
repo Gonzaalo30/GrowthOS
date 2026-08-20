@@ -19,6 +19,7 @@ Verificado de extremo a extremo en producción real (no local): registro, login,
 - Misión semanal (`MissionCard` variante de alto impacto)
 - Marketplace de mejoras con precio cerrado (`OpportunityCard`)
 - Streak de crecimiento (racha diaria + recompensas de contenido desbloqueable)
+- **Rotación de misiones diarias**: hoy las 3+1 se siembran una única vez en el alta (`lib/missionTemplates.ts`, 36 diarias + 12 semanales con prioridad alta/media/baja). Falta el sistema que sirva misiones *nuevas* cada día sin repetir las ya completadas hasta agotar la variedad, respetando el orden alta → media → baja. Seguir ampliando la librería de contenido en paralelo (más "tonterías" y más profundidad por sector) — feedback del fundador: con 3 misiones/día x 90 días (270 huecos) la librería debe seguir creciendo.
 
 ## Sprint 3 — Auditoría automática + IA
 - Motor de auditoría (SSL, meta tags, H1, schema, robots, sitemap, velocidad, mobile, cookies, enlaces rotos)
