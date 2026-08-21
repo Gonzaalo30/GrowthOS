@@ -55,3 +55,40 @@ export async function createAutopilotCheckoutAction(_prevState: CheckoutState): 
 
   redirect(sessionUrl);
 }
+
+/**
+ * Lleva al Portal de Cliente de Stripe: desde ahí se puede cancelar, cambiar
+ * el método de pago o ver facturas. Cuando el usuario cancela allí, el
+ * webhook (`customer.subscription.deleted`) actualiza `subscription_status`
+ * solo — no hace falta lógica de cancelación propia.
+ */
+export async function createBillingPortalSessionAction() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const business = await getBusinessByOwner(supabase, user.id);
+  if (!business) redirect("/onboarding");
+
+  if (!business.stripe_customer_id) {
+    redirect("/account?billingError=1");
+  }
+
+  const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+
+  let portalUrl: string | null;
+  try {
+    const stripe = getStripe();
+    const session = await stripe.billingPortal.sessions.create({
+      customer: business.stripe_customer_id,
+      return_url: `${origin}/account`,
+    });
+    portalUrl = session.url;
+  } catch {
+    redirect("/account?billingError=1");
+  }
+
+  redirect(portalUrl);
+}

@@ -7,8 +7,14 @@ import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { ProfileForm } from "@/features/account/ProfileForm";
 import { BusinessForm } from "@/features/account/BusinessForm";
+import { createBillingPortalSessionAction } from "@/app/actions/subscription";
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ billingError?: string }>;
+}) {
+  const { billingError } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -43,21 +49,35 @@ export default async function AccountPage() {
         />
       </GrowthCard>
 
-      <GrowthCard className="flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu plan</h2>
-          <p className="mt-1 text-sm text-zinc-600">
-            {isAutopilot ? (
-              <span className="font-medium text-emerald-700">Plan Autopilot activo ✓</span>
-            ) : (
-              "Estás en el plan gratuito."
-            )}
-          </p>
+      <GrowthCard className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu plan</h2>
+            <p className="mt-1 text-sm text-zinc-600">
+              {isAutopilot ? (
+                <span className="font-medium text-emerald-700">Plan Autopilot activo ✓</span>
+              ) : (
+                "Estás en el plan gratuito."
+              )}
+            </p>
+          </div>
+          {isAutopilot ? (
+            <form action={createBillingPortalSessionAction}>
+              <Button type="submit" variant="secondary">
+                Gestionar suscripción
+              </Button>
+            </form>
+          ) : (
+            <Link href="/plan-autopilot">
+              <Button variant="secondary">Ver Plan Autopilot</Button>
+            </Link>
+          )}
         </div>
-        {!isAutopilot && (
-          <Link href="/plan-autopilot">
-            <Button variant="secondary">Ver Plan Autopilot</Button>
-          </Link>
+        {billingError && (
+          <p className="text-sm text-red-600">
+            No hemos podido abrir la gestión de tu suscripción. Inténtalo de nuevo en un momento, o
+            escríbenos si sigue fallando.
+          </p>
         )}
       </GrowthCard>
     </div>

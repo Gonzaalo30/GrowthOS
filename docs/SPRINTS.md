@@ -34,6 +34,8 @@ Adelantado desde Sprint 4 por petición directa del fundador: cada misión neces
 
 **Pendiente (no bloquea, es Sprint 4/futuro):** gating real de qué pasa con las misiones de un negocio en Autopilot — de momento el webhook solo guarda el estado de la suscripción, sin cambiar el comportamiento del dashboard (ver docs/DECISIONS.md).
 
+- [x] **Gestión real de la suscripción** (2026-08-22): botón "Gestionar suscripción" en `/account` que lleva al Portal de Cliente real de Stripe (`stripe.billingPortal.sessions.create`) — cancelar, cambiar método de pago, ver facturas, todo gestionado por Stripe, sin lógica de cancelación propia. Verificado de extremo a extremo en local contra Stripe test mode: suscripción real → aparece "Gestionar suscripción" → portal real → cancelar → webhook actualiza `subscription_status` a `canceled` solo. Se probó también el caso de error (sin `stripe_customer_id`) con un mensaje claro en la página en vez de un fallo silencioso.
+
 **Incidencias reales encontradas y corregidas durante la puesta en marcha** (quedan documentadas porque son fáciles de repetir):
 - El fundador pegó primero claves **live** de Stripe por error en vez de **test** — se descartaron sin usarlas y se le pidió regenerarlas por seguridad.
 - La cuenta de Stripe tenía "Managed Payments" activado por defecto, que exige código de impuestos por producto — se desactivó con `managed_payments: { enabled: false }` en la sesión de checkout.
