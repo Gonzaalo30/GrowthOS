@@ -45,6 +45,7 @@ Adelantado desde Sprint 4 por petición directa del fundador: cada misión neces
 - [x] **Verificación real de misiones**: las ligadas a un hallazgo del análisis (`auditTrigger`: título, descripción, SSL, móvil) vuelven a comprobarse contra la web antes de marcarse como hechas — ya no basta con decir que sí. Botón "Verificar y marcar como hecha" para diferenciarlas honestamente de las que siguen siendo de confianza (responder reseña, subir foto — necesitan API de Google Business, Sprint 5). Si no pasa, mensaje claro sin marcar completada. Verificado con caso real: título de wikipedia.org sigue bloqueado, SSL se verifica y completa correctamente.
 - [x] **Growth Score con historial** (`growth_score_history`): al volver al dashboard tras 7+ días desde el último análisis, se reanaliza el dominio y se actualiza el score. Si subió, banner "¡Enhorabuena! Tu Growth Score subió X puntos esta semana" (`ScoreCelebration`). Primera visita de un negocio existente solo guarda la base, sin celebrar (no hay con qué comparar).
 - [x] **Desglose del Growth Score** (`growth_score_history.checks` jsonb): cada análisis guarda ahora el detalle de qué se comprobó, no solo el número. En el dashboard, botón "¿Por qué esta puntuación?" despliega cada check (SSL, título, descripción, H1, móvil) con su explicación en lenguaje de negocio (`ScoreBreakdown`, reutiliza `CheckItem` de `/analisis`). Deja claro que es un subconjunto — "iremos ampliando este análisis" — para no dar a entender que ya cubrimos velocidad real o Google Business.
+- [x] **Growth Score por categorías con peso** (Velocidad, SEO, Local, Conversión, Confianza, tal como pide el prompt de producto): cada check tiene `category` (`lib/scoreCategories.ts`, separado de `lib/quickAudit.ts` a propósito — importarlo desde un componente cliente arrastraba sin querer el código de servidor con `node:dns`/`node:net` al bundle del navegador, bug real encontrado y corregido en el build). Local y Conversión muestran "—" honestamente: hoy no medimos nada en esas categorías, no se inventa una puntuación.
 - [ ] Motor de auditoría completo (hoy `lib/quickAudit.ts` solo cubre SSL, título, descripción, H1, móvil — faltan schema, robots.txt, sitemap.xml, velocidad real, cookies, enlaces rotos)
 - [ ] Integración IA (Claude/OpenAI) para traducir hallazgos a lenguaje de negocio — necesita API key, pendiente de pedir
 - [ ] Emails automáticos semanales (Resend) — Growth Report
@@ -57,6 +58,18 @@ Detectado por el fundador al usar la app real: no había ninguna forma de cerrar
 - [x] `autoComplete` añadido a los campos que faltaban (ciudad → `address-level2`, dominio → `url`) para que el navegador rellene solo.
 - [ ] Pendiente: login con Google (OAuth) — necesita que el fundador cree credenciales en Google Cloud Console primero.
 - [ ] Pendiente: gestión de la suscripción desde `/account` (cancelar, cambiar de plan) — hoy solo se muestra el estado, cancelar requeriría el customer portal de Stripe o una acción de servidor propia.
+
+## Sprint 3.6 — Alineación con el prompt de producto completo (COMPLETADO 2026-08-21)
+El fundador volvió a pasar el prompt completo del producto para revisar qué faltaba. Comparado línea por línea con lo construido:
+- [x] Precio de Schema corregido a 79€ (había una contradicción entre dos versiones del prompt: 179€ vs 79€ — se usa la del prompt más reciente, en `lib/opportunities.ts` y `/precios`)
+- [x] Subtexto bajo el CTA de la landing: "Sin tarjeta · Menos de 30 segundos · Informe inmediato"
+- [x] Saludo por hora del día en el dashboard ("Buenos días/tardes/noches, {nombre}") — calculado en el cliente (`features/dashboard/Greeting.tsx`), nunca en el servidor: Vercel corre en UTC, así que calcularlo en servidor le habría mostrado "Buenas noches" a un usuario en España a media tarde
+- [x] Growth Score por categorías con peso (ver Sprint 3 arriba)
+- [x] Tabla `case_studies` preparada (arquitectura lista, sin datos) para la "biblioteca de casos de éxito" que propuso el fundador — **decisión explícita: no rellenarla con casos inventados**. Con cero clientes reales todavía, un caso de éxito falso sería exactamente el tipo de contenido que este proyecto ha evitado en todo momento (ver `/casos-de-exito`, que ya usa ejemplos genéricos por el mismo motivo). Se activará sola en cuanto haya un caso real que documentar.
+
+**Pendiente, más grande, para otro bloque:** onboarding como wizard de 5 pasos (Dominio → Tipo → Ciudad → Tamaño → Conexiones opcionales) tal como describe el prompt — hoy es un único formulario con los 4 primeros campos. El paso 5 (conectar Google Business/Search Console/GA4/WordPress) no puede ser funcional todavía porque esas integraciones OAuth son Sprint 5; se construiría como pasos visuales con las conexiones marcadas "Próximamente".
+
+**Bug real encontrado durante este bloque:** añadir la constante `SCORE_CATEGORY_LABELS` directamente en `lib/quickAudit.ts` rompía el build — un componente cliente que la importaba arrastraba también el código de servidor del analizador (`node:dns`, `node:net`), que no existen en el navegador. Solución: separar las categorías a `lib/scoreCategories.ts`, sin ninguna dependencia de Node.
 
 ## Sprint 4 — Monetización
 - Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessByOwner } from "@/services/business.service";
+import { getProfile } from "@/services/profile.service";
 import { ensureDailyMissions, getMissionsForBusiness } from "@/services/mission.service";
 import { refreshGrowthScoreIfStale, getLatestScoreBreakdown } from "@/services/audit.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
@@ -33,6 +34,7 @@ export default async function DashboardPage() {
   }
 
   const scoreBreakdown = await getLatestScoreBreakdown(supabase, business.id);
+  const profile = await getProfile(supabase, user.id);
 
   return (
     <DashboardView
@@ -40,6 +42,7 @@ export default async function DashboardPage() {
       missions={missions}
       scoreRefresh={scoreRefresh}
       scoreBreakdown={scoreBreakdown}
+      profileName={profile.name}
     />
   );
 }

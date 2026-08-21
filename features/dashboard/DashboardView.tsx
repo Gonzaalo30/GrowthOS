@@ -7,6 +7,7 @@ import { XPBar } from "@/components/growth/XPBar";
 import { StreakBadge } from "@/components/growth/StreakBadge";
 import { ScoreCelebration } from "@/components/growth/ScoreCelebration";
 import { ScoreBreakdown } from "@/components/growth/ScoreBreakdown";
+import { Greeting } from "@/features/dashboard/Greeting";
 import { getLevelProgress } from "@/lib/levels";
 import type { Database } from "@/types/database.types";
 import type { GrowthScoreRefreshResult } from "@/services/audit.service";
@@ -20,11 +21,13 @@ export function DashboardView({
   missions,
   scoreRefresh,
   scoreBreakdown,
+  profileName,
 }: {
   business: Business;
   missions: Mission[];
   scoreRefresh?: GrowthScoreRefreshResult;
   scoreBreakdown?: QuickAuditCheck[] | null;
+  profileName: string;
 }) {
   const dailyMissions = missions.filter((m) => m.type === "daily");
   const weeklyMission = missions.find((m) => m.type === "weekly");
@@ -37,6 +40,8 @@ export function DashboardView({
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
+      <Greeting name={profileName} />
+
       {scoreDelta > 0 && <ScoreCelebration delta={scoreDelta} />}
 
       <GrowthCard className="flex flex-col gap-6">

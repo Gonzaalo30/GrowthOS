@@ -1,11 +1,13 @@
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
+import type { ScoreCategory } from "@/lib/scoreCategories";
 
 export interface QuickAuditCheck {
   id: string;
   label: string;
   passed: boolean;
   detail: string;
+  category: ScoreCategory;
 }
 
 export interface QuickAuditResult {
@@ -112,6 +114,7 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
       detail: hasSsl
         ? "Tu web funciona con conexión segura, lo que da confianza a tus clientes."
         : "Tu web no responde de forma segura (https). Los navegadores avisan a los visitantes de esto.",
+      category: "confianza",
     },
     {
       id: "title",
@@ -120,6 +123,7 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
       detail: title
         ? `Título actual: "${title}"`
         : "No encontramos un título claro. Google lo usa como primera impresión de tu negocio.",
+      category: "seo",
     },
     {
       id: "description",
@@ -128,6 +132,7 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
       detail: description
         ? "Tienes una descripción que Google puede mostrar en los resultados de búsqueda."
         : "Falta una descripción que explique tu negocio en los resultados de Google.",
+      category: "seo",
     },
     {
       id: "h1",
@@ -136,6 +141,7 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
       detail: hasH1
         ? "Tu página tiene un encabezado principal claro."
         : "No encontramos un encabezado principal que resuma de qué trata tu página.",
+      category: "seo",
     },
     {
       id: "mobile",
@@ -144,6 +150,7 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
       detail: hasViewport
         ? "Tu web está preparada para verse bien en el móvil."
         : "Tu web podría no verse bien en el móvil, donde llegan la mayoría de tus clientes.",
+      category: "velocidad",
     },
   ];
 

@@ -45,6 +45,8 @@ export function Hero() {
           Analizar gratis
         </Button>
       </form>
+
+      <p className="mt-4 text-xs text-zinc-500">Sin tarjeta · Menos de 30 segundos · Informe inmediato</p>
     </section>
   );
 }

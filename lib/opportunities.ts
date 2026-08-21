@@ -33,7 +33,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     title: "Añadir datos estructurados (Schema)",
     description:
       "Implementamos información estructurada sobre tu negocio para que Google la entienda mejor y pueda mostrarte de forma más completa en los resultados.",
-    priceCents: 17900,
+    priceCents: 7900,
     expectedImpact: "Mejor visibilidad en búsquedas locales",
     implementationTime: "1-2 días laborables",
   },

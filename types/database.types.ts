@@ -155,6 +155,35 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      case_studies: {
+        Row: {
+          id: string;
+          opportunity_id: string;
+          business_type: string | null;
+          title: string;
+          what_changed: string;
+          time_to_notice: string;
+          why_good_practice: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          opportunity_id: string;
+          business_type?: string | null;
+          title: string;
+          what_changed: string;
+          time_to_notice: string;
+          why_good_practice: string;
+          created_at?: string;
+        };
+        Update: Partial<{
+          title: string;
+          what_changed: string;
+          time_to_notice: string;
+          why_good_practice: string;
+        }>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 const MARKETPLACE_EXAMPLES = [
   { title: "Optimizar ficha de Google Business", price: "149 €" },
   { title: "Mejorar la velocidad de tu web", price: "249 €" },
-  { title: "Añadir datos estructurados (Schema)", price: "179 €" },
+  { title: "Añadir datos estructurados (Schema)", price: "79 €" },
 ];
 
 const SPRINTS = [
