@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createBusiness } from "@/services/business.service";
 import { seedMissionsForBusiness } from "@/services/mission.service";
+import { recordGrowthScoreBaseline } from "@/services/audit.service";
 import { normalizeDomain } from "@/lib/utils";
 import { runQuickAudit, growthPotentialLabel } from "@/lib/quickAudit";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
@@ -53,6 +54,7 @@ export async function completeOnboardingAction(
   });
 
   await seedMissionsForBusiness(supabase, business.id, businessType, audit);
+  await recordGrowthScoreBaseline(supabase, business.id, business.growth_score);
 
   redirect("/dashboard");
 }

@@ -24,6 +24,13 @@ export async function getBusinessByOwner(supabase: Client, ownerId: string) {
   return data;
 }
 
+export async function getBusinessById(supabase: Client, businessId: string) {
+  const { data, error } = await supabase.from("businesses").select("*").eq("id", businessId).single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createBusiness(supabase: Client, input: CreateBusinessInput) {
   const { data, error } = await supabase
     .from("businesses")

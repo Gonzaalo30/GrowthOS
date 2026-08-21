@@ -135,6 +135,24 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      growth_score_history: {
+        Row: {
+          id: string;
+          business_id: string;
+          score: number;
+          recorded_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          score: number;
+          recorded_at?: string;
+        };
+        Update: Partial<{
+          score: number;
+        }>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

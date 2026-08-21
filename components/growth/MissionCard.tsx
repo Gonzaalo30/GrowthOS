@@ -22,17 +22,24 @@ export function MissionCard({ mission }: { mission: Mission }) {
   const [isPending, startTransition] = useTransition();
   const [justCompleted, setJustCompleted] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
   const isCompleted = Boolean(mission.completed_at) || justCompleted;
-
-  function handleComplete() {
-    startTransition(async () => {
-      await completeMissionAction(mission.id);
-      setJustCompleted(true);
-    });
-  }
 
   const isWeekly = mission.type === "weekly";
   const template = findTemplateById(mission.template_id);
+  const isVerified = Boolean(template?.auditTrigger);
+
+  function handleComplete() {
+    setVerifyError(null);
+    startTransition(async () => {
+      const result = await completeMissionAction(mission.id);
+      if (result.success) {
+        setJustCompleted(true);
+      } else {
+        setVerifyError(result.error ?? "No hemos podido verificar esta misión. Inténtalo de nuevo.");
+      }
+    });
+  }
 
   return (
     <GrowthCard
@@ -79,10 +86,20 @@ export function MissionCard({ mission }: { mission: Mission }) {
             disabled={isCompleted || isPending}
             onClick={handleComplete}
           >
-            {isCompleted ? "Completada" : isPending ? "Guardando…" : "Marcar como hecha"}
+            {isCompleted
+              ? "Completada"
+              : isPending
+                ? isVerified
+                  ? "Verificando…"
+                  : "Guardando…"
+                : isVerified
+                  ? "Verificar y marcar como hecha"
+                  : "Marcar como hecha"}
           </Button>
         </div>
       </div>
+
+      {verifyError && <p className="mt-2 text-sm text-red-600">{verifyError}</p>}
 
       {template && showTutorial && (
         <div className="mt-4 rounded-xl bg-surface-muted p-4">

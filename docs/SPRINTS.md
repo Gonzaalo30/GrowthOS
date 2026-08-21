@@ -41,11 +41,13 @@ Adelantado desde Sprint 4 por petición directa del fundador: cada misión neces
 - El primer webhook se creó estando en modo Live, así que no existía en modo Test — hubo que crearlo de nuevo dentro de Test mode.
 - El webhook se creó con eventos equivocados (`customer.tax_id.*` en vez de `customer.subscription.*`) — corregido por API con la secret key en vez de repetir la navegación manual en el dashboard de Stripe.
 
-## Sprint 3 — Auditoría automática + IA
-- Motor de auditoría (SSL, meta tags, H1, schema, robots, sitemap, velocidad, mobile, cookies, enlaces rotos)
-- Persistencia de resultados en Supabase
-- Integración IA (Claude/OpenAI) para traducir hallazgos a lenguaje de negocio
-- Emails automáticos semanales (Resend) — Growth Report
+## Sprint 3 — Auditoría automática + IA (EN CURSO 2026-08-21)
+- [x] **Verificación real de misiones**: las ligadas a un hallazgo del análisis (`auditTrigger`: título, descripción, SSL, móvil) vuelven a comprobarse contra la web antes de marcarse como hechas — ya no basta con decir que sí. Botón "Verificar y marcar como hecha" para diferenciarlas honestamente de las que siguen siendo de confianza (responder reseña, subir foto — necesitan API de Google Business, Sprint 5). Si no pasa, mensaje claro sin marcar completada. Verificado con caso real: título de wikipedia.org sigue bloqueado, SSL se verifica y completa correctamente.
+- [x] **Growth Score con historial** (`growth_score_history`): al volver al dashboard tras 7+ días desde el último análisis, se reanaliza el dominio y se actualiza el score. Si subió, banner "¡Enhorabuena! Tu Growth Score subió X puntos esta semana" (`ScoreCelebration`). Primera visita de un negocio existente solo guarda la base, sin celebrar (no hay con qué comparar).
+- [ ] Motor de auditoría completo (hoy `lib/quickAudit.ts` solo cubre SSL, título, descripción, H1, móvil — faltan schema, robots.txt, sitemap.xml, velocidad real, cookies, enlaces rotos)
+- [ ] Persistencia detallada de resultados de auditoría (hoy solo se guarda el score numérico en el historial, no el detalle de qué falló cada vez)
+- [ ] Integración IA (Claude/OpenAI) para traducir hallazgos a lenguaje de negocio — necesita API key, pendiente de pedir
+- [ ] Emails automáticos semanales (Resend) — Growth Report
 
 ## Sprint 4 — Monetización
 - Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints

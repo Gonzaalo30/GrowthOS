@@ -5,8 +5,10 @@ import { GrowthCard } from "@/components/growth/GrowthCard";
 import { LevelBadge } from "@/components/growth/LevelBadge";
 import { XPBar } from "@/components/growth/XPBar";
 import { StreakBadge } from "@/components/growth/StreakBadge";
+import { ScoreCelebration } from "@/components/growth/ScoreCelebration";
 import { getLevelProgress } from "@/lib/levels";
 import type { Database } from "@/types/database.types";
+import type { GrowthScoreRefreshResult } from "@/services/audit.service";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
@@ -14,17 +16,25 @@ type Mission = Database["public"]["Tables"]["missions"]["Row"];
 export function DashboardView({
   business,
   missions,
+  scoreRefresh,
 }: {
   business: Business;
   missions: Mission[];
+  scoreRefresh?: GrowthScoreRefreshResult;
 }) {
   const dailyMissions = missions.filter((m) => m.type === "daily");
   const weeklyMission = missions.find((m) => m.type === "weekly");
   const pendingDaily = dailyMissions.filter((m) => !m.completed_at).length;
   const levelProgress = getLevelProgress(business.xp);
+  const scoreDelta =
+    scoreRefresh?.refreshed && scoreRefresh.previousScore !== null
+      ? scoreRefresh.currentScore - scoreRefresh.previousScore
+      : 0;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
+      {scoreDelta > 0 && <ScoreCelebration delta={scoreDelta} />}
+
       <GrowthCard className="flex flex-col gap-6">
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
           <ScoreCircle score={business.growth_score} potential={business.growth_potential} />

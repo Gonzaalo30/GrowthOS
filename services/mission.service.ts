@@ -115,6 +115,12 @@ export async function getMissionsForBusiness(supabase: Client, businessId: strin
   return data;
 }
 
+export async function getMissionById(supabase: Client, missionId: string) {
+  const { data, error } = await supabase.from("missions").select("*").eq("id", missionId).single();
+  if (error) throw error;
+  return data;
+}
+
 export async function completeMission(supabase: Client, missionId: string) {
   const { data, error } = await supabase
     .from("missions")
