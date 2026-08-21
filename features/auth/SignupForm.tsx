@@ -48,6 +48,17 @@ export function SignupForm({ domain }: { domain?: string }) {
         <Button type="submit" disabled={isPending} className="mt-2 w-full">
           {isPending ? "Creando cuenta…" : "Crear cuenta"}
         </Button>
+        <p className="text-center text-xs text-zinc-500">
+          Al crear tu cuenta, aceptas nuestros{" "}
+          <Link href="/terminos" className="underline underline-offset-2 hover:text-foreground">
+            Términos
+          </Link>{" "}
+          y nuestra{" "}
+          <Link href="/privacidad" className="underline underline-offset-2 hover:text-foreground">
+            Política de Privacidad
+          </Link>
+          .
+        </p>
       </form>
 
       <p className="mt-4 text-center text-sm text-zinc-600">

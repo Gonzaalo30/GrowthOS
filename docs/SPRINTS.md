@@ -148,6 +148,14 @@ El fundador pidió pasar de "solo tareas sueltas" a una estructura de planes rea
 - [x] Página `/precios` reconstruida con las 4 tarjetas, medalla "Recomendado" en Growth, y formulario real de contacto para el plan Personalizado. La sección "Mejoras a la carta" (marketplace) se mantiene aparte — un plan no sustituye a la otra vía de ingresos, se complementan.
 - [x] Verificado en local con graceful degradation antes de aplicar la migración (mismo patrón de todo el proyecto: si algo falla, el resto de la página sigue funcionando).
 
+## Sprint 4.1 — Páginas legales (COMPLETADO 2026-08-22)
+El fundador pidió dar fiabilidad real al proyecto con las páginas legales obligatorias, antes de tener usuarios de pago reales.
+- [x] **Identidad legal real**, no inventada — pedida directamente al fundador antes de escribir nada (autónomo, nombre, NIF, dirección, email), centralizada en `lib/legalInfo.ts` para no repetirla en cada página.
+- [x] 4 páginas nuevas: `/aviso-legal` (LSSI-CE), `/privacidad` (RGPD — responsable, datos tratados, base legal, encargados del tratamiento reales: Supabase/Stripe/Vercel, derechos y cómo ejercerlos, referencia a la AEPD), `/cookies` (solo la cookie técnica de sesión de Supabase Auth — sin analítica ni publicidad, así que sin banner de consentimiento, explicado el motivo), `/terminos` (servicio, planes y facturación acorde a lo que existe de verdad hoy, cancelación real vía Portal de Stripe, límite de responsabilidad).
+- [x] Footer nuevo (`features/landing/Footer.tsx`) en todas las páginas de marketing, con los 4 enlaces legales y la identidad del titular.
+- [x] Aviso de aceptación de Términos y Privacidad añadido al formulario de registro.
+- **Nota del asistente, no legal:** este es un borrador sólido y honesto sobre lo que el producto hace de verdad hoy, no una revisión de un abogado. Antes de manejar un volumen real de usuarios/pagos, conviene que un profesional lo revise, sobre todo la Política de Privacidad (RGPD) y los Términos.
+
 ## Sprint 4.5 — Pendiente (requiere IA)
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€) — antes vivían como texto estático en `/precios`; se sustituyeron por el plan Personalizado (contacto real) hasta que existan de verdad
 - Roadmap 90 días generado por IA (3 fases, tareas verde/naranja/roja)
