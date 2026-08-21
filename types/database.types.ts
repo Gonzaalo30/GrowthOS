@@ -2,6 +2,7 @@ export type MissionType = "daily" | "weekly";
 export type MissionDifficulty = "easy" | "medium" | "hard";
 export type OpportunityRequestStatus = "pending" | "contacted" | "done";
 export type DailyChestReward = "xp" | "bonus_mission";
+export type BusinessPlan = "starter" | "growth" | "autopilot";
 
 export interface Database {
   public: {
@@ -42,6 +43,7 @@ export interface Database {
           stripe_customer_id: string | null;
           stripe_subscription_id: string | null;
           subscription_status: string;
+          plan: BusinessPlan;
           created_at: string;
         };
         Insert: {
@@ -60,6 +62,7 @@ export interface Database {
           stripe_customer_id?: string | null;
           stripe_subscription_id?: string | null;
           subscription_status?: string;
+          plan?: BusinessPlan;
           created_at?: string;
         };
         Update: Partial<{
@@ -75,6 +78,7 @@ export interface Database {
           stripe_customer_id: string | null;
           stripe_subscription_id: string | null;
           subscription_status: string;
+          plan: BusinessPlan;
         }>;
         Relationships: [];
       };
@@ -247,6 +251,26 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<{ event_name: string; properties: unknown }>;
+        Relationships: [];
+      };
+      custom_plan_requests: {
+        Row: {
+          id: string;
+          business_id: string;
+          details: string;
+          contact_email: string;
+          status: OpportunityRequestStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          details: string;
+          contact_email: string;
+          status?: OpportunityRequestStatus;
+          created_at?: string;
+        };
+        Update: Partial<{ status: OpportunityRequestStatus }>;
         Relationships: [];
       };
       notifications: {

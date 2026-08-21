@@ -78,10 +78,11 @@ export async function ensureDailyMissions(
   businessType: BusinessType,
   failedChecks: Set<string>,
   existingMissions: MissionRow[],
+  dailyCap = 3,
 ) {
   const dailyMissions = existingMissions.filter((m) => m.type === "daily");
   const pendingCount = dailyMissions.filter((m) => !m.completed_at).length;
-  const needed = 3 - pendingCount;
+  const needed = dailyCap - pendingCount;
   if (needed <= 0) return;
 
   const usedTemplateIds = new Set(dailyMissions.map((m) => m.template_id).filter((id): id is string => !!id));

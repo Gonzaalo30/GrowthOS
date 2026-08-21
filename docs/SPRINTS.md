@@ -135,9 +135,21 @@ El fundador pidió seguir con extras de gamificación. Se construyó un sistema 
   - Verificado en escritorio (1440px) y móvil (375px): en móvil todo vuelve a una sola columna correctamente.
 - [x] **Ecommerce como tipo de negocio real**: añadido a `BUSINESS_TYPES`, con 4 Quick Wins propios (fotos de producto, coste de envío visible antes del carrito, stock al día, política de devoluciones visible) y 1 misión semanal (compra de prueba completa + simplificar el checkout) — mismo patrón que el resto de sectores, ningún atajo. Añadido también a `/casos-de-exito` con las mismas misiones reales, no inventadas para la ocasión.
 
-## Sprint 4 — Monetización
-- Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints
-- Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€)
+## Sprint 4 — Monetización real: planes (COMPLETADO 2026-08-22)
+El fundador pidió pasar de "solo tareas sueltas" a una estructura de planes real, con opción de subir/bajar de nivel y un plan "Recomendado" — más formas de generar ingresos, no solo el Marketplace.
+- [x] **4 niveles reales**: Gratis (ya existía) → **Growth** (nuevo, 29€/mes, "Recomendado") → Autopilot (ya existía, 99€/mes) → **Personalizado** (sin precio fijo, captura de contacto real en vez de un precio inventado para algo que se cotiza caso a caso). Catálogo en `lib/plans.ts`.
+- [x] Producto y precio reales creados en Stripe (test mode) vía API para el plan Growth — igual que se hizo antes con el webhook, evitando la navegación manual del dashboard de Stripe.
+- [x] **Diferenciación real entre planes** (nada de gating decorativo):
+  - Growth/Autopilot: Quick Wins pendientes casi sin tope (20, frente a 3 en Gratis) — `dailyQuickWinCap()` en `lib/plans.ts`, aplicado en `ensureDailyMissions`.
+  - Growth/Autopilot: botón "Reanalizar ahora" en el dashboard — reanaliza la web sin esperar el ciclo automático de 7 días (`forceRefreshGrowthScore`, mismo motor de auditoría real, no una versión distinta).
+  - Insignia de plan junto al nombre del negocio en el dashboard.
+- [x] **Cambiar de plan de verdad**: el Portal de Cliente de Stripe se configuró por API (`subscription_update`) para permitir cambiar entre Growth y Autopilot desde ahí — se reutiliza el Portal ya construido en vez de programar lógica de prorrateo a mano. `businesses.plan` se deriva del price real de la suscripción en el webhook (`customer.subscription.updated`), así que un cambio hecho en el Portal se refleja solo, sin depender de metadata que solo se rellena al crear el checkout inicial.
+- [x] Migración `0013`: `businesses.plan` (enum) + tabla `custom_plan_requests` (mismo patrón que `opportunity_requests`, con RLS por dueño del negocio).
+- [x] Página `/precios` reconstruida con las 4 tarjetas, medalla "Recomendado" en Growth, y formulario real de contacto para el plan Personalizado. La sección "Mejoras a la carta" (marketplace) se mantiene aparte — un plan no sustituye a la otra vía de ingresos, se complementan.
+- [x] Verificado en local con graceful degradation antes de aplicar la migración (mismo patrón de todo el proyecto: si algo falla, el resto de la página sigue funcionando).
+
+## Sprint 4.5 — Pendiente (requiere IA)
+- Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€) — antes vivían como texto estático en `/precios`; se sustituyeron por el plan Personalizado (contacto real) hasta que existan de verdad
 - Roadmap 90 días generado por IA (3 fases, tareas verde/naranja/roja)
 - Comparador de competidores (2 competidores → tabla IA)
 

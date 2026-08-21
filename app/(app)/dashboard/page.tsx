@@ -19,6 +19,7 @@ import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
 import { computeAchievements } from "@/lib/achievements";
+import { dailyQuickWinCap } from "@/lib/plans";
 
 const CALENDAR_WEEKS = 12;
 
@@ -47,7 +48,14 @@ export default async function DashboardPage() {
     // Los checks que fallan de verdad hoy, para que la rotación priorice misiones
     // que atacan un problema real detectado, no una elección a ciegas.
     const failedChecks = new Set((scoreBreakdown ?? []).filter((c) => !c.passed).map((c) => c.id));
-    await ensureDailyMissions(supabase, business.id, businessType, failedChecks, missions);
+    await ensureDailyMissions(
+      supabase,
+      business.id,
+      businessType,
+      failedChecks,
+      missions,
+      dailyQuickWinCap(business.plan),
+    );
     missions = await getMissionsForBusiness(supabase, business.id);
   }
 

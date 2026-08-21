@@ -12,6 +12,7 @@ import { BusinessForm } from "@/features/account/BusinessForm";
 import { BillingInfoForm } from "@/features/account/BillingInfoForm";
 import { InvoiceHistory } from "@/components/account/InvoiceHistory";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
+import { getPlan } from "@/lib/plans";
 
 export default async function AccountPage({
   searchParams,
@@ -32,7 +33,8 @@ export default async function AccountPage({
 
   if (!business) redirect("/onboarding");
 
-  const isAutopilot = business.subscription_status === "active";
+  const hasActiveSubscription = business.subscription_status === "active";
+  const currentPlan = getPlan(business.plan);
 
   // Facturación real de Stripe: si algo falla al leerla, el resto de la
   // página (perfil, negocio, plan) debe seguir funcionando igualmente.
@@ -91,24 +93,25 @@ export default async function AccountPage({
               <div>
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu plan</h2>
                 <p className="mt-1 text-sm text-zinc-600">
-                  {isAutopilot ? (
-                    <span className="font-medium text-emerald-700">Plan Autopilot activo ✓</span>
+                  {hasActiveSubscription ? (
+                    <span className="font-medium text-emerald-700">Plan {currentPlan.name} activo ✓</span>
                   ) : (
                     "Estás en el plan gratuito."
                   )}
                 </p>
               </div>
-              {isAutopilot ? (
-                <form action={createBillingPortalSessionAction}>
-                  <Button type="submit" variant="secondary">
-                    Gestionar suscripción
-                  </Button>
-                </form>
-              ) : (
-                <Link href="/plan-autopilot">
-                  <Button variant="secondary">Ver Plan Autopilot</Button>
+              <div className="flex flex-col items-end gap-2">
+                {hasActiveSubscription && (
+                  <form action={createBillingPortalSessionAction}>
+                    <Button type="submit" variant="secondary">
+                      Gestionar suscripción
+                    </Button>
+                  </form>
+                )}
+                <Link href="/precios" className="text-xs font-medium text-brand-600 underline underline-offset-2">
+                  {hasActiveSubscription ? "Ver otros planes" : "Ver planes de pago"}
                 </Link>
-              )}
+              </div>
             </div>
             {billingError && (
               <p className="text-sm text-red-600">

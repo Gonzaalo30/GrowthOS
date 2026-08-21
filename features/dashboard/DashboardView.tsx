@@ -12,8 +12,11 @@ import { GrowthReplay } from "@/components/growth/GrowthReplay";
 import { DailyChest } from "@/components/growth/DailyChest";
 import { MascotMessage } from "@/components/growth/Mascot";
 import { Achievements } from "@/components/growth/Achievements";
+import { PlanBadge } from "@/components/growth/PlanBadge";
+import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
 import { Greeting } from "@/features/dashboard/Greeting";
 import { getLevelProgress } from "@/lib/levels";
+import { canRefreshOnDemand } from "@/lib/plans";
 import type { Database } from "@/types/database.types";
 import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audit.service";
 import type { QuickAuditCheck } from "@/lib/quickAudit";
@@ -96,6 +99,7 @@ export function DashboardView({
                   <h1 className="text-lg font-semibold text-foreground">{business.domain}</h1>
                   <LevelBadge level={levelProgress.level} />
                   <StreakBadge days={business.streak_count} />
+                  <PlanBadge planId={business.plan} />
                 </div>
                 <p className="mt-1 text-sm text-zinc-600">
                   Hoy tienes <span className="font-medium text-foreground">{pendingDaily} Quick Wins</span>
@@ -110,6 +114,8 @@ export function DashboardView({
             <XPBar xp={business.xp} progress={levelProgress} />
 
             {scoreBreakdown && scoreBreakdown.length > 0 && <ScoreBreakdown checks={scoreBreakdown} />}
+
+            {canRefreshOnDemand(business.plan) && <RefreshScoreButton />}
           </GrowthCard>
 
           <div>

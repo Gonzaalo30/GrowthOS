@@ -54,10 +54,42 @@ export async function refreshGrowthScoreIfStale(
     }
   }
 
+  return runAndPersistAudit(supabase, businessId, domain, last?.score ?? null, currentScoreFallback);
+}
+
+/**
+ * Reanaliza ya, sin esperar el ciclo de 7 días — reservado a planes de pago
+ * (Growth/Autopilot). Es el mismo análisis real, solo que el usuario decide
+ * cuándo, en vez de esperar al ciclo automático.
+ */
+export async function forceRefreshGrowthScore(
+  supabase: Client,
+  businessId: string,
+  domain: string,
+): Promise<GrowthScoreRefreshResult> {
+  const { data: history, error } = await supabase
+    .from("growth_score_history")
+    .select("score, recorded_at")
+    .eq("business_id", businessId)
+    .order("recorded_at", { ascending: false })
+    .limit(1);
+  if (error) throw error;
+
+  const last = history?.[0];
+  return runAndPersistAudit(supabase, businessId, domain, last?.score ?? null, last?.score ?? 0);
+}
+
+async function runAndPersistAudit(
+  supabase: Client,
+  businessId: string,
+  domain: string,
+  previousScore: number | null,
+  fallbackScore: number,
+): Promise<GrowthScoreRefreshResult> {
   const audit = await runQuickAudit(domain);
   if (audit.unreachable) {
     // No penalizamos ni actualizamos si el dominio no respondió esta vez.
-    return { refreshed: false, previousScore: null, currentScore: currentScoreFallback };
+    return { refreshed: false, previousScore: null, currentScore: fallbackScore };
   }
 
   const { error: updateError } = await supabase
@@ -71,17 +103,17 @@ export async function refreshGrowthScoreIfStale(
     .insert({ business_id: businessId, score: audit.score, checks: audit.checks });
   if (insertError) throw insertError;
 
-  if (last && audit.score > last.score) {
+  if (previousScore !== null && audit.score > previousScore) {
     await createNotification(
       supabase,
       businessId,
-      `🎉 Tu Growth Score subió de ${last.score} a ${audit.score}.`,
+      `🎉 Tu Growth Score subió de ${previousScore} a ${audit.score}.`,
     );
   }
 
   return {
     refreshed: true,
-    previousScore: last?.score ?? null,
+    previousScore,
     currentScore: audit.score,
   };
 }

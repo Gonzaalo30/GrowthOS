@@ -1,5 +1,5 @@
 import { GrowthCard } from "@/components/growth/GrowthCard";
-import { SubscribeButton } from "@/features/billing/SubscribeButton";
+import { PlanCheckoutButton } from "@/features/billing/PlanCheckoutButton";
 
 const INCLUDED = [
   "Implementamos tus 3 misiones diarias cada día, sin que tengas que tocar nada",
@@ -38,7 +38,9 @@ export default function PlanAutopilotPage() {
           ))}
         </ul>
 
-        <SubscribeButton />
+        <div className="mt-6">
+          <PlanCheckoutButton planId="autopilot" label="Suscribirme por 99 €/mes" />
+        </div>
         <p className="mt-3 text-xs text-zinc-500">
           No incluye Growth Sprints (proyectos grandes, se cotizan aparte). Necesitas una cuenta
           creada para suscribirte.
