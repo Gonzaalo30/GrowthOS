@@ -25,12 +25,21 @@ Verificado de extremo a extremo en producción real (no local): registro, login,
 
 **Seguir ampliando en paralelo:** la librería de misiones (36 diarias + 12 semanales) sigue siendo pequeña frente a 3 misiones/día × 90 días = 270 huecos; seguirá creciendo con el feedback del fundador.
 
-## Sprint 2.5 — Tutoriales por misión + Plan Autopilot (EN CURSO 2026-08-20)
+## Sprint 2.5 — Tutoriales por misión + Plan Autopilot (COMPLETADO 2026-08-21)
 Adelantado desde Sprint 4 por petición directa del fundador: cada misión necesita un tutorial de "hazlo tú" y una vía de pago para "que lo hagamos nosotros", en vez de esperar al sprint de monetización completo.
 - [x] Tutorial paso a paso en las 48 plantillas de misión (`MissionTemplate.tutorial`), desplegable en `MissionCard` ("¿Cómo lo hago?")
 - [x] Plan Autopilot: suscripción mensual (99 €/mes, cubre misiones diarias + semanal, no Growth Sprints) — `/plan-autopilot`, checkout de Stripe (`app/actions/subscription.ts`), webhook (`app/api/stripe/webhook`) que actualiza `businesses.subscription_status`
-- [ ] Pendiente: claves reales de Stripe (secret key + price ID + webhook secret) y migración `0004_subscriptions.sql` — sin esto el botón de suscripción muestra un aviso en vez de romperse, ya verificado
-- [ ] Pendiente: probar el ciclo completo de pago una vez haya claves (checkout → webhook → `subscription_status = active` → gating real de qué pasa con las misiones de un negocio en Autopilot, aún no decidido cómo se refleja en el dashboard)
+- [x] Claves de Stripe (test mode) configuradas en local y Vercel; migración `0004_subscriptions.sql` aplicada
+- [x] Ciclo de pago completo verificado en producción real: checkout → pago de prueba (tarjeta 4242) → redirección a éxito → webhook → `subscription_status = 'active'` con `stripe_customer_id`/`stripe_subscription_id` guardados
+
+**Pendiente (no bloquea, es Sprint 4/futuro):** gating real de qué pasa con las misiones de un negocio en Autopilot — de momento el webhook solo guarda el estado de la suscripción, sin cambiar el comportamiento del dashboard (ver docs/DECISIONS.md).
+
+**Incidencias reales encontradas y corregidas durante la puesta en marcha** (quedan documentadas porque son fáciles de repetir):
+- El fundador pegó primero claves **live** de Stripe por error en vez de **test** — se descartaron sin usarlas y se le pidió regenerarlas por seguridad.
+- La cuenta de Stripe tenía "Managed Payments" activado por defecto, que exige código de impuestos por producto — se desactivó con `managed_payments: { enabled: false }` en la sesión de checkout.
+- Añadir variables de entorno en Vercel no redespliega solo — hace falta un Redeploy manual después.
+- El primer webhook se creó estando en modo Live, así que no existía en modo Test — hubo que crearlo de nuevo dentro de Test mode.
+- El webhook se creó con eventos equivocados (`customer.tax_id.*` en vez de `customer.subscription.*`) — corregido por API con la secret key en vez de repetir la navegación manual en el dashboard de Stripe.
 
 ## Sprint 3 — Auditoría automática + IA
 - Motor de auditoría (SSL, meta tags, H1, schema, robots, sitemap, velocidad, mobile, cookies, enlaces rotos)
