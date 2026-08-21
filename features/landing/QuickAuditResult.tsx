@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ScoreCircle } from "@/components/growth/ScoreCircle";
 import { CheckItem } from "@/components/growth/CheckItem";
 import { GrowthCard } from "@/components/growth/GrowthCard";
+import { ConfettiBurst } from "@/components/growth/ConfettiBurst";
 import { Button } from "@/components/ui/Button";
 import { runQuickAudit, growthPotentialLabel } from "@/lib/quickAudit";
 
@@ -27,7 +28,8 @@ export async function QuickAuditResult({ domain }: { domain: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6">
-      <GrowthCard className="flex flex-col items-center gap-4 text-center">
+      <GrowthCard className="relative flex flex-col items-center gap-4 text-center">
+        <ConfettiBurst />
         <span className="text-sm text-zinc-500">Resultado para {domain}</span>
         <ScoreCircle score={result.score} potential={growthPotentialLabel(result.score)} />
         <p className="text-sm text-zinc-600">

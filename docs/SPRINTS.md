@@ -76,6 +76,45 @@ El fundador volvió a pasar el prompt completo del producto para revisar qué fa
 
 **Bug real encontrado y corregido durante la verificación de este bloque:** al probar el wizard completo con una cuenta que ya tenía un negocio, `completeOnboardingAction` creó un segundo registro en `businesses` para el mismo `owner_id`, y `getBusinessByOwner` (que espera una única fila) rompió el dashboard con `PGRST116 — multiple rows returned`. La causa es que `/onboarding` solo redirige a `/dashboard` si ya existe negocio *antes* de renderizar el formulario, pero nada impide un segundo submit si el usuario vuelve a esa URL. No es un bug introducido por el wizard (el formulario de un solo paso tenía el mismo riesgo), pero quedó expuesto durante las pruebas. Fix aplicado de inmediato: se borró la fila duplicada (confirmado con el fundador antes de borrar). **Pendiente real de robustez, no bloqueante para este sprint:** añadir una restricción `unique(owner_id)` en `businesses` para que esto sea imposible a nivel de base de datos en vez de solo a nivel de UI.
 
+## Sprint 3.8 — Landing con más "wow" (COMPLETADO 2026-08-21)
+El fundador mandó una lista larga de ideas de producto tras usarlo. De la parte que marcó como "urgente, lo haría primero":
+- [x] Preview en vivo en el Hero: al escribir un dominio (debounce 900ms), aparece a la derecha del input una tarjeta con Growth Score, nº de acciones pendientes y potencial de mejora — **con datos reales** (server action `app/actions/heroPreview.ts` que llama a `runQuickAudit`), no inventados. El fundador pedía una "preview falsa hasta que cargue"; se implementó con auditoría real en su lugar para no romper el principio de cero datos falsos del proyecto — mismo efecto sorpresa, sin mentir.
+- [x] CTA cambiado de "Analizar gratis" a "Ver mi Growth Score" (más específico, ligado a la métrica central del producto). Nota: no hay test A/B real todavía — eso depende de la infraestructura de feature flags/analytics que el fundador pidió más abajo en su lista y que sigue sin construirse (ver backlog).
+- [x] Barra de confianza con iconos (30 segundos / Sin tarjeta / Sin conocimientos técnicos) en vez de solo texto.
+- [x] Animación de auditoría por pasos en `/analisis` (`features/landing/AuditLoadingSteps.tsx`, sustituye al `Suspense` fallback de texto plano) — 3 pasos con check ✓ progresivo, con nombres que corresponden a categorías que **sí** auditamos de verdad (velocidad/móvil, SEO, seguridad), no a integraciones que no existen (el fundador proponía "Buscando Google Business", pero esa comprobación no existe hasta Sprint 5 — cambiar el paso por algo real en vez de simular una capacidad que no tenemos).
+- [x] Confeti al revelar el resultado (`components/growth/ConfettiBurst.tsx`, CSS/framer-motion, sin librería nueva) en la tarjeta de score de `/analisis`.
+
+**Bug real encontrado y corregido:** el panel de preview del Hero se quedaba congelado mostrando el esqueleto de carga para siempre, aunque el servidor ya había devuelto el resultado (confirmado con logs: el estado se actualizaba correctamente). Causa: `AnimatePresence mode="wait"` con una `key` que cambiaba de `"loading"` a `preview.domain` interrumpía la animación de salida del esqueleto a mitad de camino y nunca completaba el montaje del contenido nuevo. Arreglado usando una `key` estable (`"panel"`) para el contenedor y dejando que el contenido interior cambie sin remontar el `motion.div` exterior.
+
+### Backlog priorizado (resto de la lista del fundador, no construido todavía)
+Todo lo que sigue viene de la misma lista de ideas. Se documenta para no perderlo, agrupado por tamaño/dependencias — no implica orden de sprint todavía, eso se decide con el fundador:
+
+**Dashboard con más personalidad**
+- Racha (🔥) y "hoy puedes ganar N XP" más visibles junto al saludo — hoy el saludo y el streak existen pero por separado, no combinados en una sola frase con gancho.
+- Calendario de crecimiento estilo GitHub (cuadrícula de días, color según nº de misiones completadas ese día) — requiere guardar actividad diaria por negocio, no solo el contador de racha actual.
+- Renombrar "misión diaria" a "Quick Win" con numeración (#27) — cambio de copy + contador global de misiones completadas por negocio.
+- La misión semanal con tratamiento visual de "boss" (mucho más grande, con precio/impacto destacado) — hoy ya tiene borde diferenciado pero no ese peso visual.
+- Marketplace renombrado a "Centro de Mejoras" + filtros (Todos/SEO/Google/Velocidad/Conversiones) — los filtros necesitan una `category` en `opportunities` (similar a la que ya existe en los checks de auditoría).
+
+**Gamificación nueva**
+- Cofre diario (XP / nueva misión / descuento 5% / informe premium al azar) — mecánica nueva, necesita definir qué recompensas son reales antes de construirlas (nada de "informe premium" si no existe todavía).
+- Multiplicador de XP por rachas de Quick Wins seguidos.
+
+**Funcionalidades más grandes**
+- Comparador de competidores mostrando "te adelantó esta semana" (ya estaba en el roadmap de Sprint 4, ahora con este enfoque más accionable).
+- Roadmap 90 días con checklist estilo Notion (pendiente/en progreso/completada) — ya estaba en Sprint 4, se afina el diseño.
+- Growth Sprint renombrado por resultado ("Crecimiento Local" en vez de "SEO Sprint").
+- **Growth Replay** (la idea que más nos gustó): guardar antes/después real del Growth Score de un negocio con las misiones que lo explican, como un "replay" de progreso. Es honesto por diseño porque usa `growth_score_history` (que ya existe desde el Sprint 3) — no requiere inventar nada, solo visualizarlo bien. Buen candidato para el próximo bloque grande.
+
+**Infraestructura (pidió meterla ahora porque luego cuesta más)**
+- Feature flags (activar/desactivar funcionalidades sin redeploy).
+- Eventos de analytics (clic en CTA, auditoría iniciada, misión completada, compra, abandono).
+- Sistema de notificaciones (email/in-app/push) diseñado desde la base, no añadido después.
+- Cola de auditorías en vez de ejecutarlas directamente (para escalar).
+
+**Identidad de marca**
+- Mascota naranja (radar/cohete con ojos) como voz del producto en vez de un tono neutro de sistema — mensajes tipo "He encontrado una oportunidad" / "Llevas 5 días sin completar una misión". Decisión de marca, no solo de código — mejor validarla con el fundador (naming, diseño del personaje) antes de escribirla en todos los textos del producto.
+
 ## Sprint 4 — Monetización
 - Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€)
