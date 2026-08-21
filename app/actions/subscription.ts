@@ -40,6 +40,9 @@ export async function createAutopilotCheckoutAction(_prevState: CheckoutState): 
       customer_email: user.email,
       metadata: { business_id: business.id },
       subscription_data: { metadata: { business_id: business.id } },
+      // Managed Payments (Stripe como merchant of record) exige código de impuestos
+      // por producto; lo desactivamos porque el MVP no lo necesita todavía.
+      managed_payments: { enabled: false },
     });
     sessionUrl = session.url;
   } catch {
