@@ -11,11 +11,13 @@ import { GrowthCalendar } from "@/components/growth/GrowthCalendar";
 import { GrowthReplay } from "@/components/growth/GrowthReplay";
 import { DailyChest } from "@/components/growth/DailyChest";
 import { MascotMessage } from "@/components/growth/Mascot";
+import { Achievements } from "@/components/growth/Achievements";
 import { Greeting } from "@/features/dashboard/Greeting";
 import { getLevelProgress } from "@/lib/levels";
 import type { Database } from "@/types/database.types";
 import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audit.service";
 import type { QuickAuditCheck } from "@/lib/quickAudit";
+import type { Achievement } from "@/lib/achievements";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
@@ -30,6 +32,7 @@ export function DashboardView({
   scoreTimeline,
   replayMissions,
   chestOpenedToday,
+  achievements,
 }: {
   business: Business;
   missions: Mission[];
@@ -40,6 +43,7 @@ export function DashboardView({
   scoreTimeline: GrowthScorePoint[];
   replayMissions: Pick<Mission, "id" | "title" | "completed_at">[];
   chestOpenedToday: boolean;
+  achievements: Achievement[];
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const allDailyMissions = missions
@@ -131,6 +135,8 @@ export function DashboardView({
       )}
 
       <GrowthCalendar counts={dailyCounts} />
+
+      {achievements.length > 0 && <Achievements achievements={achievements} />}
 
       <Link href="/marketplace">
         <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-400">

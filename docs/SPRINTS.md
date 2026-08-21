@@ -120,6 +120,12 @@ El fundador pidió seguir con el resto de la lista de ideas. Construido en este 
 
 **Pendiente, requiere IA (Sprint 4, sin empezar):** comparador de competidores ("te adelantó esta semana") y roadmap 90 días estilo Notion. Growth Sprint (renombrar "SEO Sprint" → "Crecimiento Local") no tiene nada que renombrar todavía porque esa función no existe — se nombrará bien desde el principio cuando se construya, no antes.
 
+## Sprint 3.10 — Sistema de logros (COMPLETADO 2026-08-22)
+El fundador pidió seguir con extras de gamificación. Se construyó un sistema de logros real (`lib/achievements.ts` + `components/growth/Achievements.tsx`), visible en el dashboard como una cuadrícula de insignias bloqueadas/desbloqueadas:
+- [x] 11 logros, todos derivados de datos que ya guardábamos de verdad: primer Quick Win, primera misión semanal, racha de 7/30 días, los 4 niveles (Explorer/Optimizer/Growth Pro/Scale, reutilizando `lib/levels.ts` en vez de duplicar los umbrales), Growth Score en subida, 5 cofres abiertos, primera mejora solicitada. Ninguno se marca conseguido sin un hecho real detrás.
+- [x] **Migración `0012`**: columna `businesses.longest_streak`, actualizada de forma atómica dentro de `register_business_activity`. Sin esto, un logro de "racha de 7 días" se desbloquearía y luego **desaparecería** en cuanto la racha actual se rompiera — deshonesto, porque sí lo consiguió. `longest_streak` solo crece, nunca se resetea.
+- [x] Toda la sección envuelta en `try/catch` en `app/(app)/dashboard/page.tsx`: si algo falla al calcular logros, el resto del dashboard sigue funcionando. Verificado en real ejecutando la página **antes** de aplicar la migración (columna todavía inexistente) — no rompió nada, solo mostró los logros calculables con lo demás.
+
 ## Sprint 4 — Monetización
 - Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€)

@@ -37,6 +37,7 @@ export interface Database {
           growth_potential: string | null;
           xp: number;
           streak_count: number;
+          longest_streak: number;
           last_activity_date: string | null;
           stripe_customer_id: string | null;
           stripe_subscription_id: string | null;
@@ -54,6 +55,7 @@ export interface Database {
           growth_potential?: string | null;
           xp?: number;
           streak_count?: number;
+          longest_streak?: number;
           last_activity_date?: string | null;
           stripe_customer_id?: string | null;
           stripe_subscription_id?: string | null;

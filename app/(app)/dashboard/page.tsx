@@ -13,10 +13,12 @@ import {
   getLatestScoreBreakdown,
   getGrowthScoreTimeline,
 } from "@/services/audit.service";
-import { getTodayChest } from "@/services/chest.service";
+import { getTodayChest, countChestsOpened } from "@/services/chest.service";
+import { getRequestsForBusiness } from "@/services/opportunity.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
+import { computeAchievements } from "@/lib/achievements";
 
 const CALENDAR_WEEKS = 12;
 
@@ -70,6 +72,27 @@ export default async function DashboardPage() {
     // se trata como "cofre no abierto todavía" en vez de romper la página
   }
 
+  // Los logros son un extra: si algo falla al calcularlos, el resto del
+  // dashboard debe seguir funcionando igualmente.
+  let achievements: ReturnType<typeof computeAchievements> = [];
+  try {
+    const [chestsOpened, requests] = await Promise.all([
+      countChestsOpened(supabase, business.id),
+      getRequestsForBusiness(supabase, business.id),
+    ]);
+    achievements = computeAchievements({
+      xp: business.xp,
+      longestStreak: business.longest_streak,
+      hasCompletedDaily: missions.some((m) => m.type === "daily" && m.completed_at !== null),
+      hasCompletedWeekly: missions.some((m) => m.type === "weekly" && m.completed_at !== null),
+      chestsOpened,
+      opportunityRequests: requests.length,
+      scoreImproved: scoreTimeline.length >= 2 && scoreTimeline[scoreTimeline.length - 1].score > scoreTimeline[0].score,
+    });
+  } catch {
+    // dashboard sigue funcionando sin la sección de logros
+  }
+
   return (
     <DashboardView
       business={business}
@@ -81,6 +104,7 @@ export default async function DashboardPage() {
       scoreTimeline={scoreTimeline}
       replayMissions={replayMissions}
       chestOpenedToday={Boolean(todayChest)}
+      achievements={achievements}
     />
   );
 }

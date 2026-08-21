@@ -30,6 +30,15 @@ export function rollChestReward(): { type: "xp"; xp: number } | { type: "bonus_m
   return { type: "bonus_mission" };
 }
 
+export async function countChestsOpened(supabase: Client, businessId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("daily_chests")
+    .select("id", { count: "exact", head: true })
+    .eq("business_id", businessId);
+  if (error) throw error;
+  return count ?? 0;
+}
+
 export async function recordChestOpen(
   supabase: Client,
   businessId: string,
