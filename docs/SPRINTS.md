@@ -126,6 +126,15 @@ El fundador pidió seguir con extras de gamificación. Se construyó un sistema 
 - [x] **Migración `0012`**: columna `businesses.longest_streak`, actualizada de forma atómica dentro de `register_business_activity`. Sin esto, un logro de "racha de 7 días" se desbloquearía y luego **desaparecería** en cuanto la racha actual se rompiera — deshonesto, porque sí lo consiguió. `longest_streak` solo crece, nunca se resetea.
 - [x] Toda la sección envuelta en `try/catch` en `app/(app)/dashboard/page.tsx`: si algo falla al calcular logros, el resto del dashboard sigue funcionando. Verificado en real ejecutando la página **antes** de aplicar la migración (columna todavía inexistente) — no rompió nada, solo mostró los logros calculables con lo demás.
 
+## Sprint 3.11 — Layout a pantalla completa + soporte para Ecommerce (COMPLETADO 2026-08-22)
+- [x] **Layout de las páginas de la app ensanchado**: el fundador señaló que el dashboard, cuenta y Centro de Mejoras apenas ocupaban la pantalla en un monitor normal (todo iba en una columna `max-w-3xl`/`max-w-lg` centrada). Cambiado a:
+  - Dashboard: `max-w-6xl` con layout de 2 columnas en pantallas grandes (contenido principal 2/3, barra lateral 1/3 con cofre, Growth Replay, logros y el enlace al Centro de Mejoras) — antes todo era una única columna vertical.
+  - Mi cuenta: `max-w-5xl` con 2 columnas (perfil/negocio/facturación a la izquierda, plan/facturas a la derecha).
+  - Centro de Mejoras: `max-w-6xl` con las mejoras en cuadrícula (hasta 3 columnas) en vez de una lista apilada.
+  - Las páginas de marketing (landing, precios, onboarding, `/analisis`) se dejan tal cual — ahí una columna estrecha es la elección correcta para lectura, no un problema a arreglar.
+  - Verificado en escritorio (1440px) y móvil (375px): en móvil todo vuelve a una sola columna correctamente.
+- [x] **Ecommerce como tipo de negocio real**: añadido a `BUSINESS_TYPES`, con 4 Quick Wins propios (fotos de producto, coste de envío visible antes del carrito, stock al día, política de devoluciones visible) y 1 misión semanal (compra de prueba completa + simplificar el checkout) — mismo patrón que el resto de sectores, ningún atajo. Añadido también a `/casos-de-exito` con las mismas misiones reales, no inventadas para la ocasión.
+
 ## Sprint 4 — Monetización
 - Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€)

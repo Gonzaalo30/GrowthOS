@@ -4,6 +4,7 @@ export const BUSINESS_TYPES = [
   "Inmobiliaria",
   "Taller",
   "Hotel",
+  "Ecommerce",
   "Autónomo",
   "Otra PYME",
 ] as const;

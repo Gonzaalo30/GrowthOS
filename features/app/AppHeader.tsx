@@ -29,7 +29,7 @@ export function AppHeader({ notifications = [] }: { notifications?: Notification
 
   return (
     <header className="relative border-b border-border bg-white">
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-foreground">
           Growth<span className="text-brand-500">OS</span>
         </Link>

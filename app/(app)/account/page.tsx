@@ -51,77 +51,83 @@ export default async function AccountPage({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-12">
       <h1 className="text-xl font-semibold text-foreground">Mi cuenta</h1>
 
-      <GrowthCard>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu perfil</h2>
-        <ProfileForm name={profile.name} email={profile.email} />
-      </GrowthCard>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+        <div className="flex flex-col gap-6">
+          <GrowthCard>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu perfil</h2>
+            <ProfileForm name={profile.name} email={profile.email} />
+          </GrowthCard>
 
-      <GrowthCard>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu negocio</h2>
-        <BusinessForm
-          domain={business.domain}
-          businessType={business.business_type}
-          city={business.city}
-          companySize={business.company_size}
-        />
-      </GrowthCard>
+          <GrowthCard>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu negocio</h2>
+            <BusinessForm
+              domain={business.domain}
+              businessType={business.business_type}
+              city={business.city}
+              companySize={business.company_size}
+            />
+          </GrowthCard>
 
-      <GrowthCard className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu plan</h2>
-            <p className="mt-1 text-sm text-zinc-600">
-              {isAutopilot ? (
-                <span className="font-medium text-emerald-700">Plan Autopilot activo ✓</span>
-              ) : (
-                "Estás en el plan gratuito."
-              )}
-            </p>
-          </div>
-          {isAutopilot ? (
-            <form action={createBillingPortalSessionAction}>
-              <Button type="submit" variant="secondary">
-                Gestionar suscripción
-              </Button>
-            </form>
-          ) : (
-            <Link href="/plan-autopilot">
-              <Button variant="secondary">Ver Plan Autopilot</Button>
-            </Link>
+          {billingInfo && (
+            <GrowthCard>
+              <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                Datos de facturación
+              </h2>
+              <p className="mb-3 text-sm text-zinc-600">
+                Con esto tus próximas facturas saldrán a tu nombre o al de tu negocio, con NIF/CIF si lo
+                necesitas para tu contabilidad.
+              </p>
+              <BillingInfoForm billingInfo={billingInfo} />
+            </GrowthCard>
           )}
         </div>
-        {billingError && (
-          <p className="text-sm text-red-600">
-            No hemos podido abrir la gestión de tu suscripción. Inténtalo de nuevo en un momento, o
-            escríbenos si sigue fallando.
-          </p>
-        )}
-      </GrowthCard>
 
-      {billingInfo && (
-        <GrowthCard>
-          <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Datos de facturación
-          </h2>
-          <p className="mb-3 text-sm text-zinc-600">
-            Con esto tus próximas facturas saldrán a tu nombre o al de tu negocio, con NIF/CIF si lo
-            necesitas para tu contabilidad.
-          </p>
-          <BillingInfoForm billingInfo={billingInfo} />
-        </GrowthCard>
-      )}
+        <div className="flex flex-col gap-6">
+          <GrowthCard className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu plan</h2>
+                <p className="mt-1 text-sm text-zinc-600">
+                  {isAutopilot ? (
+                    <span className="font-medium text-emerald-700">Plan Autopilot activo ✓</span>
+                  ) : (
+                    "Estás en el plan gratuito."
+                  )}
+                </p>
+              </div>
+              {isAutopilot ? (
+                <form action={createBillingPortalSessionAction}>
+                  <Button type="submit" variant="secondary">
+                    Gestionar suscripción
+                  </Button>
+                </form>
+              ) : (
+                <Link href="/plan-autopilot">
+                  <Button variant="secondary">Ver Plan Autopilot</Button>
+                </Link>
+              )}
+            </div>
+            {billingError && (
+              <p className="text-sm text-red-600">
+                No hemos podido abrir la gestión de tu suscripción. Inténtalo de nuevo en un momento, o
+                escríbenos si sigue fallando.
+              </p>
+            )}
+          </GrowthCard>
 
-      {business.stripe_customer_id && (
-        <GrowthCard>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Historial de facturas
-          </h2>
-          <InvoiceHistory invoices={invoices} />
-        </GrowthCard>
-      )}
+          {business.stripe_customer_id && (
+            <GrowthCard>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                Historial de facturas
+              </h2>
+              <InvoiceHistory invoices={invoices} />
+            </GrowthCard>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

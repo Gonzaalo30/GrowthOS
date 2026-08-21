@@ -35,6 +35,14 @@ const EXAMPLES = [
       "Publicar fotos del taller y del equipo",
     ],
   },
+  {
+    type: "Ecommerce",
+    missions: [
+      "Mejorar las fotos del producto más vendido",
+      "Dejar claro el coste de envío antes del carrito",
+      "Simplificar el checkout para reducir carritos abandonados",
+    ],
+  },
 ];
 
 export default function CasosDeExitoPage() {

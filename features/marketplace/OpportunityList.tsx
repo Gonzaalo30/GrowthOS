@@ -48,7 +48,7 @@ export function OpportunityList({
         ))}
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {visible.map((opportunity) => (
           <OpportunityCard
             key={opportunity.id}
@@ -56,10 +56,10 @@ export function OpportunityList({
             alreadyRequested={requested.has(opportunity.id)}
           />
         ))}
-        {visible.length === 0 && (
-          <p className="text-sm text-zinc-500">No hay mejoras en esta categoría todavía.</p>
-        )}
       </div>
+      {visible.length === 0 && (
+        <p className="text-sm text-zinc-500">No hay mejoras en esta categoría todavía.</p>
+      )}
     </div>
   );
 }

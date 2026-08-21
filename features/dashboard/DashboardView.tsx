@@ -69,7 +69,7 @@ export function DashboardView({
       : 0;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-12">
       <div>
         <Greeting name={profileName} />
         <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-600">
@@ -86,67 +86,79 @@ export function DashboardView({
         <MascotMessage message={`Hoy puedes subir al nivel ${levelProgress.next.name} si completas tus Quick Wins.`} />
       )}
 
-      <GrowthCard className="flex flex-col gap-6">
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <ScoreCircle score={business.growth_score} potential={business.growth_potential} />
-          <div className="text-center sm:text-left">
-            <div className="flex flex-col items-center gap-2 sm:flex-row">
-              <h1 className="text-lg font-semibold text-foreground">{business.domain}</h1>
-              <LevelBadge level={levelProgress.level} />
-              <StreakBadge days={business.streak_count} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
+        <div className="flex flex-col gap-6 lg:col-span-2">
+          <GrowthCard className="flex flex-col gap-6">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+              <ScoreCircle score={business.growth_score} potential={business.growth_potential} />
+              <div className="text-center sm:text-left">
+                <div className="flex flex-col items-center gap-2 sm:flex-row">
+                  <h1 className="text-lg font-semibold text-foreground">{business.domain}</h1>
+                  <LevelBadge level={levelProgress.level} />
+                  <StreakBadge days={business.streak_count} />
+                </div>
+                <p className="mt-1 text-sm text-zinc-600">
+                  Hoy tienes <span className="font-medium text-foreground">{pendingDaily} Quick Wins</span>
+                  {weeklyMission && !weeklyMission.completed_at && (
+                    <> y <span className="font-medium text-foreground">1 misión semanal</span></>
+                  )}
+                  .
+                </p>
+              </div>
             </div>
-            <p className="mt-1 text-sm text-zinc-600">
-              Hoy tienes <span className="font-medium text-foreground">{pendingDaily} Quick Wins</span>
-              {weeklyMission && !weeklyMission.completed_at && (
-                <> y <span className="font-medium text-foreground">1 misión semanal</span></>
-              )}
-              .
-            </p>
+
+            <XPBar xp={business.xp} progress={levelProgress} />
+
+            {scoreBreakdown && scoreBreakdown.length > 0 && <ScoreBreakdown checks={scoreBreakdown} />}
+          </GrowthCard>
+
+          <div>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+              Quick Wins de hoy
+            </h2>
+            <div className="flex flex-col gap-3">
+              {dailyMissionsToday.map((mission) => (
+                <MissionCard
+                  key={mission.id}
+                  mission={mission}
+                  quickWinNumber={mission.sequence_number ?? undefined}
+                />
+              ))}
+            </div>
           </div>
+
+          {weeklyMission && (
+            <div>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                Misión de la semana
+              </h2>
+              <MissionCard mission={weeklyMission} />
+            </div>
+          )}
+
+          <GrowthCalendar counts={dailyCounts} />
         </div>
 
-        <XPBar xp={business.xp} progress={levelProgress} />
+        <div className="flex flex-col gap-6">
+          <DailyChest alreadyOpenedToday={chestOpenedToday} />
 
-        {scoreBreakdown && scoreBreakdown.length > 0 && <ScoreBreakdown checks={scoreBreakdown} />}
-      </GrowthCard>
+          <GrowthReplay timeline={scoreTimeline} completedMissions={replayMissions} />
 
-      <DailyChest alreadyOpenedToday={chestOpenedToday} />
+          {achievements.length > 0 && <Achievements achievements={achievements} />}
 
-      <GrowthReplay timeline={scoreTimeline} completedMissions={replayMissions} />
-
-      <div>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Quick Wins de hoy
-        </h2>
-        <div className="flex flex-col gap-3">
-          {dailyMissionsToday.map((mission) => (
-            <MissionCard key={mission.id} mission={mission} quickWinNumber={mission.sequence_number ?? undefined} />
-          ))}
+          <Link href="/marketplace">
+            <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-400">
+              <div>
+                <h2 className="font-medium text-foreground">Centro de Mejoras</h2>
+                <p className="mt-1 text-sm text-zinc-600">
+                  Mejoras con precio cerrado, cuando quieras ir más rápido.
+                </p>
+              </div>
+              <span className="text-brand-600">→</span>
+            </GrowthCard>
+          </Link>
         </div>
       </div>
-
-      {weeklyMission && (
-        <div>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Misión de la semana
-          </h2>
-          <MissionCard mission={weeklyMission} />
-        </div>
-      )}
-
-      <GrowthCalendar counts={dailyCounts} />
-
-      {achievements.length > 0 && <Achievements achievements={achievements} />}
-
-      <Link href="/marketplace">
-        <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-400">
-          <div>
-            <h2 className="font-medium text-foreground">Centro de Mejoras</h2>
-            <p className="mt-1 text-sm text-zinc-600">Mejoras con precio cerrado, cuando quieras ir más rápido.</p>
-          </div>
-          <span className="text-brand-600">→</span>
-        </GrowthCard>
-      </Link>
     </div>
   );
 }

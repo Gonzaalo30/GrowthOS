@@ -29,7 +29,7 @@ export function OpportunityCard({
   }
 
   return (
-    <GrowthCard className="flex flex-col gap-3">
+    <GrowthCard className="flex h-full flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <div>
           <span className="mb-1 inline-block rounded-full bg-surface-muted px-2 py-0.5 text-[11px] font-medium text-zinc-500">
