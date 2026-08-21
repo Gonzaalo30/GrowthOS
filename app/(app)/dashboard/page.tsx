@@ -38,14 +38,17 @@ export default async function DashboardPage() {
   }
 
   let missions = await getMissionsForBusiness(supabase, business.id);
+  const scoreBreakdown = await getLatestScoreBreakdown(supabase, business.id);
 
   if ((BUSINESS_TYPES as readonly string[]).includes(business.business_type)) {
     const businessType = business.business_type as BusinessType;
-    await ensureDailyMissions(supabase, business.id, businessType, new Set(), missions);
+    // Los checks que fallan de verdad hoy, para que la rotación priorice misiones
+    // que atacan un problema real detectado, no una elección a ciegas.
+    const failedChecks = new Set((scoreBreakdown ?? []).filter((c) => !c.passed).map((c) => c.id));
+    await ensureDailyMissions(supabase, business.id, businessType, failedChecks, missions);
     missions = await getMissionsForBusiness(supabase, business.id);
   }
 
-  const scoreBreakdown = await getLatestScoreBreakdown(supabase, business.id);
   const profile = await getProfile(supabase, user.id);
 
   const calendarSince = new Date();
