@@ -31,6 +31,27 @@ export async function getBusinessById(supabase: Client, businessId: string) {
   return data;
 }
 
+export interface UpdateBusinessInput {
+  domain: string;
+  businessType: string;
+  city: string;
+  companySize: string;
+}
+
+export async function updateBusiness(supabase: Client, businessId: string, input: UpdateBusinessInput) {
+  const { error } = await supabase
+    .from("businesses")
+    .update({
+      domain: input.domain,
+      business_type: input.businessType,
+      city: input.city,
+      company_size: input.companySize,
+    })
+    .eq("id", businessId);
+
+  if (error) throw error;
+}
+
 export async function createBusiness(supabase: Client, input: CreateBusinessInput) {
   const { data, error } = await supabase
     .from("businesses")

@@ -49,6 +49,15 @@ Adelantado desde Sprint 4 por petición directa del fundador: cada misión neces
 - [ ] Integración IA (Claude/OpenAI) para traducir hallazgos a lenguaje de negocio — necesita API key, pendiente de pedir
 - [ ] Emails automáticos semanales (Resend) — Growth Report
 
+## Sprint 3.5 — Cuenta y navegación (COMPLETADO 2026-08-21)
+Detectado por el fundador al usar la app real: no había ninguna forma de cerrar sesión, ni menú alguno una vez dentro — el dashboard era un callejón sin salida.
+- [x] Cabecera de la app autenticada (`app/(app)/layout.tsx` + `AppHeader`): Dashboard · Marketplace · Mi cuenta · Cerrar sesión, con menú hamburguesa en móvil. Rutas `dashboard`, `marketplace` movidas al route group `(app)`.
+- [x] `signOutAction` — **no existía ninguna forma de cerrar sesión en la app hasta ahora**, hueco básico ya cerrado.
+- [x] Página `/account` (protegida): editar nombre, ver email (solo lectura), editar datos del negocio (dominio, tipo, ciudad, tamaño), ver estado del Plan Autopilot con enlace a suscribirse si no está activo.
+- [x] `autoComplete` añadido a los campos que faltaban (ciudad → `address-level2`, dominio → `url`) para que el navegador rellene solo.
+- [ ] Pendiente: login con Google (OAuth) — necesita que el fundador cree credenciales en Google Cloud Console primero.
+- [ ] Pendiente: gestión de la suscripción desde `/account` (cancelar, cambiar de plan) — hoy solo se muestra el estado, cancelar requeriría el customer portal de Stripe o una acción de servidor propia.
+
 ## Sprint 4 — Monetización
 - Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€)

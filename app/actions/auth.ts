@@ -66,3 +66,9 @@ export async function signUpAction(
 
   return { success: true };
 }
+
+export async function signOutAction() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/");
+}

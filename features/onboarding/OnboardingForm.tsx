@@ -22,7 +22,14 @@ export function OnboardingForm({ domain }: { domain?: string }) {
       <form action={formAction} className="mt-6 flex flex-col gap-3">
         <label className="text-sm font-medium text-foreground">
           Web de tu negocio
-          <Input name="domain" defaultValue={domain} placeholder="tunegocio.com" required className="mt-1" />
+          <Input
+            name="domain"
+            defaultValue={domain}
+            placeholder="tunegocio.com"
+            required
+            autoComplete="url"
+            className="mt-1"
+          />
         </label>
 
         <label className="text-sm font-medium text-foreground">
@@ -46,7 +53,13 @@ export function OnboardingForm({ domain }: { domain?: string }) {
 
         <label className="text-sm font-medium text-foreground">
           Ciudad
-          <Input name="city" placeholder="Madrid" required className="mt-1" />
+          <Input
+            name="city"
+            placeholder="Madrid"
+            required
+            autoComplete="address-level2"
+            className="mt-1"
+          />
         </label>
 
         <label className="text-sm font-medium text-foreground">
