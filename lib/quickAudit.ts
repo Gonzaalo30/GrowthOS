@@ -18,7 +18,10 @@ export interface QuickAuditResult {
 }
 
 const FETCH_TIMEOUT_MS = 6000;
+const LINK_CHECK_TIMEOUT_MS = 3000;
 const MAX_BODY_BYTES = 2_000_000;
+const MAX_LINKS_TO_CHECK = 5;
+const SPEED_THRESHOLD_MS = 1500;
 
 // Evita SSRF: nunca dejamos que el servidor haga fetch a IPs privadas/locales
 // aunque el usuario introduzca "localhost" o una IP interna como "dominio".
@@ -39,18 +42,22 @@ function isPrivateAddress(address: string): boolean {
   return true;
 }
 
-async function safeFetchHtml(url: string): Promise<{ html: string; usedUrl: string } | null> {
-  const hostname = new URL(url).hostname;
-
+async function isSafeHost(url: string): Promise<boolean> {
   try {
+    const hostname = new URL(url).hostname;
     const { address } = await lookup(hostname);
-    if (isPrivateAddress(address)) return null;
+    return !isPrivateAddress(address);
   } catch {
-    return null;
+    return false;
   }
+}
+
+async function safeFetchText(url: string): Promise<{ html: string; usedUrl: string; elapsedMs: number } | null> {
+  if (!(await isSafeHost(url))) return null;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  const startedAt = Date.now();
 
   try {
     const res = await fetch(url, {
@@ -71,12 +78,67 @@ async function safeFetchHtml(url: string): Promise<{ html: string; usedUrl: stri
       if (bytes > MAX_BODY_BYTES) break;
       html += decoder.decode(value, { stream: true });
     }
-    return { html, usedUrl: res.url };
+    return { html, usedUrl: res.url, elapsedMs: Date.now() - startedAt };
   } catch {
     return null;
   } finally {
     clearTimeout(timeout);
   }
+}
+
+/** true = responde con 200. Usado para robots.txt / sitemap.xml, donde solo nos importa si existe. */
+async function urlExists(url: string): Promise<boolean> {
+  const result = await safeFetchText(url);
+  return result !== null;
+}
+
+/** Comprueba una muestra de enlaces internos y devuelve cuántos responden con error. */
+async function countBrokenLinks(links: string[]): Promise<number> {
+  let broken = 0;
+  await Promise.all(
+    links.map(async (link) => {
+      if (!(await isSafeHost(link))) return;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), LINK_CHECK_TIMEOUT_MS);
+      try {
+        const res = await fetch(link, {
+          method: "HEAD",
+          signal: controller.signal,
+          redirect: "follow",
+          headers: { "User-Agent": "GrowthOS-QuickAudit/1.0" },
+        });
+        if (res.status >= 400) broken++;
+      } catch {
+        // Fallo de red propio (timeout, DNS): no lo contamos como enlace roto del sitio.
+      } finally {
+        clearTimeout(timeout);
+      }
+    }),
+  );
+  return broken;
+}
+
+function extractInternalLinks(html: string, origin: string, limit: number): string[] {
+  const hrefs = [...html.matchAll(/<a\s[^>]*href=["']([^"'#][^"']*)["']/gi)].map((m) => m[1]);
+  const seen = new Set<string>();
+  const links: string[] = [];
+
+  for (const href of hrefs) {
+    try {
+      const url = new URL(href, origin);
+      if (url.origin !== origin) continue;
+      if (url.protocol !== "http:" && url.protocol !== "https:") continue;
+      const key = url.toString();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      links.push(key);
+      if (links.length >= limit) break;
+    } catch {
+      // href no parseable (javascript:, mailto:, etc.) — se ignora
+    }
+  }
+
+  return links;
 }
 
 function extractTag(html: string, regex: RegExp): string | null {
@@ -85,8 +147,8 @@ function extractTag(html: string, regex: RegExp): string | null {
 }
 
 export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
-  const httpsResult = await safeFetchHtml(`https://${domain}`);
-  const result = httpsResult ?? (await safeFetchHtml(`http://${domain}`));
+  const httpsResult = await safeFetchText(`https://${domain}`);
+  const result = httpsResult ?? (await safeFetchText(`http://${domain}`));
 
   if (!result) {
     return {
@@ -105,6 +167,16 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
   );
   const hasH1 = /<h1[^>]*>[^<]+<\/h1>/i.test(result.html);
   const hasViewport = /<meta[^>]+name=["']viewport["']/i.test(result.html);
+  const hasSchema = /<script[^>]+type=["']application\/ld\+json["']/i.test(result.html) || /itemscope/i.test(result.html);
+
+  const origin = new URL(result.usedUrl).origin;
+  const sampledLinks = extractInternalLinks(result.html, origin, MAX_LINKS_TO_CHECK);
+
+  const [hasRobots, hasSitemap, brokenLinkCount] = await Promise.all([
+    urlExists(`${origin}/robots.txt`),
+    urlExists(`${origin}/sitemap.xml`),
+    countBrokenLinks(sampledLinks),
+  ]);
 
   const checks: QuickAuditCheck[] = [
     {
@@ -151,6 +223,53 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
         ? "Tu web está preparada para verse bien en el móvil."
         : "Tu web podría no verse bien en el móvil, donde llegan la mayoría de tus clientes.",
       category: "velocidad",
+    },
+    {
+      id: "schema",
+      label: "Datos estructurados (Schema)",
+      passed: hasSchema,
+      detail: hasSchema
+        ? "Tu web incluye información estructurada que ayuda a Google a entenderla mejor."
+        : "Google no encuentra información estructurada sobre tu negocio (nombre, dirección, horario).",
+      category: "seo",
+    },
+    {
+      id: "robots",
+      label: "Archivo robots.txt",
+      passed: hasRobots,
+      detail: hasRobots
+        ? "Tienes un archivo robots.txt que guía a los buscadores por tu web."
+        : "No encontramos un archivo robots.txt. No es grave, pero ayuda a que Google rastree tu web mejor.",
+      category: "seo",
+    },
+    {
+      id: "sitemap",
+      label: "Mapa del sitio (sitemap.xml)",
+      passed: hasSitemap,
+      detail: hasSitemap
+        ? "Tienes un sitemap.xml que ayuda a Google a encontrar todas tus páginas."
+        : "No encontramos un sitemap.xml. Sin él, Google puede tardar más en descubrir tus páginas.",
+      category: "seo",
+    },
+    {
+      id: "speed",
+      label: "Velocidad de respuesta",
+      passed: result.elapsedMs < SPEED_THRESHOLD_MS,
+      detail:
+        result.elapsedMs < SPEED_THRESHOLD_MS
+          ? `Tu web respondió en ${result.elapsedMs} ms, un tiempo saludable.`
+          : `Tu web tardó ${result.elapsedMs} ms en responder. Cuanto más tarde, más visitantes se van antes de verla.`,
+      category: "velocidad",
+    },
+    {
+      id: "brokenLinks",
+      label: "Enlaces sin errores",
+      passed: brokenLinkCount === 0,
+      detail:
+        brokenLinkCount === 0
+          ? "Los enlaces que revisamos en tu página principal funcionan bien."
+          : `Encontramos ${brokenLinkCount} ${brokenLinkCount === 1 ? "enlace roto" : "enlaces rotos"} en tu página principal.`,
+      category: "confianza",
     },
   ];
 
