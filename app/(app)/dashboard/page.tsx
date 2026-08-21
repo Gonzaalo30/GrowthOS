@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessByOwner } from "@/services/business.service";
 import { ensureDailyMissions, getMissionsForBusiness } from "@/services/mission.service";
-import { refreshGrowthScoreIfStale } from "@/services/audit.service";
+import { refreshGrowthScoreIfStale, getLatestScoreBreakdown } from "@/services/audit.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
@@ -32,5 +32,14 @@ export default async function DashboardPage() {
     missions = await getMissionsForBusiness(supabase, business.id);
   }
 
-  return <DashboardView business={business} missions={missions} scoreRefresh={scoreRefresh} />;
+  const scoreBreakdown = await getLatestScoreBreakdown(supabase, business.id);
+
+  return (
+    <DashboardView
+      business={business}
+      missions={missions}
+      scoreRefresh={scoreRefresh}
+      scoreBreakdown={scoreBreakdown}
+    />
+  );
 }

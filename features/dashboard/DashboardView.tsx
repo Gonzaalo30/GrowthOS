@@ -6,9 +6,11 @@ import { LevelBadge } from "@/components/growth/LevelBadge";
 import { XPBar } from "@/components/growth/XPBar";
 import { StreakBadge } from "@/components/growth/StreakBadge";
 import { ScoreCelebration } from "@/components/growth/ScoreCelebration";
+import { ScoreBreakdown } from "@/components/growth/ScoreBreakdown";
 import { getLevelProgress } from "@/lib/levels";
 import type { Database } from "@/types/database.types";
 import type { GrowthScoreRefreshResult } from "@/services/audit.service";
+import type { QuickAuditCheck } from "@/lib/quickAudit";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
@@ -17,10 +19,12 @@ export function DashboardView({
   business,
   missions,
   scoreRefresh,
+  scoreBreakdown,
 }: {
   business: Business;
   missions: Mission[];
   scoreRefresh?: GrowthScoreRefreshResult;
+  scoreBreakdown?: QuickAuditCheck[] | null;
 }) {
   const dailyMissions = missions.filter((m) => m.type === "daily");
   const weeklyMission = missions.find((m) => m.type === "weekly");
@@ -55,6 +59,8 @@ export function DashboardView({
         </div>
 
         <XPBar xp={business.xp} progress={levelProgress} />
+
+        {scoreBreakdown && scoreBreakdown.length > 0 && <ScoreBreakdown checks={scoreBreakdown} />}
       </GrowthCard>
 
       <div>

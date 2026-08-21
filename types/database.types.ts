@@ -140,12 +140,14 @@ export interface Database {
           id: string;
           business_id: string;
           score: number;
+          checks: unknown;
           recorded_at: string;
         };
         Insert: {
           id?: string;
           business_id: string;
           score: number;
+          checks?: unknown;
           recorded_at?: string;
         };
         Update: Partial<{

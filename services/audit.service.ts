@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
-import { runQuickAudit, growthPotentialLabel } from "@/lib/quickAudit";
+import { runQuickAudit, growthPotentialLabel, type QuickAuditCheck } from "@/lib/quickAudit";
 
 type Client = SupabaseClient<Database>;
 
@@ -12,8 +12,15 @@ export interface GrowthScoreRefreshResult {
   currentScore: number;
 }
 
-export async function recordGrowthScoreBaseline(supabase: Client, businessId: string, score: number) {
-  const { error } = await supabase.from("growth_score_history").insert({ business_id: businessId, score });
+export async function recordGrowthScoreBaseline(
+  supabase: Client,
+  businessId: string,
+  score: number,
+  checks: QuickAuditCheck[],
+) {
+  const { error } = await supabase
+    .from("growth_score_history")
+    .insert({ business_id: businessId, score, checks });
   if (error) throw error;
 }
 
@@ -60,7 +67,7 @@ export async function refreshGrowthScoreIfStale(
 
   const { error: insertError } = await supabase
     .from("growth_score_history")
-    .insert({ business_id: businessId, score: audit.score });
+    .insert({ business_id: businessId, score: audit.score, checks: audit.checks });
   if (insertError) throw insertError;
 
   return {
@@ -68,4 +75,21 @@ export async function refreshGrowthScoreIfStale(
     previousScore: last?.score ?? null,
     currentScore: audit.score,
   };
+}
+
+export async function getLatestScoreBreakdown(
+  supabase: Client,
+  businessId: string,
+): Promise<QuickAuditCheck[] | null> {
+  const { data, error } = await supabase
+    .from("growth_score_history")
+    .select("checks")
+    .eq("business_id", businessId)
+    .order("recorded_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data?.checks) return null;
+  return data.checks as QuickAuditCheck[];
 }

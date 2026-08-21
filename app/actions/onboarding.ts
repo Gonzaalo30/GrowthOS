@@ -54,7 +54,7 @@ export async function completeOnboardingAction(
   });
 
   await seedMissionsForBusiness(supabase, business.id, businessType, audit);
-  await recordGrowthScoreBaseline(supabase, business.id, business.growth_score);
+  await recordGrowthScoreBaseline(supabase, business.id, business.growth_score, audit.unreachable ? [] : audit.checks);
 
   redirect("/dashboard");
 }
