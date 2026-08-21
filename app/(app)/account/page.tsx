@@ -3,10 +3,14 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessByOwner } from "@/services/business.service";
 import { getProfile } from "@/services/profile.service";
+import { getBillingInfo, listInvoices, type BillingInfo, type InvoiceSummary } from "@/services/billing.service";
+import { getStripe } from "@/lib/stripe";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { ProfileForm } from "@/features/account/ProfileForm";
 import { BusinessForm } from "@/features/account/BusinessForm";
+import { BillingInfoForm } from "@/features/account/BillingInfoForm";
+import { InvoiceHistory } from "@/components/account/InvoiceHistory";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
 
 export default async function AccountPage({
@@ -29,6 +33,22 @@ export default async function AccountPage({
   if (!business) redirect("/onboarding");
 
   const isAutopilot = business.subscription_status === "active";
+
+  // Facturación real de Stripe: si algo falla al leerla, el resto de la
+  // página (perfil, negocio, plan) debe seguir funcionando igualmente.
+  let billingInfo: BillingInfo | null = null;
+  let invoices: InvoiceSummary[] = [];
+  if (business.stripe_customer_id) {
+    try {
+      const stripe = getStripe();
+      [billingInfo, invoices] = await Promise.all([
+        getBillingInfo(stripe, business.stripe_customer_id),
+        listInvoices(stripe, business.stripe_customer_id),
+      ]);
+    } catch {
+      // se muestra como si no hubiera facturación todavía, en vez de romper la página
+    }
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-6 py-12">
@@ -80,6 +100,28 @@ export default async function AccountPage({
           </p>
         )}
       </GrowthCard>
+
+      {billingInfo && (
+        <GrowthCard>
+          <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            Datos de facturación
+          </h2>
+          <p className="mb-3 text-sm text-zinc-600">
+            Con esto tus próximas facturas saldrán a tu nombre o al de tu negocio, con NIF/CIF si lo
+            necesitas para tu contabilidad.
+          </p>
+          <BillingInfoForm billingInfo={billingInfo} />
+        </GrowthCard>
+      )}
+
+      {business.stripe_customer_id && (
+        <GrowthCard>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            Historial de facturas
+          </h2>
+          <InvoiceHistory invoices={invoices} />
+        </GrowthCard>
+      )}
     </div>
   );
 }
