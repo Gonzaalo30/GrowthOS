@@ -8,11 +8,17 @@ import {
   type MissionTemplate,
 } from "@/lib/missionTemplates";
 import type { QuickAuditResult } from "@/lib/quickAudit";
+import { createNotification } from "@/services/notification.service";
 
 type Client = SupabaseClient<Database>;
 type MissionRow = Database["public"]["Tables"]["missions"]["Row"];
 
-function toInsertRow(businessId: string, type: "daily" | "weekly", m: MissionTemplate) {
+function toInsertRow(
+  businessId: string,
+  type: "daily" | "weekly",
+  m: MissionTemplate,
+  sequenceNumber: number | null = null,
+) {
   return {
     business_id: businessId,
     type,
@@ -23,7 +29,22 @@ function toInsertRow(businessId: string, type: "daily" | "weekly", m: MissionTem
     xp_reward: m.xpReward,
     expected_impact: m.expectedImpact,
     template_id: m.id,
+    sequence_number: sequenceNumber,
   };
+}
+
+async function getNextSequenceNumber(supabase: Client, businessId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from("missions")
+    .select("sequence_number")
+    .eq("business_id", businessId)
+    .eq("type", "daily")
+    .order("sequence_number", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data?.sequence_number ?? 0) + 1;
 }
 
 export async function seedMissionsForBusiness(
@@ -37,7 +58,7 @@ export async function seedMissionsForBusiness(
   const weeklyMission = selectWeeklyMission(businessType, failedChecks);
 
   const rows = [
-    ...dailyMissions.map((m) => toInsertRow(businessId, "daily", m)),
+    ...dailyMissions.map((m, i) => toInsertRow(businessId, "daily", m, i + 1)),
     toInsertRow(businessId, "weekly", weeklyMission),
   ];
 
@@ -99,9 +120,80 @@ export async function ensureDailyMissions(
 
   if (selection.length === 0) return;
 
-  const rows = selection.map((m) => toInsertRow(businessId, "daily", m));
+  const nextNumber = await getNextSequenceNumber(supabase, businessId);
+  const rows = selection.map((m, i) => toInsertRow(businessId, "daily", m, nextNumber + i));
   const { error } = await supabase.from("missions").insert(rows);
   if (error) throw error;
+}
+
+/**
+ * Nº de misiones completadas por día (fecha en formato YYYY-MM-DD, según la
+ * hora del servidor) desde `sinceDate`. Base real para el calendario de
+ * crecimiento — nunca inventamos actividad de días sin misiones completadas.
+ */
+export async function getDailyCompletionCounts(
+  supabase: Client,
+  businessId: string,
+  sinceDate: Date,
+): Promise<Map<string, number>> {
+  const { data, error } = await supabase
+    .from("missions")
+    .select("completed_at")
+    .eq("business_id", businessId)
+    .not("completed_at", "is", null)
+    .gte("completed_at", sinceDate.toISOString());
+
+  if (error) throw error;
+
+  const counts = new Map<string, number>();
+  for (const row of data) {
+    if (!row.completed_at) continue;
+    const day = row.completed_at.slice(0, 10);
+    counts.set(day, (counts.get(day) ?? 0) + 1);
+  }
+  return counts;
+}
+
+export async function getCompletedMissionsSince(supabase: Client, businessId: string, sinceDate: Date) {
+  const { data, error } = await supabase
+    .from("missions")
+    .select("id, title, xp_reward, completed_at")
+    .eq("business_id", businessId)
+    .not("completed_at", "is", null)
+    .gte("completed_at", sinceDate.toISOString())
+    .order("completed_at", { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Añade 1 Quick Win extra saltándose el tope de 3 pendientes — usado como
+ * recompensa real del cofre diario. Reutiliza la misma regla de no repetir
+ * una plantilla que ya esté pendiente ahora mismo.
+ */
+export async function addBonusDailyMission(
+  supabase: Client,
+  businessId: string,
+  businessType: BusinessType,
+  existingMissions: MissionRow[],
+) {
+  const dailyMissions = existingMissions.filter((m) => m.type === "daily");
+  const pendingTemplateIds = new Set(
+    dailyMissions.filter((m) => !m.completed_at).map((m) => m.template_id).filter((id): id is string => !!id),
+  );
+
+  const candidates = DAILY_MISSION_TEMPLATES.filter(
+    (t) => (t.appliesTo === "all" || t.appliesTo.includes(businessType)) && !pendingTemplateIds.has(t.id),
+  );
+  if (candidates.length === 0) return null;
+
+  const template = candidates[Math.floor(Math.random() * candidates.length)];
+  const nextNumber = await getNextSequenceNumber(supabase, businessId);
+  const row = toInsertRow(businessId, "daily", template, nextNumber);
+  const { error } = await supabase.from("missions").insert(row);
+  if (error) throw error;
+  return template;
 }
 
 export async function getMissionsForBusiness(supabase: Client, businessId: string) {
@@ -121,24 +213,58 @@ export async function getMissionById(supabase: Client, missionId: string) {
   return data;
 }
 
-export async function completeMission(supabase: Client, missionId: string) {
+const STREAK_MULTIPLIER_THRESHOLD = 3;
+const STREAK_MULTIPLIER = 2;
+
+export interface CompleteMissionOutcome {
+  xpAwarded: number;
+  multiplierApplied: boolean;
+}
+
+/**
+ * Si esta es la 3ª (o más) misión diaria completada hoy para este negocio,
+ * duplica el XP de esta misión — recompensa real por rachas dentro del día,
+ * no un multiplicador cosmético.
+ */
+export async function completeMission(supabase: Client, missionId: string): Promise<CompleteMissionOutcome | null> {
   const { data, error } = await supabase
     .from("missions")
     .update({ completed_at: new Date().toISOString() })
     .eq("id", missionId)
     .is("completed_at", null)
-    .select("business_id, xp_reward")
+    .select("business_id, xp_reward, type")
     .maybeSingle();
 
   if (error) throw error;
 
   // Si no se actualizó ninguna fila, la misión ya estaba completada antes:
   // no volvemos a sumar XP ni a contar actividad (evita duplicar con dobles clics).
-  if (!data) return;
+  if (!data) return null;
+
+  let multiplierApplied = false;
+  let xpAwarded = data.xp_reward;
+
+  if (data.type === "daily") {
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+    const { count, error: countError } = await supabase
+      .from("missions")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", data.business_id)
+      .eq("type", "daily")
+      .not("completed_at", "is", null)
+      .gte("completed_at", todayStart.toISOString());
+    if (countError) throw countError;
+
+    if ((count ?? 0) >= STREAK_MULTIPLIER_THRESHOLD) {
+      multiplierApplied = true;
+      xpAwarded = data.xp_reward * STREAK_MULTIPLIER;
+    }
+  }
 
   const { error: xpError } = await supabase.rpc("increment_business_xp", {
     p_business_id: data.business_id,
-    p_amount: data.xp_reward,
+    p_amount: xpAwarded,
   });
   if (xpError) throw xpError;
 
@@ -146,4 +272,19 @@ export async function completeMission(supabase: Client, missionId: string) {
     p_business_id: data.business_id,
   });
   if (streakError) throw streakError;
+
+  const { data: updated } = await supabase
+    .from("businesses")
+    .select("streak_count")
+    .eq("id", data.business_id)
+    .maybeSingle();
+  if (updated?.streak_count === 7 || updated?.streak_count === 30) {
+    await createNotification(
+      supabase,
+      data.business_id,
+      `🔥 ¡Racha de ${updated.streak_count} días! Sigue así.`,
+    );
+  }
+
+  return { xpAwarded, multiplierApplied };
 }

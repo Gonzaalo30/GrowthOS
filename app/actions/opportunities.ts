@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getBusinessByOwner } from "@/services/business.service";
 import { requestOpportunity } from "@/services/opportunity.service";
 import { OPPORTUNITIES } from "@/lib/opportunities";
+import { trackEvent } from "@/lib/analytics";
 
 export async function requestOpportunityAction(opportunityId: string) {
   const opportunity = OPPORTUNITIES.find((o) => o.id === opportunityId);
@@ -20,5 +21,6 @@ export async function requestOpportunityAction(opportunityId: string) {
   if (!business) throw new Error("No tienes un negocio asociado");
 
   await requestOpportunity(supabase, business.id, opportunity);
+  await trackEvent(supabase, "opportunity_requested", business.id, { opportunityId: opportunity.id });
   revalidatePath("/marketplace");
 }

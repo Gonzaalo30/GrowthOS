@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { trackEvent } from "@/lib/analytics";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
             subscription_status: "active",
           })
           .eq("id", businessId);
+        await trackEvent(supabase, "checkout_completed", businessId);
       }
       break;
     }

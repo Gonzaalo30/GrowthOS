@@ -5,9 +5,14 @@ import { GrowthCard } from "@/components/growth/GrowthCard";
 import { ConfettiBurst } from "@/components/growth/ConfettiBurst";
 import { Button } from "@/components/ui/Button";
 import { runQuickAudit, growthPotentialLabel } from "@/lib/quickAudit";
+import { createClient } from "@/lib/supabase/server";
+import { trackEvent } from "@/lib/analytics";
 
 export async function QuickAuditResult({ domain }: { domain: string }) {
   const result = await runQuickAudit(domain);
+
+  const supabase = await createClient();
+  await trackEvent(supabase, "audit_started", null, { domain, unreachable: result.unreachable });
 
   if (result.unreachable) {
     return (

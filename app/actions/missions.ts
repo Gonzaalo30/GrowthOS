@@ -6,10 +6,13 @@ import { completeMission, getMissionById } from "@/services/mission.service";
 import { getBusinessById } from "@/services/business.service";
 import { findTemplateById } from "@/lib/missionTemplates";
 import { runQuickAudit } from "@/lib/quickAudit";
+import { trackEvent } from "@/lib/analytics";
 
 export interface CompleteMissionResult {
   success: boolean;
   error?: string;
+  xpAwarded?: number;
+  multiplierApplied?: boolean;
 }
 
 export async function completeMissionAction(missionId: string): Promise<CompleteMissionResult> {
@@ -44,7 +47,8 @@ export async function completeMissionAction(missionId: string): Promise<Complete
     }
   }
 
-  await completeMission(supabase, missionId);
+  const outcome = await completeMission(supabase, missionId);
+  await trackEvent(supabase, "mission_completed", mission.business_id, { missionId, type: mission.type });
   revalidatePath("/dashboard");
-  return { success: true };
+  return { success: true, xpAwarded: outcome?.xpAwarded, multiplierApplied: outcome?.multiplierApplied };
 }

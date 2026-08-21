@@ -86,34 +86,32 @@ El fundador mandó una lista larga de ideas de producto tras usarlo. De la parte
 
 **Bug real encontrado y corregido:** el panel de preview del Hero se quedaba congelado mostrando el esqueleto de carga para siempre, aunque el servidor ya había devuelto el resultado (confirmado con logs: el estado se actualizaba correctamente). Causa: `AnimatePresence mode="wait"` con una `key` que cambiaba de `"loading"` a `preview.domain` interrumpía la animación de salida del esqueleto a mitad de camino y nunca completaba el montaje del contenido nuevo. Arreglado usando una `key` estable (`"panel"`) para el contenedor y dejando que el contenido interior cambie sin remontar el `motion.div` exterior.
 
-### Backlog priorizado (resto de la lista del fundador, no construido todavía)
-Todo lo que sigue viene de la misma lista de ideas. Se documenta para no perderlo, agrupado por tamaño/dependencias — no implica orden de sprint todavía, eso se decide con el fundador:
+## Sprint 3.9 — Backlog del fundador: dashboard, gamificación e infra (COMPLETADO 2026-08-21)
+El fundador pidió seguir con el resto de la lista de ideas. Construido en este bloque:
 
 **Dashboard con más personalidad**
-- Racha (🔥) y "hoy puedes ganar N XP" más visibles junto al saludo — hoy el saludo y el streak existen pero por separado, no combinados en una sola frase con gancho.
-- Calendario de crecimiento estilo GitHub (cuadrícula de días, color según nº de misiones completadas ese día) — requiere guardar actividad diaria por negocio, no solo el contador de racha actual.
-- Renombrar "misión diaria" a "Quick Win" con numeración (#27) — cambio de copy + contador global de misiones completadas por negocio.
-- La misión semanal con tratamiento visual de "boss" (mucho más grande, con precio/impacto destacado) — hoy ya tiene borde diferenciado pero no ese peso visual.
-- Marketplace renombrado a "Centro de Mejoras" + filtros (Todos/SEO/Google/Velocidad/Conversiones) — los filtros necesitan una `category` en `opportunities` (similar a la que ya existe en los checks de auditoría).
+- [x] Racha (🔥) y "hoy puedes ganar N XP" combinados en una sola línea junto al saludo.
+- [x] Calendario de crecimiento estilo GitHub (`components/growth/GrowthCalendar.tsx`, 12 semanas, color según nº de Quick Wins completados ese día). Usa colores de marca (naranja) en vez de verde, para no salirse de la paleta naranja/negro/blanco del producto.
+- [x] "Misión diaria" renombrada a "Quick Win #N" con numeración estable — guardada en `missions.sequence_number` (migración 0009), no calculada en el cliente. **Bug real encontrado y corregido:** la primera versión calculaba el número ordenando por `created_at`, pero las misiones se insertan en lote y pueden compartir el mismo timestamp exacto, así que el número cambiaba entre recargas. Se guarda una vez, al crear la misión.
+- [x] Misión semanal con tratamiento visual de "boss" (👑, más grande, XP destacado en grande).
+- [x] Marketplace renombrado a "Centro de Mejoras" en toda la UI + filtros por categoría (Todos/SEO/Google/Velocidad/Conversiones vía `lib/opportunities.ts` → `category`). La URL sigue siendo `/marketplace` a propósito — cambiarla habría exigido una redirección sin ganar nada real.
+- [x] "Misiones de hoy" ahora solo muestra lo pendiente + lo completado hoy, no todo el historial acumulado. **Bug real encontrado de paso:** antes de este cambio, esa lista crecía sin límite para siempre (todas las misiones completadas desde el primer día seguían apareciendo ahí) — no se había notado porque las cuentas de prueba eran nuevas. El historial completo ahora vive en el calendario, no en esa lista.
 
 **Gamificación nueva**
-- Cofre diario (XP / nueva misión / descuento 5% / informe premium al azar) — mecánica nueva, necesita definir qué recompensas son reales antes de construirlas (nada de "informe premium" si no existe todavía).
-- Multiplicador de XP por rachas de Quick Wins seguidos.
+- [x] Cofre diario (`daily_chests`, migración 0010) — una apertura al día por negocio, recompensa real: XP (5-20) o un Quick Win extra desbloqueado. Sin descuentos ni "informe premium": esas cosas no existen todavía en el producto, así que no se ofrecen como recompensa.
+- [x] Multiplicador ×2 de XP a partir del 3er Quick Win completado en el mismo día — regla determinista sobre datos reales (`missions.completed_at`), sin tabla nueva.
+- [x] **Growth Replay** (`components/growth/GrowthReplay.tsx`) — antes/después real del Growth Score con las misiones completadas en medio, usando `growth_score_history`. Solo se muestra con 2+ puntos de historial; con menos, no aparece nada (nunca un "antes/después" inventado).
 
-**Funcionalidades más grandes**
-- Comparador de competidores mostrando "te adelantó esta semana" (ya estaba en el roadmap de Sprint 4, ahora con este enfoque más accionable).
-- Roadmap 90 días con checklist estilo Notion (pendiente/en progreso/completada) — ya estaba en Sprint 4, se afina el diseño.
-- Growth Sprint renombrado por resultado ("Crecimiento Local" en vez de "SEO Sprint").
-- **Growth Replay** (la idea que más nos gustó): guardar antes/después real del Growth Score de un negocio con las misiones que lo explican, como un "replay" de progreso. Es honesto por diseño porque usa `growth_score_history` (que ya existe desde el Sprint 3) — no requiere inventar nada, solo visualizarlo bien. Buen candidato para el próximo bloque grande.
-
-**Infraestructura (pidió meterla ahora porque luego cuesta más)**
-- Feature flags (activar/desactivar funcionalidades sin redeploy).
-- Eventos de analytics (clic en CTA, auditoría iniciada, misión completada, compra, abandono).
-- Sistema de notificaciones (email/in-app/push) diseñado desde la base, no añadido después.
-- Cola de auditorías en vez de ejecutarlas directamente (para escalar).
+**Infraestructura** (migración 0011)
+- [x] Feature flags (`feature_flags`, `lib/featureFlags.ts`) — sin panel de admin todavía, se editan por SQL directamente en Supabase. La base real está lista para cuando haga falta un panel.
+- [x] Eventos de analytics (`analytics_events`, `lib/analytics.ts`) — enganchado en: `signup_completed`, `audit_started` (anónimo), `mission_completed`, `opportunity_requested`, `checkout_completed`. **No cubierto todavía:** clic en CTA y abandono (necesitan tracking desde el cliente, no solo desde el servidor) — se añaden cuando haya un caso de uso concreto para esos datos, no antes.
+- [x] Notificaciones in-app (`notifications`, campana en `AppHeader`) — disparadas de verdad en hitos de racha (7/30 días) y subida del Growth Score. **No cubierto:** email ni push — Resend sigue sin conectar (bloqueante ya documentado desde el Sprint 1), y push no tiene sentido sin una app instalable todavía.
+- [ ] **Cola de auditorías** — decidido NO construirla todavía. Es una decisión de arquitectura (qué proveedor de colas, cómo se reintenta, cómo se notifica cuando termina) que cambia cómo se despliega la app, no una feature aislada. Sin señales reales de que el análisis directo esté dando problemas de escala hoy, construir esto ahora sería trabajo especulativo. Se retoma si el tráfico real lo justifica.
 
 **Identidad de marca**
-- Mascota naranja (radar/cohete con ojos) como voz del producto en vez de un tono neutro de sistema — mensajes tipo "He encontrado una oportunidad" / "Llevas 5 días sin completar una misión". Decisión de marca, no solo de código — mejor validarla con el fundador (naming, diseño del personaje) antes de escribirla en todos los textos del producto.
+- [x] Mascota v1 (`components/growth/Mascot.tsx`, SVG inline, sin dependencias) — usada en `ScoreCelebration` y como aviso de "hoy puedes subir de nivel". **Explícitamente una primera propuesta, no una decisión cerrada de marca** — nombre y diseño final los valida el fundador antes de extenderla a más sitios (emails, redes, etc).
+
+**Pendiente, requiere IA (Sprint 4, sin empezar):** comparador de competidores ("te adelantó esta semana") y roadmap 90 días estilo Notion. Growth Sprint (renombrar "SEO Sprint" → "Crecimiento Local") no tiene nada que renombrar todavía porque esa función no existe — se nombrará bien desde el principio cuando se construya, no antes.
 
 ## Sprint 4 — Monetización
 - Stripe para el marketplace (hoy `opportunity_requests` es solo captura de interés, sin cobro) y Growth Sprints

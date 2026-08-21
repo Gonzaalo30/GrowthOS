@@ -18,9 +18,17 @@ const DIFFICULTY_LABEL: Record<Mission["difficulty"], string> = {
   hard: "Alta",
 };
 
-export function MissionCard({ mission }: { mission: Mission }) {
+export function MissionCard({
+  mission,
+  quickWinNumber,
+}: {
+  mission: Mission;
+  quickWinNumber?: number;
+}) {
   const [isPending, startTransition] = useTransition();
   const [justCompleted, setJustCompleted] = useState(false);
+  const [awardedXp, setAwardedXp] = useState<number | null>(null);
+  const [multiplierApplied, setMultiplierApplied] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const isCompleted = Boolean(mission.completed_at) || justCompleted;
@@ -35,6 +43,8 @@ export function MissionCard({ mission }: { mission: Mission }) {
       const result = await completeMissionAction(mission.id);
       if (result.success) {
         setJustCompleted(true);
+        setAwardedXp(result.xpAwarded ?? mission.xp_reward);
+        setMultiplierApplied(Boolean(result.multiplierApplied));
       } else {
         setVerifyError(result.error ?? "No hemos podido verificar esta misión. Inténtalo de nuevo.");
       }
@@ -45,22 +55,28 @@ export function MissionCard({ mission }: { mission: Mission }) {
     <GrowthCard
       className={cn(
         "relative overflow-visible",
-        isWeekly && "border-2 border-brand-200 bg-gradient-to-br from-brand-50/60 to-transparent",
+        isWeekly && "border-2 border-brand-400 bg-gradient-to-br from-brand-50 to-transparent p-6 shadow-md",
         isCompleted && "bg-brand-50/40",
       )}
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
-            <span className={cn(isWeekly && "font-semibold text-brand-600")}>
-              {isWeekly ? "⭐ Misión semanal · Alto impacto" : "Misión diaria"}
+          <div className={cn("flex items-center gap-2 text-zinc-500", isWeekly ? "text-sm" : "text-xs")}>
+            <span className={cn(isWeekly && "text-base font-bold text-brand-600")}>
+              {isWeekly ? "👑 MISIÓN DE LA SEMANA · Alto impacto" : `Quick Win${quickWinNumber ? ` #${quickWinNumber}` : ""}`}
             </span>
-            <span>·</span>
-            <span>{DIFFICULTY_LABEL[mission.difficulty]}</span>
+            {!isWeekly && (
+              <>
+                <span>·</span>
+                <span>{DIFFICULTY_LABEL[mission.difficulty]}</span>
+              </>
+            )}
             <span>·</span>
             <span>{mission.time_estimate_minutes} min</span>
           </div>
-          <h3 className="mt-1 font-medium text-foreground">{mission.title}</h3>
+          <h3 className={cn("mt-1 font-medium text-foreground", isWeekly && "text-lg font-semibold")}>
+            {mission.title}
+          </h3>
           <p className="mt-1 text-sm text-zinc-600">{mission.description}</p>
           {mission.expected_impact && (
             <p className="mt-2 text-xs font-medium text-brand-600">
@@ -80,7 +96,9 @@ export function MissionCard({ mission }: { mission: Mission }) {
         </div>
 
         <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
-          <span className="text-xs font-semibold text-brand-600">+{mission.xp_reward} XP</span>
+          <span className={cn("font-semibold text-brand-600", isWeekly ? "text-xl" : "text-xs")}>
+            +{mission.xp_reward} XP
+          </span>
           <Button
             variant={isCompleted ? "secondary" : "primary"}
             disabled={isCompleted || isPending}
@@ -132,7 +150,7 @@ export function MissionCard({ mission }: { mission: Mission }) {
             transition={{ duration: 0.5 }}
             className="pointer-events-none absolute right-4 top-0 text-sm font-semibold text-brand-500"
           >
-            +{mission.xp_reward} XP
+            +{awardedXp ?? mission.xp_reward} XP{multiplierApplied ? " ×2 🔥" : ""}
           </motion.span>
         )}
       </AnimatePresence>

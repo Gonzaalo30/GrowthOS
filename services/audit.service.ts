@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { runQuickAudit, growthPotentialLabel, type QuickAuditCheck } from "@/lib/quickAudit";
+import { createNotification } from "@/services/notification.service";
 
 type Client = SupabaseClient<Database>;
 
@@ -70,11 +71,39 @@ export async function refreshGrowthScoreIfStale(
     .insert({ business_id: businessId, score: audit.score, checks: audit.checks });
   if (insertError) throw insertError;
 
+  if (last && audit.score > last.score) {
+    await createNotification(
+      supabase,
+      businessId,
+      `🎉 Tu Growth Score subió de ${last.score} a ${audit.score}.`,
+    );
+  }
+
   return {
     refreshed: true,
     previousScore: last?.score ?? null,
     currentScore: audit.score,
   };
+}
+
+export interface GrowthScorePoint {
+  score: number;
+  recordedAt: string;
+}
+
+/** Historial completo (primero -> último) para el "Growth Replay" antes/después. */
+export async function getGrowthScoreTimeline(
+  supabase: Client,
+  businessId: string,
+): Promise<GrowthScorePoint[]> {
+  const { data, error } = await supabase
+    .from("growth_score_history")
+    .select("score, recorded_at")
+    .eq("business_id", businessId)
+    .order("recorded_at", { ascending: true });
+
+  if (error) throw error;
+  return data.map((row) => ({ score: row.score, recordedAt: row.recorded_at }));
 }
 
 export async function getLatestScoreBreakdown(

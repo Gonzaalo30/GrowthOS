@@ -7,10 +7,14 @@ import { XPBar } from "@/components/growth/XPBar";
 import { StreakBadge } from "@/components/growth/StreakBadge";
 import { ScoreCelebration } from "@/components/growth/ScoreCelebration";
 import { ScoreBreakdown } from "@/components/growth/ScoreBreakdown";
+import { GrowthCalendar } from "@/components/growth/GrowthCalendar";
+import { GrowthReplay } from "@/components/growth/GrowthReplay";
+import { DailyChest } from "@/components/growth/DailyChest";
+import { MascotMessage } from "@/components/growth/Mascot";
 import { Greeting } from "@/features/dashboard/Greeting";
 import { getLevelProgress } from "@/lib/levels";
 import type { Database } from "@/types/database.types";
-import type { GrowthScoreRefreshResult } from "@/services/audit.service";
+import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audit.service";
 import type { QuickAuditCheck } from "@/lib/quickAudit";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
@@ -22,17 +26,39 @@ export function DashboardView({
   scoreRefresh,
   scoreBreakdown,
   profileName,
+  dailyCounts,
+  scoreTimeline,
+  replayMissions,
+  chestOpenedToday,
 }: {
   business: Business;
   missions: Mission[];
   scoreRefresh?: GrowthScoreRefreshResult;
   scoreBreakdown?: QuickAuditCheck[] | null;
   profileName: string;
+  dailyCounts: Record<string, number>;
+  scoreTimeline: GrowthScorePoint[];
+  replayMissions: Pick<Mission, "id" | "title" | "completed_at">[];
+  chestOpenedToday: boolean;
 }) {
-  const dailyMissions = missions.filter((m) => m.type === "daily");
+  const today = new Date().toISOString().slice(0, 10);
+  const allDailyMissions = missions
+    .filter((m) => m.type === "daily")
+    .sort((a, b) => a.created_at.localeCompare(b.created_at));
+  // "Misiones de hoy" solo muestra lo pendiente + lo completado hoy: las
+  // completadas en días anteriores viven en el calendario, no aquí, para que
+  // esta lista no crezca sin límite con el tiempo.
+  const dailyMissionsToday = allDailyMissions.filter(
+    (m) => !m.completed_at || m.completed_at.slice(0, 10) === today,
+  );
   const weeklyMission = missions.find((m) => m.type === "weekly");
-  const pendingDaily = dailyMissions.filter((m) => !m.completed_at).length;
+  const pendingDaily = dailyMissionsToday.filter((m) => !m.completed_at).length;
+  const xpAvailableToday =
+    dailyMissionsToday.filter((m) => !m.completed_at).reduce((sum, m) => sum + m.xp_reward, 0) +
+    (weeklyMission && !weeklyMission.completed_at ? weeklyMission.xp_reward : 0);
   const levelProgress = getLevelProgress(business.xp);
+  const canLevelUpToday =
+    levelProgress.next !== null && business.xp + xpAvailableToday >= levelProgress.next.minXp;
   const scoreDelta =
     scoreRefresh?.refreshed && scoreRefresh.previousScore !== null
       ? scoreRefresh.currentScore - scoreRefresh.previousScore
@@ -40,9 +66,21 @@ export function DashboardView({
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
-      <Greeting name={profileName} />
+      <div>
+        <Greeting name={profileName} />
+        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-600">
+          {business.streak_count > 0 && (
+            <span className="font-medium text-orange-600">🔥 Racha: {business.streak_count} días</span>
+          )}
+          {xpAvailableToday > 0 && <span>Hoy puedes ganar {xpAvailableToday} XP.</span>}
+        </p>
+      </div>
 
       {scoreDelta > 0 && <ScoreCelebration delta={scoreDelta} />}
+
+      {canLevelUpToday && levelProgress.next && (
+        <MascotMessage message={`Hoy puedes subir al nivel ${levelProgress.next.name} si completas tus Quick Wins.`} />
+      )}
 
       <GrowthCard className="flex flex-col gap-6">
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
@@ -54,7 +92,7 @@ export function DashboardView({
               <StreakBadge days={business.streak_count} />
             </div>
             <p className="mt-1 text-sm text-zinc-600">
-              Hoy tienes <span className="font-medium text-foreground">{pendingDaily} misiones diarias</span>
+              Hoy tienes <span className="font-medium text-foreground">{pendingDaily} Quick Wins</span>
               {weeklyMission && !weeklyMission.completed_at && (
                 <> y <span className="font-medium text-foreground">1 misión semanal</span></>
               )}
@@ -68,13 +106,17 @@ export function DashboardView({
         {scoreBreakdown && scoreBreakdown.length > 0 && <ScoreBreakdown checks={scoreBreakdown} />}
       </GrowthCard>
 
+      <DailyChest alreadyOpenedToday={chestOpenedToday} />
+
+      <GrowthReplay timeline={scoreTimeline} completedMissions={replayMissions} />
+
       <div>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Misiones de hoy
+          Quick Wins de hoy
         </h2>
         <div className="flex flex-col gap-3">
-          {dailyMissions.map((mission) => (
-            <MissionCard key={mission.id} mission={mission} />
+          {dailyMissionsToday.map((mission) => (
+            <MissionCard key={mission.id} mission={mission} quickWinNumber={mission.sequence_number ?? undefined} />
           ))}
         </div>
       </div>
@@ -88,10 +130,12 @@ export function DashboardView({
         </div>
       )}
 
+      <GrowthCalendar counts={dailyCounts} />
+
       <Link href="/marketplace">
-        <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-300">
+        <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-400">
           <div>
-            <h2 className="font-medium text-foreground">Marketplace</h2>
+            <h2 className="font-medium text-foreground">Centro de Mejoras</h2>
             <p className="mt-1 text-sm text-zinc-600">Mejoras con precio cerrado, cuando quieras ir más rápido.</p>
           </div>
           <span className="text-brand-600">→</span>

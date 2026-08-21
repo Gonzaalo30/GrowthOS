@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Mascot } from "@/components/growth/Mascot";
 
 export function ScoreCelebration({ delta }: { delta: number }) {
   if (delta <= 0) return null;
@@ -10,10 +11,13 @@ export function ScoreCelebration({ delta }: { delta: number }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+      className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
     >
-      🎉 <span className="font-semibold">¡Enhorabuena!</span> Tu Growth Score subió {delta}{" "}
-      {delta === 1 ? "punto" : "puntos"} esta semana.
+      <Mascot size={32} />
+      <p>
+        <span className="font-semibold">¡Enhorabuena!</span> Tu Growth Score subió {delta}{" "}
+        {delta === 1 ? "punto" : "puntos"} esta semana.
+      </p>
     </motion.div>
   );
 }

@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { trackEvent } from "@/lib/analytics";
 
 export interface SignUpState {
   error?: string;
@@ -64,6 +65,7 @@ export async function signUpAction(
     return { error: error.message };
   }
 
+  await trackEvent(supabase, "signup_completed", null);
   return { success: true };
 }
 

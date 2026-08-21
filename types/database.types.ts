@@ -1,6 +1,7 @@
 export type MissionType = "daily" | "weekly";
 export type MissionDifficulty = "easy" | "medium" | "hard";
 export type OpportunityRequestStatus = "pending" | "contacted" | "done";
+export type DailyChestReward = "xp" | "bonus_mission";
 
 export interface Database {
   public: {
@@ -88,6 +89,7 @@ export interface Database {
           expected_impact: string | null;
           price_cents: number | null;
           template_id: string | null;
+          sequence_number: number | null;
           completed_at: string | null;
           created_at: string;
         };
@@ -103,6 +105,7 @@ export interface Database {
           expected_impact?: string | null;
           price_cents?: number | null;
           template_id?: string | null;
+          sequence_number?: number | null;
           completed_at?: string | null;
           created_at?: string;
         };
@@ -155,6 +158,29 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      daily_chests: {
+        Row: {
+          id: string;
+          business_id: string;
+          opened_date: string;
+          reward_type: DailyChestReward;
+          xp_awarded: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          opened_date: string;
+          reward_type: DailyChestReward;
+          xp_awarded?: number | null;
+          created_at?: string;
+        };
+        Update: Partial<{
+          reward_type: DailyChestReward;
+          xp_awarded: number | null;
+        }>;
+        Relationships: [];
+      };
       case_studies: {
         Row: {
           id: string;
@@ -182,6 +208,61 @@ export interface Database {
           time_to_notice: string;
           why_good_practice: string;
         }>;
+        Relationships: [];
+      };
+      feature_flags: {
+        Row: {
+          key: string;
+          enabled: boolean;
+          description: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          enabled?: boolean;
+          description?: string | null;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          enabled: boolean;
+          description: string | null;
+        }>;
+        Relationships: [];
+      };
+      analytics_events: {
+        Row: {
+          id: string;
+          business_id: string | null;
+          event_name: string;
+          properties: unknown;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id?: string | null;
+          event_name: string;
+          properties?: unknown;
+          created_at?: string;
+        };
+        Update: Partial<{ event_name: string; properties: unknown }>;
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          business_id: string;
+          message: string;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          message: string;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<{ read_at: string | null }>;
         Relationships: [];
       };
     };

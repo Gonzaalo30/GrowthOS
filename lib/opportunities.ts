@@ -1,3 +1,12 @@
+export type OpportunityCategory = "seo" | "google" | "velocidad" | "conversion";
+
+export const OPPORTUNITY_CATEGORY_LABELS: Record<OpportunityCategory, string> = {
+  seo: "SEO",
+  google: "Google",
+  velocidad: "Velocidad",
+  conversion: "Conversiones",
+};
+
 export interface Opportunity {
   id: string;
   title: string;
@@ -5,9 +14,10 @@ export interface Opportunity {
   priceCents: number;
   expectedImpact: string;
   implementationTime: string;
+  category: OpportunityCategory;
 }
 
-// Catálogo del marketplace. Sin pago todavía (Stripe llega en el Sprint 4):
+// Catálogo del Centro de Mejoras. Sin pago todavía (Stripe llega en el Sprint 4):
 // "Aplicar esta mejora" registra una solicitud real, no procesa un cobro.
 export const OPPORTUNITIES: Opportunity[] = [
   {
@@ -18,6 +28,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     priceCents: 14900,
     expectedImpact: "Más apariciones en búsquedas cercanas a ti",
     implementationTime: "2-3 días laborables",
+    category: "google",
   },
   {
     id: "core-web-vitals",
@@ -27,6 +38,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     priceCents: 24900,
     expectedImpact: "Menos visitantes que se van antes de que cargue",
     implementationTime: "3-5 días laborables",
+    category: "velocidad",
   },
   {
     id: "schema",
@@ -36,6 +48,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     priceCents: 7900,
     expectedImpact: "Mejor visibilidad en búsquedas locales",
     implementationTime: "1-2 días laborables",
+    category: "seo",
   },
   {
     id: "faq-seo",
@@ -45,6 +58,7 @@ export const OPPORTUNITIES: Opportunity[] = [
     priceCents: 9900,
     expectedImpact: "Menos consultas repetitivas, más SEO",
     implementationTime: "2-3 días laborables",
+    category: "seo",
   },
   {
     id: "landing-optimizada",
@@ -54,5 +68,6 @@ export const OPPORTUNITIES: Opportunity[] = [
     priceCents: 29900,
     expectedImpact: "Más visitantes que se convierten en clientes",
     implementationTime: "4-6 días laborables",
+    category: "conversion",
   },
 ];
