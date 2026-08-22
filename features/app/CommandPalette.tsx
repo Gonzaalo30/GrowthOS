@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/actions/auth";
-import { getCommandPaletteMissionsAction, type CommandPaletteMission } from "@/app/actions/commandPalette";
+import { getCommandPaletteContextAction, type CommandPaletteMission } from "@/app/actions/commandPalette";
+import { forceRefreshGrowthScoreAction } from "@/app/actions/audit";
 
 interface NavCommand {
   kind: "nav";
@@ -45,6 +46,7 @@ export function CommandPalette() {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [missions, setMissions] = useState<CommandPaletteMission[] | null>(null);
+  const [canRefresh, setCanRefresh] = useState(false);
   const [, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -79,30 +81,46 @@ export function CommandPalette() {
       inputRef.current?.focus();
       if (missions === null) {
         startTransition(async () => {
-          const result = await getCommandPaletteMissionsAction();
-          setMissions(result);
+          const result = await getCommandPaletteContextAction();
+          setMissions(result.missions);
+          setCanRefresh(result.canRefresh);
         });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- solo debe cargar misiones al abrir, no en cada render
   }, [open]);
 
-  const actionCommands: ActionCommand[] = useMemo(
-    () => [
-      {
+  const actionCommands: ActionCommand[] = useMemo(() => {
+    const commands: ActionCommand[] = [];
+    if (canRefresh) {
+      commands.push({
         kind: "action",
-        id: "sign-out",
-        label: "Cerrar sesión",
+        id: "refresh-score",
+        label: "Reanalizar mi web ahora",
         hint: "Acción",
         run: () => {
           startTransition(async () => {
-            await signOutAction();
+            await forceRefreshGrowthScoreAction();
+            router.push("/dashboard");
+            router.refresh();
           });
         },
+      });
+    }
+    commands.push({
+      kind: "action",
+      id: "sign-out",
+      label: "Cerrar sesión",
+      hint: "Acción",
+      run: () => {
+        startTransition(async () => {
+          await signOutAction();
+        });
       },
-    ],
-    [],
-  );
+    });
+    return commands;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- router/startTransition son estables entre renders
+  }, [canRefresh]);
 
   const missionCommands: MissionCommand[] = useMemo(
     () =>

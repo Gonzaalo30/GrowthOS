@@ -34,7 +34,7 @@ export async function QuickAuditResult({ domain }: { domain: string }) {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6">
-      <GrowthCard className="relative flex flex-col items-center gap-4 text-center">
+      <GrowthCard glow className="relative flex flex-col items-center gap-4 text-center">
         <ConfettiBurst />
         <span className="text-sm text-zinc-500">Resultado para {domain}</span>
         <ScoreCircle score={result.score} potential={growthPotentialLabel(result.score)} />

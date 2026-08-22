@@ -14,6 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   let notifications: Awaited<ReturnType<typeof getUnreadNotifications>> = [];
   let avatarUrl: string | null = null;
+  let xp: number | null = null;
   try {
     if (user) {
       const [business, profile] = await Promise.all([
@@ -23,15 +24,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       avatarUrl = profile.avatar_url;
       if (business) {
         notifications = await getUnreadNotifications(supabase, business.id);
+        xp = business.xp;
       }
     }
   } catch {
-    // Las notificaciones/avatar no deben poder tirar abajo la navegación de toda la app.
+    // Las notificaciones/avatar/XP no deben poder tirar abajo la navegación de toda la app.
   }
 
   return (
     <>
-      <AppHeader notifications={notifications} avatarUrl={avatarUrl} />
+      <AppHeader notifications={notifications} avatarUrl={avatarUrl} xp={xp} />
       <div className="flex flex-1 flex-col pb-16 sm:pb-0">{children}</div>
       <MobileBottomNav />
       <CommandPalette />

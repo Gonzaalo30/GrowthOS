@@ -119,7 +119,7 @@ export function DashboardView({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
         <div className="flex flex-col gap-6 lg:col-span-2">
-          <GrowthCard className="flex flex-col gap-6">
+          <GrowthCard glow className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
               <ScoreCircle score={business.growth_score} potential={business.growth_potential} />
               <div className="text-center sm:text-left">

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOutAction } from "@/app/actions/auth";
 import { markNotificationsReadAction } from "@/app/actions/notifications";
+import { LevelBadge } from "@/components/growth/LevelBadge";
+import { getLevelProgress } from "@/lib/levels";
 import type { Database } from "@/types/database.types";
 
 type Notification = Database["public"]["Tables"]["notifications"]["Row"];
@@ -17,9 +19,11 @@ const NAV_LINKS = [
 export function AppHeader({
   notifications = [],
   avatarUrl,
+  xp,
 }: {
   notifications?: Notification[];
   avatarUrl?: string | null;
+  xp?: number | null;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
@@ -45,9 +49,17 @@ export function AppHeader({
   return (
     <header className="relative border-b border-border bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-foreground">
-          Growth<span className="text-brand-500">OS</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-foreground">
+            Growth<span className="text-brand-500">OS</span>
+          </Link>
+          {xp !== null && xp !== undefined && (
+            <Link href="/dashboard" className="flex items-center gap-1.5">
+              <LevelBadge level={getLevelProgress(xp).level} />
+              <span className="text-xs font-medium text-zinc-500">{xp} XP</span>
+            </Link>
+          )}
+        </div>
 
         <nav className="hidden items-center gap-6 sm:flex">
           {NAV_LINKS.map((link) => (
