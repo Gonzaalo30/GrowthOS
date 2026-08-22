@@ -15,17 +15,18 @@ const FILTERS: Array<{ value: OpportunityCategory | "all"; label: string }> = [
   { value: "google", label: OPPORTUNITY_CATEGORY_LABELS.google },
   { value: "velocidad", label: OPPORTUNITY_CATEGORY_LABELS.velocidad },
   { value: "conversion", label: OPPORTUNITY_CATEGORY_LABELS.conversion },
+  { value: "seguridad", label: OPPORTUNITY_CATEGORY_LABELS.seguridad },
 ];
 
 export function OpportunityList({
   opportunities,
-  requestedIds,
+  purchasedIds,
 }: {
   opportunities: Opportunity[];
-  requestedIds: string[];
+  purchasedIds: string[];
 }) {
   const [filter, setFilter] = useState<OpportunityCategory | "all">("all");
-  const requested = new Set(requestedIds);
+  const purchased = new Set(purchasedIds);
   const visible = opportunities.filter((o) => filter === "all" || o.category === filter);
 
   return (
@@ -53,7 +54,7 @@ export function OpportunityList({
           <OpportunityCard
             key={opportunity.id}
             opportunity={opportunity}
-            alreadyRequested={requested.has(opportunity.id)}
+            alreadyPurchased={purchased.has(opportunity.id)}
           />
         ))}
       </div>

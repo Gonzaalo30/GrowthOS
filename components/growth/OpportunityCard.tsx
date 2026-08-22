@@ -1,30 +1,28 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
-import { requestOpportunityAction } from "@/app/actions/opportunities";
+import { createOpportunityCheckoutAction } from "@/app/actions/opportunities";
 import { OPPORTUNITY_CATEGORY_LABELS, type Opportunity } from "@/lib/opportunities";
 
-function formatPrice(cents: number) {
-  return `${(cents / 100).toLocaleString("es-ES")} €`;
+function formatPrice(opportunity: Opportunity) {
+  const amount = `${(opportunity.priceCents / 100).toLocaleString("es-ES")} €`;
+  return opportunity.pricing === "monthly" ? `${amount}/mes` : amount;
 }
 
 export function OpportunityCard({
   opportunity,
-  alreadyRequested,
+  alreadyPurchased,
 }: {
   opportunity: Opportunity;
-  alreadyRequested: boolean;
+  alreadyPurchased: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [justRequested, setJustRequested] = useState(false);
-  const requested = alreadyRequested || justRequested;
 
-  function handleApply() {
+  function handleBuy() {
     startTransition(async () => {
-      await requestOpportunityAction(opportunity.id);
-      setJustRequested(true);
+      await createOpportunityCheckoutAction(opportunity.id);
     });
   }
 
@@ -38,21 +36,27 @@ export function OpportunityCard({
           <h3 className="font-medium text-foreground">{opportunity.title}</h3>
         </div>
         <span className="whitespace-nowrap text-sm font-semibold text-brand-600">
-          {formatPrice(opportunity.priceCents)}
+          {formatPrice(opportunity)}
         </span>
       </div>
       <p className="text-sm text-zinc-600">{opportunity.description}</p>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500">
         <span>Impacto: {opportunity.expectedImpact}</span>
-        <span>Tiempo: {opportunity.implementationTime}</span>
+        <span>{opportunity.pricing === "monthly" ? "Cadencia" : "Tiempo"}: {opportunity.implementationTime}</span>
       </div>
       <Button
-        variant={requested ? "secondary" : "primary"}
-        disabled={requested || isPending}
-        onClick={handleApply}
+        variant={alreadyPurchased ? "secondary" : "primary"}
+        disabled={alreadyPurchased || isPending}
+        onClick={handleBuy}
         className="mt-1 self-start"
       >
-        {requested ? "Solicitud enviada" : isPending ? "Enviando…" : "Aplicar esta mejora"}
+        {alreadyPurchased
+          ? opportunity.pricing === "monthly"
+            ? "Ya contratado"
+            : "Ya comprado"
+          : isPending
+            ? "Redirigiendo…"
+            : `Comprar por ${formatPrice(opportunity)}`}
       </Button>
     </GrowthCard>
   );

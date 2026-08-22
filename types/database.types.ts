@@ -135,6 +135,10 @@ export interface Database {
           title: string;
           price_cents: number;
           status: OpportunityRequestStatus;
+          paid: boolean;
+          paid_at: string | null;
+          stripe_checkout_session_id: string | null;
+          stripe_subscription_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -144,6 +148,10 @@ export interface Database {
           title: string;
           price_cents: number;
           status?: OpportunityRequestStatus;
+          paid?: boolean;
+          paid_at?: string | null;
+          stripe_checkout_session_id?: string | null;
+          stripe_subscription_id?: string | null;
           created_at?: string;
         };
         Update: Partial<{

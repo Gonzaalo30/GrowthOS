@@ -1,15 +1,17 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessByOwner } from "@/services/business.service";
 import { GrowthCard } from "@/components/growth/GrowthCard";
+import { Button } from "@/components/ui/Button";
 import { PlanCard } from "@/features/billing/PlanCard";
 import { CustomPlanForm } from "@/features/billing/CustomPlanForm";
 import { PLANS } from "@/lib/plans";
+import { OPPORTUNITIES } from "@/lib/opportunities";
 
-const MARKETPLACE_EXAMPLES = [
-  { title: "Optimizar ficha de Google Business", price: "149 €" },
-  { title: "Mejorar la velocidad de tu web", price: "249 €" },
-  { title: "Añadir datos estructurados (Schema)", price: "79 €" },
-];
+function formatOpportunityPrice(cents: number, pricing: "one_time" | "monthly") {
+  const amount = `${(cents / 100).toLocaleString("es-ES")} €`;
+  return pricing === "monthly" ? `${amount}/mes` : amount;
+}
 
 export default async function PreciosPage() {
   const supabase = await createClient();
@@ -60,18 +62,32 @@ export default async function PreciosPage() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
           Mejoras a la carta
         </h2>
-        <p className="mb-4 text-sm text-zinc-600">
-          Independientemente de tu plan, cuando una misión requiere trabajo técnico puedes pedir que la
-          implementemos nosotros por un precio cerrado. Estos son ejemplos orientativos:
+        <p className="mb-1 text-sm text-zinc-600">
+          Independientemente de tu plan, cuando algo requiere trabajo técnico puedes pedir que lo
+          implementemos nosotros por un precio cerrado — mejoras puntuales de pago único, y también
+          servicios recurrentes (gestión mensual de tu ficha de Google, mantenimiento de la web) para lo
+          que necesita atención continua, no solo un arreglo puntual.
+        </p>
+        <p className="mb-4 text-xs text-zinc-500">
+          Tras la compra, uno de nuestros expertos te contacta por email o teléfono en menos de 24-48h
+          laborables para pedirte los accesos necesarios (a tu web, tu ficha de Google, hosting, etc.) y
+          ponerse manos a la obra.
         </p>
         <div className="flex flex-col gap-3">
-          {MARKETPLACE_EXAMPLES.map((item) => (
-            <GrowthCard key={item.title} className="flex items-center justify-between">
+          {OPPORTUNITIES.map((item) => (
+            <GrowthCard key={item.id} className="flex items-center justify-between gap-3">
               <span className="text-sm font-medium text-foreground">{item.title}</span>
-              <span className="text-sm font-semibold text-brand-600">{item.price}</span>
+              <span className="whitespace-nowrap text-sm font-semibold text-brand-600">
+                {formatOpportunityPrice(item.priceCents, item.pricing)}
+              </span>
             </GrowthCard>
           ))}
         </div>
+        <Link href={user ? "/marketplace" : "/signup"} className="mt-4 inline-block">
+          <Button variant="secondary">
+            {user ? "Ir al Centro de Mejoras" : "Crea tu cuenta gratis para comprar"}
+          </Button>
+        </Link>
       </div>
     </div>
   );
