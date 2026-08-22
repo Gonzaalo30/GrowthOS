@@ -35,6 +35,7 @@ type Command = NavCommand | ActionCommand | MissionCommand;
 const NAV_COMMANDS: NavCommand[] = [
   { kind: "nav", id: "dashboard", label: "Dashboard", hint: "Ir", href: "/dashboard" },
   { kind: "nav", id: "marketplace", label: "Centro de Mejoras", hint: "Ir", href: "/marketplace" },
+  { kind: "nav", id: "historial", label: "Historial de cambios", hint: "Ir", href: "/historial" },
   { kind: "nav", id: "account", label: "Mi cuenta", hint: "Ir", href: "/account" },
   { kind: "nav", id: "faq", label: "Preguntas frecuentes", hint: "Ir", href: "/faq" },
   { kind: "nav", id: "contacto", label: "Contacto", hint: "Ir", href: "/contacto" },

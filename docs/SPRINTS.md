@@ -242,6 +242,16 @@ La auditoría externa (sección A, punto 9) señalaba `text-gray-400` con contra
 - **Fuera de alcance a propósito**: no se tocó el resto de la voz gamificada del producto (mascota, confeti, "¡Enhorabuena!", emojis) — es una decisión de marca ya asentada en sprints anteriores, no "relleno corporativo" que haya que eliminar. El tono directo se aplicó al copy funcional/informativo (estados vacíos, ayuda), no a sustituir la personalidad del producto.
 - [x] Verificado en pestaña limpia: nombres de nivel correctos en cabecera, tarjeta principal, barra de XP y logros; copy nuevo de Growth Replay visible con datos reales.
 
+## Sprint 4.13 — Audit Log: historial real de cambios e impacto (COMPLETADO 2026-08-23)
+El fundador pidió un "Audit Log" estilo Linear: un historial limpio de cada cambio hecho guiado por GrowthOS y su impacto después, pensado como "diario de abordo" para enseñar a inversores o socios.
+- [x] **`/historial`** (`app/(app)/historial/page.tsx`, `features/historial/AuditLog.tsx`): línea de tiempo vertical con 3 tipos de entrada, todas de datos 100% reales, sin ninguna tabla ni migración nueva:
+  - **Misiones completadas** (`getAllCompletedMissions`, nuevo en `mission.service.ts`) — cada Quick Win y misión semanal real, con su XP.
+  - **Puntos de Growth Score** (`getGrowthScoreTimeline`, ya existía) — cada vez que se reanalizó la web, con el delta real frente al punto anterior (el primer punto no cuenta como "impacto", es la base de comparación).
+  - **Mejoras compradas** (`getRequestsForBusiness`, ya existía) — solo las realmente pagadas (`paid = true`), con precio y si es mensual.
+- [x] Registro estético deliberadamente más sobrio que el resto de la app (sin emojis, sin confeti) — es el único sitio del producto pensado para enseñarse fuera, así que se trató distinto a propósito del resto de la voz gamificada.
+- [x] Enlazado desde "Growth Replay" en el dashboard ("Ver historial completo →", en las dos versiones — con y sin historial suficiente) y añadido como comando de navegación real en el Cmd+K. No se añadió a la barra de navegación principal ni a la nav inferior móvil (se mantienen deliberadamente mínimas, mismo criterio que ya se aplicó a FAQ/Contacto).
+- [x] Verificado con datos reales de una cuenta de prueba: las 2 misiones completadas aparecen con su XP y fecha reales, navegación completa desde el Cmd+K funcionando, diseño responsive correcto en móvil (375px) sin recortes.
+
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
 - OAuth Google Business

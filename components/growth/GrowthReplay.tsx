@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
 import { formatDate } from "@/lib/formatDate";
@@ -40,6 +41,9 @@ export function GrowthReplay({
         ) : (
           <p className="text-xs text-zinc-500">Se actualiza automáticamente cada 7 días.</p>
         )}
+        <Link href="/historial" className="text-xs font-medium text-brand-600 underline underline-offset-2 hover:text-brand-700">
+          Ver historial completo →
+        </Link>
       </GrowthCard>
     );
   }
@@ -89,6 +93,10 @@ export function GrowthReplay({
           </ul>
         </div>
       )}
+
+      <Link href="/historial" className="text-xs font-medium text-brand-600 underline underline-offset-2 hover:text-brand-700">
+        Ver historial completo →
+      </Link>
     </GrowthCard>
   );
 }

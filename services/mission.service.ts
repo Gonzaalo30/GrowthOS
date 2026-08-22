@@ -168,6 +168,19 @@ export async function getCompletedMissionsSince(supabase: Client, businessId: st
   return data;
 }
 
+/** Historial completo de misiones completadas, para el Audit Log — no solo lo reciente. */
+export async function getAllCompletedMissions(supabase: Client, businessId: string) {
+  const { data, error } = await supabase
+    .from("missions")
+    .select("id, title, xp_reward, type, completed_at")
+    .eq("business_id", businessId)
+    .not("completed_at", "is", null)
+    .order("completed_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
 /**
  * Añade 1 Quick Win extra saltándose el tope de 3 pendientes — usado como
  * recompensa real del cofre diario. Reutiliza la misma regla de no repetir
