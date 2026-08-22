@@ -3,6 +3,7 @@ import { ScoreCircle } from "@/components/growth/ScoreCircle";
 import { CheckItem } from "@/components/growth/CheckItem";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { ConfettiBurst } from "@/components/growth/ConfettiBurst";
+import { CategoryScores } from "@/components/growth/CategoryScores";
 import { Button } from "@/components/ui/Button";
 import { runQuickAudit, growthPotentialLabel } from "@/lib/quickAudit";
 import { createClient } from "@/lib/supabase/server";
@@ -41,6 +42,13 @@ export async function QuickAuditResult({ domain }: { domain: string }) {
           Cumples {passedCount} de {result.checks.length} puntos básicos. Crea tu cuenta gratis para
           ver el plan completo de mejoras y tus misiones de hoy.
         </p>
+      </GrowthCard>
+
+      <GrowthCard>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          Puntuación por área
+        </h2>
+        <CategoryScores checks={result.checks} />
       </GrowthCard>
 
       <GrowthCard>

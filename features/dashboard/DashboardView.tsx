@@ -7,6 +7,7 @@ import { XPBar } from "@/components/growth/XPBar";
 import { StreakBadge } from "@/components/growth/StreakBadge";
 import { ScoreCelebration } from "@/components/growth/ScoreCelebration";
 import { ScoreBreakdown } from "@/components/growth/ScoreBreakdown";
+import { CategoryScores } from "@/components/growth/CategoryScores";
 import { GrowthCalendar } from "@/components/growth/GrowthCalendar";
 import { GrowthReplay } from "@/components/growth/GrowthReplay";
 import { DailyChest } from "@/components/growth/DailyChest";
@@ -116,7 +117,12 @@ export function DashboardView({
 
             <XPBar xp={business.xp} progress={levelProgress} />
 
-            {scoreBreakdown && scoreBreakdown.length > 0 && <ScoreBreakdown checks={scoreBreakdown} />}
+            {scoreBreakdown && scoreBreakdown.length > 0 && (
+              <>
+                <CategoryScores checks={scoreBreakdown} />
+                <ScoreBreakdown checks={scoreBreakdown} />
+              </>
+            )}
 
             {canRefreshOnDemand(business.plan) && <RefreshScoreButton />}
           </GrowthCard>

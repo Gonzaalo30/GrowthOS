@@ -167,6 +167,12 @@ El fundador pidió foto de perfil, cambiar contraseña, formato de fecha/hora/pa
   - Idioma mostrado como "Español (más idiomas próximamente)", deshabilitado — no hay infraestructura de traducción todavía; un selector que no traduce nada sería un ajuste falso.
 - [x] Sección "⚙️ Ajustes" nueva en `/account`, todo verificado con graceful degradation antes de aplicar la migración `0014` (columna nueva + políticas de Storage).
 
+## Sprint 4.3 — Puntuación por área siempre visible (COMPLETADO 2026-08-22)
+El fundador señaló que le faltaba "chicha" al dashboard — pidió, además de la puntuación global, una más específica. Esa puntuación por categoría ya existía (Sprint 3.6), pero escondida detrás de un toggle "¿Por qué esta puntuación?", así que en la práctica nadie la veía.
+- [x] `components/growth/CategoryScores.tsx` — tarjetas siempre visibles (no un acordeón) con icono, número y barra de progreso animada por categoría (SEO, Confianza, Velocidad, Local, Conversión), en el dashboard justo debajo de la puntuación global y también en `/analisis` (el informe público antes de registrarse, para que la primera impresión también se vea más seria). Local y Conversión se siguen marcando honestamente con "—" mientras no las midamos.
+- [x] `ScoreBreakdown.tsx` simplificado: ya no repite los números de categoría (ahora viven en `CategoryScores`), solo queda el detalle expandible de cada comprobación individual.
+- [x] Verificado en escritorio y móvil, en el dashboard real y en el informe público.
+
 ## Sprint 4.5 — Pendiente (requiere IA)
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€) — antes vivían como texto estático en `/precios`; se sustituyeron por el plan Personalizado (contacto real) hasta que existan de verdad
 - Roadmap 90 días generado por IA (3 fases, tareas verde/naranja/roja)
