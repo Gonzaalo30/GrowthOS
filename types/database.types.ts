@@ -3,6 +3,7 @@ export type MissionDifficulty = "easy" | "medium" | "hard";
 export type OpportunityRequestStatus = "pending" | "contacted" | "done";
 export type DailyChestReward = "xp" | "bonus_mission";
 export type BusinessPlan = "starter" | "growth" | "autopilot";
+export type DateFormat = "long" | "short_dmy" | "short_mdy";
 
 export interface Database {
   public: {
@@ -12,17 +13,23 @@ export interface Database {
           id: string;
           name: string;
           email: string;
+          avatar_url: string | null;
+          date_format: DateFormat;
           created_at: string;
         };
         Insert: {
           id: string;
           name: string;
           email: string;
+          avatar_url?: string | null;
+          date_format?: DateFormat;
           created_at?: string;
         };
         Update: Partial<{
           name: string;
           email: string;
+          avatar_url: string | null;
+          date_format: DateFormat;
         }>;
         Relationships: [];
       };

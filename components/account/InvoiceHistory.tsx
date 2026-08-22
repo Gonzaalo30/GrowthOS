@@ -1,4 +1,6 @@
 import type { InvoiceSummary } from "@/services/billing.service";
+import { formatDate } from "@/lib/formatDate";
+import type { DateFormat } from "@/types/database.types";
 
 const STATUS_LABELS: Record<string, string> = {
   paid: "Pagada",
@@ -20,11 +22,13 @@ function formatPrice(cents: number) {
   return `${(cents / 100).toLocaleString("es-ES", { minimumFractionDigits: 2 })} €`;
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
-}
-
-export function InvoiceHistory({ invoices }: { invoices: InvoiceSummary[] }) {
+export function InvoiceHistory({
+  invoices,
+  dateFormat = "long",
+}: {
+  invoices: InvoiceSummary[];
+  dateFormat?: DateFormat;
+}) {
   if (invoices.length === 0) {
     return <p className="text-sm text-zinc-500">Todavía no tienes facturas.</p>;
   }
@@ -35,7 +39,7 @@ export function InvoiceHistory({ invoices }: { invoices: InvoiceSummary[] }) {
         <div key={invoice.id} className="flex items-center justify-between gap-3 py-2.5">
           <div>
             <p className="text-sm font-medium text-foreground">
-              {formatDate(invoice.createdAt)} — {formatPrice(invoice.amountPaidCents)}
+              {formatDate(invoice.createdAt, dateFormat)} — {formatPrice(invoice.amountPaidCents)}
             </p>
             <span
               className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${

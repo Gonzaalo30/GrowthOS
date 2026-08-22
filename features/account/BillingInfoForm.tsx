@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { updateBillingInfoAction, type BillingFormState } from "@/app/actions/billing";
 import type { BillingInfo } from "@/services/billing.service";
+import { COUNTRIES } from "@/lib/countries";
 
 const initialState: BillingFormState = {};
 
@@ -69,6 +70,22 @@ export function BillingInfoForm({ billingInfo }: { billingInfo: BillingInfo }) {
           />
         </label>
       </div>
+
+      <label className="text-sm font-medium text-foreground">
+        País
+        <select
+          name="country"
+          required
+          defaultValue={billingInfo.country ?? "ES"}
+          className="mt-1 w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500"
+        >
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       {state.success && <p className="text-sm text-emerald-600">Guardado. Tus próximas facturas usarán estos datos.</p>}

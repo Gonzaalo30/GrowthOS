@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/Button";
 import { ProfileForm } from "@/features/account/ProfileForm";
 import { BusinessForm } from "@/features/account/BusinessForm";
 import { BillingInfoForm } from "@/features/account/BillingInfoForm";
+import { AvatarUpload } from "@/features/account/AvatarUpload";
+import { PasswordForm } from "@/features/account/PasswordForm";
+import { PreferencesForm } from "@/features/account/PreferencesForm";
 import { InvoiceHistory } from "@/components/account/InvoiceHistory";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
 import { getPlan } from "@/lib/plans";
@@ -60,7 +63,26 @@ export default async function AccountPage({
         <div className="flex flex-col gap-6">
           <GrowthCard>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu perfil</h2>
+            <div className="mb-4">
+              <AvatarUpload name={profile.name} avatarUrl={profile.avatar_url} />
+            </div>
             <ProfileForm name={profile.name} email={profile.email} />
+          </GrowthCard>
+
+          <GrowthCard>
+            <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+              <span aria-hidden>⚙️</span> Ajustes
+            </h2>
+            <div className="flex flex-col gap-6">
+              <div>
+                <h3 className="mb-2 text-xs font-semibold text-zinc-500">Contraseña</h3>
+                <PasswordForm />
+              </div>
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-2 text-xs font-semibold text-zinc-500">Preferencias</h3>
+                <PreferencesForm dateFormat={profile.date_format} />
+              </div>
+            </div>
           </GrowthCard>
 
           <GrowthCard>
@@ -126,7 +148,7 @@ export default async function AccountPage({
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
                 Historial de facturas
               </h2>
-              <InvoiceHistory invoices={invoices} />
+              <InvoiceHistory invoices={invoices} dateFormat={profile.date_format} />
             </GrowthCard>
           )}
         </div>

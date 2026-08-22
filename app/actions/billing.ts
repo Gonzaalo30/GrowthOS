@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getBusinessByOwner } from "@/services/business.service";
 import { getStripe } from "@/lib/stripe";
 import { updateBillingInfo } from "@/services/billing.service";
+import { COUNTRIES } from "@/lib/countries";
 
 export interface BillingFormState {
   error?: string;
@@ -20,9 +21,13 @@ export async function updateBillingInfoAction(
   const addressLine1 = String(formData.get("addressLine1") ?? "").trim();
   const city = String(formData.get("city") ?? "").trim();
   const postalCode = String(formData.get("postalCode") ?? "").trim();
+  const country = String(formData.get("country") ?? "").trim();
 
-  if (!name || !addressLine1 || !city || !postalCode) {
-    return { error: "Completa nombre, dirección, ciudad y código postal." };
+  if (!name || !addressLine1 || !city || !postalCode || !country) {
+    return { error: "Completa nombre, dirección, ciudad, código postal y país." };
+  }
+  if (!COUNTRIES.some((c) => c.code === country)) {
+    return { error: "Selecciona un país válido." };
   }
 
   const supabase = await createClient();
@@ -38,7 +43,14 @@ export async function updateBillingInfoAction(
 
   try {
     const stripe = getStripe();
-    await updateBillingInfo(stripe, business.stripe_customer_id, { name, taxId, addressLine1, city, postalCode });
+    await updateBillingInfo(stripe, business.stripe_customer_id, {
+      name,
+      taxId,
+      addressLine1,
+      city,
+      postalCode,
+      country,
+    });
   } catch {
     return { error: "No hemos podido guardar tus datos de facturación. Inténtalo de nuevo." };
   }

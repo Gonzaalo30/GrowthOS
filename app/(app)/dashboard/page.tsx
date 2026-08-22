@@ -113,6 +113,7 @@ export default async function DashboardPage() {
       replayMissions={replayMissions}
       chestOpenedToday={Boolean(todayChest)}
       achievements={achievements}
+      dateFormat={profile.date_format}
     />
   );
 }

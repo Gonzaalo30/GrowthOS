@@ -1,14 +1,12 @@
 import { GrowthCard } from "@/components/growth/GrowthCard";
+import { formatDate } from "@/lib/formatDate";
 import type { GrowthScorePoint } from "@/services/audit.service";
+import type { DateFormat } from "@/types/database.types";
 
 interface CompletedMission {
   id: string;
   title: string;
   completed_at: string | null;
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
 }
 
 /**
@@ -19,9 +17,11 @@ function formatDate(iso: string) {
 export function GrowthReplay({
   timeline,
   completedMissions,
+  dateFormat = "long",
 }: {
   timeline: GrowthScorePoint[];
   completedMissions: CompletedMission[];
+  dateFormat?: DateFormat;
 }) {
   if (timeline.length < 2) return null;
 
@@ -35,12 +35,12 @@ export function GrowthReplay({
 
       <div className="flex items-center justify-center gap-6">
         <div className="text-center">
-          <p className="text-xs text-zinc-500">Antes · {formatDate(first.recordedAt)}</p>
+          <p className="text-xs text-zinc-500">Antes · {formatDate(first.recordedAt, dateFormat)}</p>
           <p className="text-3xl font-semibold text-zinc-400">{first.score}</p>
         </div>
         <span className="text-2xl text-zinc-300">→</span>
         <div className="text-center">
-          <p className="text-xs text-zinc-500">Ahora · {formatDate(last.recordedAt)}</p>
+          <p className="text-xs text-zinc-500">Ahora · {formatDate(last.recordedAt, dateFormat)}</p>
           <p className="text-3xl font-semibold text-foreground">{last.score}</p>
         </div>
         {delta !== 0 && (

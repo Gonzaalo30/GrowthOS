@@ -13,3 +13,17 @@ export async function updateProfileName(supabase: Client, userId: string, name: 
   const { error } = await supabase.from("profiles").update({ name }).eq("id", userId);
   if (error) throw error;
 }
+
+export async function updateAvatarUrl(supabase: Client, userId: string, avatarUrl: string | null) {
+  const { error } = await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", userId);
+  if (error) throw error;
+}
+
+export async function updateDateFormat(
+  supabase: Client,
+  userId: string,
+  dateFormat: Database["public"]["Tables"]["profiles"]["Row"]["date_format"],
+) {
+  const { error } = await supabase.from("profiles").update({ date_format: dateFormat }).eq("id", userId);
+  if (error) throw error;
+}

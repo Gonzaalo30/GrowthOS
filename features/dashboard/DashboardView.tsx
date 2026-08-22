@@ -21,6 +21,7 @@ import type { Database } from "@/types/database.types";
 import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audit.service";
 import type { QuickAuditCheck } from "@/lib/quickAudit";
 import type { Achievement } from "@/lib/achievements";
+import type { DateFormat } from "@/types/database.types";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
@@ -36,6 +37,7 @@ export function DashboardView({
   replayMissions,
   chestOpenedToday,
   achievements,
+  dateFormat,
 }: {
   business: Business;
   missions: Mission[];
@@ -47,6 +49,7 @@ export function DashboardView({
   replayMissions: Pick<Mission, "id" | "title" | "completed_at">[];
   chestOpenedToday: boolean;
   achievements: Achievement[];
+  dateFormat: DateFormat;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const allDailyMissions = missions
@@ -148,7 +151,7 @@ export function DashboardView({
         <div className="flex flex-col gap-6">
           <DailyChest alreadyOpenedToday={chestOpenedToday} />
 
-          <GrowthReplay timeline={scoreTimeline} completedMissions={replayMissions} />
+          <GrowthReplay timeline={scoreTimeline} completedMissions={replayMissions} dateFormat={dateFormat} />
 
           {achievements.length > 0 && <Achievements achievements={achievements} />}
 

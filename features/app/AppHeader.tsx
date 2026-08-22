@@ -14,7 +14,13 @@ const NAV_LINKS = [
   { href: "/account", label: "Mi cuenta" },
 ];
 
-export function AppHeader({ notifications = [] }: { notifications?: Notification[] }) {
+export function AppHeader({
+  notifications = [],
+  avatarUrl,
+}: {
+  notifications?: Notification[];
+  avatarUrl?: string | null;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [items, setItems] = useState(notifications);
@@ -39,8 +45,12 @@ export function AppHeader({ notifications = [] }: { notifications?: Notification
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-zinc-600 transition-colors hover:text-foreground"
+              className="flex items-center gap-2 text-sm text-zinc-600 transition-colors hover:text-foreground"
             >
+              {link.href === "/account" && avatarUrl && (
+                // eslint-disable-next-line @next/next/no-img-element -- avatar viene de Supabase Storage, no de assets propios
+                <img src={avatarUrl} alt="" className="h-5 w-5 rounded-full object-cover" />
+              )}
               {link.label}
             </Link>
           ))}

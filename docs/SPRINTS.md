@@ -156,6 +156,17 @@ El fundador pidió dar fiabilidad real al proyecto con las páginas legales obli
 - [x] Aviso de aceptación de Términos y Privacidad añadido al formulario de registro.
 - **Nota del asistente, no legal:** este es un borrador sólido y honesto sobre lo que el producto hace de verdad hoy, no una revisión de un abogado. Antes de manejar un volumen real de usuarios/pagos, conviene que un profesional lo revise, sobre todo la Política de Privacidad (RGPD) y los Términos.
 
+## Sprint 4.2 — Ajustes de cuenta (COMPLETADO 2026-08-22)
+El fundador pidió foto de perfil, cambiar contraseña, formato de fecha/hora/país y el típico "engranaje de ajustes". Antes de construir, se acotó a lo que puede ser real hoy:
+- [x] **Foto de perfil** real vía Supabase Storage (`services/avatar.service.ts`) — bucket `avatars` creado por API, política de lectura pública y escritura restringida a la carpeta del propio usuario (`avatars/{user_id}/...`). Mismo nombre de archivo siempre (no un id nuevo cada vez) para que una foto nueva sustituya a la anterior en vez de acumular huérfanos; URL con cache-bust para que se vea el cambio al instante. Se muestra también en la cabecera de la app, no solo en Mi cuenta.
+- [x] **Cambiar contraseña** real vía Supabase Auth (`supabase.auth.updateUser`).
+- [x] **Formato de fecha** real — aplicado en los dos únicos sitios de la app que muestran una fecha (historial de facturas, Growth Replay), con un formateador compartido (`lib/formatDate.ts`) para que la preferencia se note de verdad en todos lados, no solo donde es cómodo.
+- [x] **País** conectado a los datos de facturación reales (antes estaba fijo a "España" sin poder cambiarlo) — el NIF/CIF solo se manda a Stripe como Tax ID formal para España (es el único tipo que sabemos construir bien hoy); para otros países se guarda como texto sin crear un Tax ID con el tipo equivocado.
+- **Decisiones explícitas de alcance, explicadas al fundador antes de construir:**
+  - Sin ajuste de "hora" — hoy la app no muestra ninguna hora en ningún sitio, así que un selector 12h/24h no cambiaría nada real.
+  - Idioma mostrado como "Español (más idiomas próximamente)", deshabilitado — no hay infraestructura de traducción todavía; un selector que no traduce nada sería un ajuste falso.
+- [x] Sección "⚙️ Ajustes" nueva en `/account`, todo verificado con graceful degradation antes de aplicar la migración `0014` (columna nueva + políticas de Storage).
+
 ## Sprint 4.5 — Pendiente (requiere IA)
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€) — antes vivían como texto estático en `/precios`; se sustituyeron por el plan Personalizado (contacto real) hasta que existan de verdad
 - Roadmap 90 días generado por IA (3 fases, tareas verde/naranja/roja)

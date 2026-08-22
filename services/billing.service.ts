@@ -30,12 +30,13 @@ export interface BillingInfo {
   addressLine1: string | null;
   city: string | null;
   postalCode: string | null;
+  country: string | null;
 }
 
 export async function getBillingInfo(stripe: Stripe, customerId: string): Promise<BillingInfo> {
   const customer = await stripe.customers.retrieve(customerId);
   if ("deleted" in customer && customer.deleted) {
-    return { name: null, taxId: null, addressLine1: null, city: null, postalCode: null };
+    return { name: null, taxId: null, addressLine1: null, city: null, postalCode: null, country: null };
   }
 
   const taxIds = await stripe.customers.listTaxIds(customerId, { limit: 10 });
@@ -47,6 +48,7 @@ export async function getBillingInfo(stripe: Stripe, customerId: string): Promis
     addressLine1: customer.address?.line1 ?? null,
     city: customer.address?.city ?? null,
     postalCode: customer.address?.postal_code ?? null,
+    country: customer.address?.country ?? null,
   };
 }
 
@@ -58,7 +60,7 @@ export async function getBillingInfo(stripe: Stripe, customerId: string): Promis
 export async function updateBillingInfo(
   stripe: Stripe,
   customerId: string,
-  data: { name: string; taxId: string; addressLine1: string; city: string; postalCode: string },
+  data: { name: string; taxId: string; addressLine1: string; city: string; postalCode: string; country: string },
 ) {
   await stripe.customers.update(customerId, {
     name: data.name,
@@ -66,11 +68,15 @@ export async function updateBillingInfo(
       line1: data.addressLine1,
       city: data.city,
       postal_code: data.postalCode,
-      country: "ES",
+      country: data.country,
     },
   });
 
-  if (data.taxId) {
+  // El Tax ID de Stripe es específico por país (es_cif, mx_rfc, ar_cuit...);
+  // hoy solo sabemos crear correctamente el de España. Para otros países el
+  // NIF/CIF se guarda solo como texto en el nombre/dirección, no como Tax ID
+  // formal, para no mandar a Stripe un tipo que no le corresponde.
+  if (data.taxId && data.country === "ES") {
     const existing = await stripe.customers.listTaxIds(customerId, { limit: 10 });
     await Promise.all(
       existing.data
