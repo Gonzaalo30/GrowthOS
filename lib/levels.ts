@@ -4,12 +4,15 @@ export interface Level {
 }
 
 // Duolingo-style progression: cada nivel requiere más XP que el anterior.
+// Nombres pensados para el negocio local real que usa GrowthOS (clínica,
+// restaurante, taller...), no jerga de startups financiadas (nada de
+// "Pre-Seed"/"Series A" — no es el idioma de quien lleva un negocio local).
 export const LEVELS: Level[] = [
-  { name: "Starter", minXp: 0 },
-  { name: "Explorer", minXp: 100 },
-  { name: "Optimizer", minXp: 300 },
-  { name: "Growth Pro", minXp: 700 },
-  { name: "Scale", minXp: 1500 },
+  { name: "Arranque", minXp: 0 },
+  { name: "En marcha", minXp: 100 },
+  { name: "Consolidado", minXp: 300 },
+  { name: "Referencia", minXp: 700 },
+  { name: "Líder", minXp: 1500 },
 ];
 
 export interface LevelProgress {

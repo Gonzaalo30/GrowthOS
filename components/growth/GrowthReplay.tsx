@@ -32,8 +32,8 @@ export function GrowthReplay({
       <GrowthCard className="flex flex-col items-center gap-2 text-center">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Growth Replay</h2>
         <p className="text-sm text-zinc-600">
-          Aquí verás tu evolución del Growth Score en cuanto tengamos un segundo punto con el que
-          compararlo.
+          Todavía no hay un segundo punto con el que comparar. Completa Quick Wins y en 7 días sabrás
+          si tu Growth Score sube de verdad, no si te lo parece.
         </p>
         {canRefresh ? (
           <RefreshScoreButton />
