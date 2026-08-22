@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOutAction } from "@/app/actions/auth";
 import { markNotificationsReadAction } from "@/app/actions/notifications";
@@ -24,6 +24,15 @@ export function AppHeader({
   const [menuOpen, setMenuOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [items, setItems] = useState(notifications);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(navigator.platform.toLowerCase().includes("mac"));
+  }, []);
+
+  function openCommandPalette() {
+    window.dispatchEvent(new CustomEvent("toggle-command-palette"));
+  }
 
   function handleBellClick() {
     setBellOpen((v) => !v);
@@ -57,6 +66,18 @@ export function AppHeader({
         </nav>
 
         <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={openCommandPalette}
+            aria-label="Abrir buscador de comandos"
+            className="hidden items-center gap-2 rounded-lg border border-border px-2.5 py-1.5 text-xs text-zinc-500 transition-colors hover:bg-surface-muted hover:text-foreground sm:flex"
+          >
+            Buscar
+            <kbd className="rounded border border-border bg-surface-muted px-1.5 py-0.5 font-sans text-[10px]">
+              {isMac ? "⌘K" : "Ctrl K"}
+            </kbd>
+          </button>
+
           <div className="relative">
             <button
               type="button"
