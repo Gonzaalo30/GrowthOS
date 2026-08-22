@@ -39,6 +39,7 @@ export function DashboardView({
   chestOpenedToday,
   achievements,
   dateFormat,
+  welcomeMissionId,
 }: {
   business: Business;
   missions: Mission[];
@@ -51,6 +52,7 @@ export function DashboardView({
   chestOpenedToday: boolean;
   achievements: Achievement[];
   dateFormat: DateFormat;
+  welcomeMissionId?: string;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const allDailyMissions = missions
@@ -62,6 +64,14 @@ export function DashboardView({
   const dailyMissionsToday = allDailyMissions.filter(
     (m) => !m.completed_at || m.completed_at.slice(0, 10) === today,
   );
+  const welcomeMission = welcomeMissionId
+    ? missions.find((m) => m.id === welcomeMissionId)
+    : undefined;
+  // Mientras se muestra el spotlight de bienvenida, esa misión no se repite
+  // también en la lista normal — evita la misma tarjeta duplicada en pantalla.
+  const visibleDailyMissionsToday = welcomeMission
+    ? dailyMissionsToday.filter((m) => m.id !== welcomeMission.id)
+    : dailyMissionsToday;
   const weeklyMission = missions.find((m) => m.type === "weekly");
   const pendingDaily = dailyMissionsToday.filter((m) => !m.completed_at).length;
   const xpAvailableToday =
@@ -86,6 +96,20 @@ export function DashboardView({
           {xpAvailableToday > 0 && <span>Hoy puedes ganar {xpAvailableToday} XP.</span>}
         </p>
       </div>
+
+      {welcomeMission && (
+        <div>
+          <GrowthCard className="border-2 border-brand-400 bg-gradient-to-br from-brand-50 to-transparent shadow-md">
+            <p className="text-sm font-medium text-brand-600">🎉 ¡Bienvenido a GrowthOS!</p>
+            <h2 className="mt-1 font-semibold text-foreground">
+              Complétala en un minuto y consigue tus primeros XP
+            </h2>
+          </GrowthCard>
+          <div className="mt-3">
+            <MissionCard mission={welcomeMission} quickWinNumber={welcomeMission.sequence_number ?? undefined} />
+          </div>
+        </div>
+      )}
 
       {scoreDelta > 0 && <ScoreCelebration delta={scoreDelta} />}
 
@@ -132,7 +156,7 @@ export function DashboardView({
               Quick Wins de hoy
             </h2>
             <div className="flex flex-col gap-3">
-              {dailyMissionsToday.map((mission) => (
+              {visibleDailyMissionsToday.map((mission) => (
                 <MissionCard
                   key={mission.id}
                   mission={mission}

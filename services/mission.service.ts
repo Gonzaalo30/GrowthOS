@@ -178,6 +178,7 @@ export async function addBonusDailyMission(
   businessId: string,
   businessType: BusinessType,
   existingMissions: MissionRow[],
+  options?: { selfReportOnly?: boolean },
 ) {
   const dailyMissions = existingMissions.filter((m) => m.type === "daily");
   const pendingTemplateIds = new Set(
@@ -185,7 +186,10 @@ export async function addBonusDailyMission(
   );
 
   const candidates = DAILY_MISSION_TEMPLATES.filter(
-    (t) => (t.appliesTo === "all" || t.appliesTo.includes(businessType)) && !pendingTemplateIds.has(t.id),
+    (t) =>
+      (t.appliesTo === "all" || t.appliesTo.includes(businessType)) &&
+      !pendingTemplateIds.has(t.id) &&
+      (!options?.selfReportOnly || !t.auditTrigger),
   );
   if (candidates.length === 0) return null;
 

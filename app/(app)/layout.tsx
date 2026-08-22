@@ -3,6 +3,7 @@ import { getBusinessByOwner } from "@/services/business.service";
 import { getUnreadNotifications } from "@/services/notification.service";
 import { getProfile } from "@/services/profile.service";
 import { AppHeader } from "@/features/app/AppHeader";
+import { MobileBottomNav } from "@/features/app/MobileBottomNav";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -30,7 +31,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <>
       <AppHeader notifications={notifications} avatarUrl={avatarUrl} />
-      <div className="flex flex-1 flex-col">{children}</div>
+      <div className="flex flex-1 flex-col pb-16 sm:pb-0">{children}</div>
+      <MobileBottomNav />
     </>
   );
 }

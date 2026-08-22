@@ -23,7 +23,12 @@ import { dailyQuickWinCap } from "@/lib/plans";
 
 const CALENDAR_WEEKS = 12;
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ bienvenida?: string }>;
+}) {
+  const { bienvenida } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -114,6 +119,7 @@ export default async function DashboardPage() {
       chestOpenedToday={Boolean(todayChest)}
       achievements={achievements}
       dateFormat={profile.date_format}
+      welcomeMissionId={bienvenida}
     />
   );
 }
