@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: "/como-funciona", label: "Cómo funciona" },
   { href: "/precios", label: "Precios" },
   { href: "/casos-de-exito", label: "Casos de éxito" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 export function Header() {

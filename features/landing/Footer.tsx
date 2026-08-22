@@ -2,6 +2,8 @@ import Link from "next/link";
 import { LEGAL_INFO } from "@/lib/legalInfo";
 
 const LEGAL_LINKS = [
+  { href: "/faq", label: "FAQ" },
+  { href: "/contacto", label: "Contacto" },
   { href: "/aviso-legal", label: "Aviso legal" },
   { href: "/privacidad", label: "Privacidad" },
   { href: "/cookies", label: "Cookies" },

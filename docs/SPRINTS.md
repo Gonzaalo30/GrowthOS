@@ -173,6 +173,13 @@ El fundador señaló que le faltaba "chicha" al dashboard — pidió, además de
 - [x] `ScoreBreakdown.tsx` simplificado: ya no repite los números de categoría (ahora viven en `CategoryScores`), solo queda el detalle expandible de cada comprobación individual.
 - [x] Verificado en escritorio y móvil, en el dashboard real y en el informe público.
 
+## Sprint 4.4 — FAQ y formulario de contacto (COMPLETADO 2026-08-22)
+El fundador pidió "completar todo más": unas FAQs y un formulario de contacto/dudas.
+- [x] **`/faq`**: 13 preguntas reales agrupadas en 4 bloques (General, Cómo funciona, Precios y planes, Cuenta y datos), acordeón de una sola pregunta abierta a la vez (`features/faq/FaqAccordion.tsx`). Contenido ceñido estrictamente a lo que el producto hace hoy de verdad (nada de funciones prometidas como si ya existieran) — p.ej. explica que el Growth Score se actualiza solo cada 7 días salvo en Growth/Autopilot, donde se puede reanalizar bajo demanda.
+- [x] **`/contacto`**: formulario real (nombre, email, mensaje) abierto a cualquiera, con o sin sesión — quien todavía no tiene cuenta también puede tener dudas antes de registrarse. Si hay sesión iniciada, se precargan nombre/email del perfil. Mismo patrón de captura de leads que `opportunity_requests`/`custom_plan_requests`: se guarda en `contact_messages` (migración `0015`, RLS de solo-inserción, sin política de lectura — se revisa con la clave de servicio, sin panel de admin todavía).
+- [x] Enlaces añadidos al Header (FAQ) y Footer (FAQ + Contacto) de las páginas de marketing.
+- [x] Verificado de extremo a extremo en local: `/faq` renderiza las 13 preguntas y el acordeón funciona; `/contacto` precarga los datos de un usuario logueado, envía el mensaje y queda guardado en `contact_messages` con los datos correctos (confirmado leyendo la fila directamente tras el envío).
+
 ## Sprint 4.5 — Pendiente (requiere IA)
 - Landings de Growth Sprint (Performance/SEO/Local/Conversion, 1.000–5.000€) — antes vivían como texto estático en `/precios`; se sustituyeron por el plan Personalizado (contacto real) hasta que existan de verdad
 - Roadmap 90 días generado por IA (3 fases, tareas verde/naranja/roja)

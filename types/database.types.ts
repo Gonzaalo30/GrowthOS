@@ -280,6 +280,28 @@ export interface Database {
         Update: Partial<{ status: OpportunityRequestStatus }>;
         Relationships: [];
       };
+      contact_messages: {
+        Row: {
+          id: string;
+          business_id: string | null;
+          name: string;
+          email: string;
+          message: string;
+          status: OpportunityRequestStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id?: string | null;
+          name: string;
+          email: string;
+          message: string;
+          status?: OpportunityRequestStatus;
+          created_at?: string;
+        };
+        Update: Partial<{ status: OpportunityRequestStatus }>;
+        Relationships: [];
+      };
       notifications: {
         Row: {
           id: string;
