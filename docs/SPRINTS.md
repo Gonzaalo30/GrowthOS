@@ -220,6 +220,13 @@ Tercera tanda de la misma auditoría, sección "Mejoras Medias (1-3h)":
 - [x] **Estados vacíos con llamada a la acción real**: `GrowthReplay` ya no desaparece sin más cuando un negocio nuevo no tiene historial suficiente — explica por qué está vacío y ofrece "Reanalizar ahora" (botón real, `RefreshScoreButton`) si el plan lo permite, o el aviso de que se actualiza solo cada 7 días si no. El filtro de categorías del Centro de Mejoras añade "Ver todas las mejoras" cuando una categoría queda sin resultados.
 - [x] Verificado en pestaña limpia: modal de victoria en la misión semanal (XP real reflejado al instante en la cabecera vía revalidación, sin recargar), estado vacío de Growth Replay con el mensaje correcto para plan Gratis.
 
+## Sprint 4.10 — Momentum Score (COMPLETADO 2026-08-22)
+Última tanda de la misma auditoría externa, sección "Grandes Mejoras". De los 2 puntos:
+- **"Onboarding contextual estilo Cursor con agente visual"**: no se construyó — necesita IA generativa real para interpretar lo que escribe el usuario, y eso sigue bloqueado hasta que el fundador dé una API key (ver Sprint 4.5/Sprint 3, decisión ya tomada, confirmada de nuevo aquí).
+- [x] **Momentum Score** (`lib/momentum.ts`, `components/growth/MomentumScore.tsx`): la auditoría solo proponía la idea ("combinar constancia y velocidad de entrega") sin fórmula real — se acordó con el fundador antes de construir: `Quick Wins completados en los últimos 7 días ÷ Quick Wins que tuvo disponibles esos mismos 7 días × 100`. "Disponible esta semana" = asignado esta semana o completado esta semana aunque se asignara antes. Se calcula con datos que ya existían (`missions.created_at`/`completed_at`), sin migración ni tabla nueva. Visible en el dashboard justo debajo de la barra de XP, con el mismo lenguaje visual (barra de progreso, color según el valor). Se descartó explícitamente el `GlowCard`/`DailyCommandCenter` en tema oscuro con datos hardcodeados que traía la propia auditoría como "código listo" — violaba tanto la decisión de mantener el tema claro como el principio de cero datos falsos del proyecto (las 3 misiones y el "88% momentum" del ejemplo eran literalmente inventados en el propio código).
+- [x] **"Sistema de rachas total"**: no hacía falta nada nuevo — racha, XP y niveles ya llevan construidos desde el Sprint 2; el Momentum Score es el único componente real que faltaba de lo que pedía este punto.
+- [x] Verificado en pestaña limpia con datos reales: negocio de prueba con 4 Quick Wins asignados esta semana y 1 completado → "1 de 4 Quick Wins esta semana", barra en gris (por debajo del umbral de "buen ritmo").
+
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
 - OAuth Google Business

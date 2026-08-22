@@ -4,6 +4,7 @@ import { MissionCard } from "@/components/growth/MissionCard";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { LevelBadge } from "@/components/growth/LevelBadge";
 import { XPBar } from "@/components/growth/XPBar";
+import { MomentumScore } from "@/components/growth/MomentumScore";
 import { StreakBadge } from "@/components/growth/StreakBadge";
 import { ScoreCelebration } from "@/components/growth/ScoreCelebration";
 import { ScoreBreakdown } from "@/components/growth/ScoreBreakdown";
@@ -22,6 +23,7 @@ import type { Database } from "@/types/database.types";
 import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audit.service";
 import type { QuickAuditCheck } from "@/lib/quickAudit";
 import type { Achievement } from "@/lib/achievements";
+import type { MomentumResult } from "@/lib/momentum";
 import type { DateFormat } from "@/types/database.types";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
@@ -40,6 +42,7 @@ export function DashboardView({
   achievements,
   dateFormat,
   welcomeMissionId,
+  momentum,
 }: {
   business: Business;
   missions: Mission[];
@@ -52,6 +55,7 @@ export function DashboardView({
   chestOpenedToday: boolean;
   achievements: Achievement[];
   dateFormat: DateFormat;
+  momentum: MomentumResult | null;
   welcomeMissionId?: string;
 }) {
   const today = new Date().toISOString().slice(0, 10);
@@ -144,6 +148,7 @@ export function DashboardView({
             </div>
 
             <XPBar xp={business.xp} progress={levelProgress} />
+            <MomentumScore data={momentum} />
 
             {scoreBreakdown && scoreBreakdown.length > 0 && (
               <>

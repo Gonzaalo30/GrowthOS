@@ -19,6 +19,7 @@ import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
 import { computeAchievements } from "@/lib/achievements";
+import { computeMomentumScore } from "@/lib/momentum";
 import { dailyQuickWinCap } from "@/lib/plans";
 
 const CALENDAR_WEEKS = 12;
@@ -63,6 +64,8 @@ export default async function DashboardPage({
     );
     missions = await getMissionsForBusiness(supabase, business.id);
   }
+
+  const momentum = computeMomentumScore(missions);
 
   const profile = await getProfile(supabase, user.id);
 
@@ -120,6 +123,7 @@ export default async function DashboardPage({
       achievements={achievements}
       dateFormat={profile.date_format}
       welcomeMissionId={bienvenida}
+      momentum={momentum}
     />
   );
 }
