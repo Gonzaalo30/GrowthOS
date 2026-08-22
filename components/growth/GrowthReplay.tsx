@@ -1,4 +1,5 @@
 import { GrowthCard } from "@/components/growth/GrowthCard";
+import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
 import { formatDate } from "@/lib/formatDate";
 import type { GrowthScorePoint } from "@/services/audit.service";
 import type { DateFormat } from "@/types/database.types";
@@ -11,19 +12,37 @@ interface CompletedMission {
 
 /**
  * Antes/después real del Growth Score, con las misiones completadas en medio.
- * Solo se muestra si hay al menos 2 puntos de historial — sin eso no hay
- * "replay" honesto que enseñar todavía.
+ * Con menos de 2 puntos de historial no hay "replay" honesto que enseñar
+ * todavía — en vez de ocultar la sección entera, se explica por qué está
+ * vacía y se ofrece la única acción real disponible para acelerarlo.
  */
 export function GrowthReplay({
   timeline,
   completedMissions,
   dateFormat = "long",
+  canRefresh = false,
 }: {
   timeline: GrowthScorePoint[];
   completedMissions: CompletedMission[];
   dateFormat?: DateFormat;
+  canRefresh?: boolean;
 }) {
-  if (timeline.length < 2) return null;
+  if (timeline.length < 2) {
+    return (
+      <GrowthCard className="flex flex-col items-center gap-2 text-center">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Growth Replay</h2>
+        <p className="text-sm text-zinc-600">
+          Aquí verás tu evolución del Growth Score en cuanto tengamos un segundo punto con el que
+          compararlo.
+        </p>
+        {canRefresh ? (
+          <RefreshScoreButton />
+        ) : (
+          <p className="text-xs text-zinc-500">Se actualiza automáticamente cada 7 días.</p>
+        )}
+      </GrowthCard>
+    );
+  }
 
   const first = timeline[0];
   const last = timeline[timeline.length - 1];

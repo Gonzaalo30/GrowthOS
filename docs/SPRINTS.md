@@ -213,6 +213,13 @@ Segunda tanda de la misma auditoría, sección "Quick Wins (menos de 30 min)". D
 - **Descartado explícitamente**: "Tooltips con atajos de teclado en cada botón de acción rápida". Hoy el único atajo real de la app es Cmd+K; los botones de misiones, cofre, etc. no tienen ni van a tener atajo propio todavía. Poner tooltips anunciando atajos que no existen habría sido decoración engañosa, justo lo que este proyecto evita en todo momento.
 - [x] Verificado en escritorio y móvil, en pestaña de navegador limpia (las pestañas reutilizadas en esta sesión arrastraban errores de compilación viejos ya resueltos, no reales).
 
+## Sprint 4.9 — 3 mejoras medias de la auditoría externa (COMPLETADO 2026-08-22)
+Tercera tanda de la misma auditoría, sección "Mejoras Medias (1-3h)":
+- **"Motor de Misiones Diarias (Daily Command Center)"**: no se construyó nada nuevo — es exactamente lo que `MissionCard` ya hace desde el Sprint 1 (desglose de tiempo estimado, XP, dificultad, impacto esperado, tutorial). Tercera vez en esta misma auditoría que describe como ausente algo que ya lleva sprints funcionando.
+- [x] **Victory Screen con confeti** (`components/growth/VictoryModal.tsx`, prop `celebrateWithModal` en `MissionCard`): modal a pantalla completa con confeti, mascota y el XP ganado. Aplicado solo a los momentos de mayor impacto — la misión de activación del onboarding y la misión semanal — no a cada Quick Win diario, que sigue con el "+XP" flotante ligero de siempre: interrumpir con un modal completo varias veces al día por cada Quick Win habría ido en contra de que sean rápidos y sin fricción. Sonido explícitamente descartado (la propia auditoría lo marcaba como opcional): no hay diseño de sonido en el producto y el autoplay de audio suele bloquearlo el navegador sin gesto previo del usuario.
+- [x] **Estados vacíos con llamada a la acción real**: `GrowthReplay` ya no desaparece sin más cuando un negocio nuevo no tiene historial suficiente — explica por qué está vacío y ofrece "Reanalizar ahora" (botón real, `RefreshScoreButton`) si el plan lo permite, o el aviso de que se actualiza solo cada 7 días si no. El filtro de categorías del Centro de Mejoras añade "Ver todas las mejoras" cuando una categoría queda sin resultados.
+- [x] Verificado en pestaña limpia: modal de victoria en la misión semanal (XP real reflejado al instante en la cabecera vía revalidación, sin recargar), estado vacío de Growth Replay con el mensaje correcto para plan Gratis.
+
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
 - OAuth Google Business

@@ -59,7 +59,16 @@ export function OpportunityList({
         ))}
       </div>
       {visible.length === 0 && (
-        <p className="text-sm text-zinc-500">No hay mejoras en esta categoría todavía.</p>
+        <div className="flex flex-col items-center gap-2 py-6 text-center">
+          <p className="text-sm text-zinc-500">No hay mejoras en esta categoría todavía.</p>
+          <button
+            type="button"
+            onClick={() => setFilter("all")}
+            className="text-sm font-medium text-brand-600 underline underline-offset-2 hover:text-brand-700"
+          >
+            Ver todas las mejoras
+          </button>
+        </div>
       )}
     </div>
   );

@@ -106,7 +106,11 @@ export function DashboardView({
             </h2>
           </GrowthCard>
           <div className="mt-3">
-            <MissionCard mission={welcomeMission} quickWinNumber={welcomeMission.sequence_number ?? undefined} />
+            <MissionCard
+              mission={welcomeMission}
+              quickWinNumber={welcomeMission.sequence_number ?? undefined}
+              celebrateWithModal
+            />
           </div>
         </div>
       )}
@@ -171,7 +175,7 @@ export function DashboardView({
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
                 Misión de la semana
               </h2>
-              <MissionCard mission={weeklyMission} />
+              <MissionCard mission={weeklyMission} celebrateWithModal />
             </div>
           )}
 
@@ -181,7 +185,12 @@ export function DashboardView({
         <div className="flex flex-col gap-6">
           <DailyChest alreadyOpenedToday={chestOpenedToday} />
 
-          <GrowthReplay timeline={scoreTimeline} completedMissions={replayMissions} dateFormat={dateFormat} />
+          <GrowthReplay
+            timeline={scoreTimeline}
+            completedMissions={replayMissions}
+            dateFormat={dateFormat}
+            canRefresh={canRefreshOnDemand(business.plan)}
+          />
 
           {achievements.length > 0 && <Achievements achievements={achievements} />}
 

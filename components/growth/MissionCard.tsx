@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { GrowthCard } from "@/components/growth/GrowthCard";
+import { VictoryModal } from "@/components/growth/VictoryModal";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { completeMissionAction } from "@/app/actions/missions";
@@ -21,9 +22,12 @@ const DIFFICULTY_LABEL: Record<Mission["difficulty"], string> = {
 export function MissionCard({
   mission,
   quickWinNumber,
+  celebrateWithModal = false,
 }: {
   mission: Mission;
   quickWinNumber?: number;
+  /** Misión de la semana y activaciones especiales: pantalla de victoria con confeti en vez del "+XP" flotante habitual. */
+  celebrateWithModal?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const [justCompleted, setJustCompleted] = useState(false);
@@ -31,6 +35,7 @@ export function MissionCard({
   const [multiplierApplied, setMultiplierApplied] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [showVictoryModal, setShowVictoryModal] = useState(false);
   const isCompleted = Boolean(mission.completed_at) || justCompleted;
 
   const isWeekly = mission.type === "weekly";
@@ -45,6 +50,7 @@ export function MissionCard({
         setJustCompleted(true);
         setAwardedXp(result.xpAwarded ?? mission.xp_reward);
         setMultiplierApplied(Boolean(result.multiplierApplied));
+        if (celebrateWithModal) setShowVictoryModal(true);
       } else {
         setVerifyError(result.error ?? "No hemos podido verificar esta misión. Inténtalo de nuevo.");
       }
@@ -142,7 +148,7 @@ export function MissionCard({
       )}
 
       <AnimatePresence>
-        {justCompleted && (
+        {justCompleted && !celebrateWithModal && (
           <motion.span
             initial={{ opacity: 0, y: 0, scale: 0.8 }}
             animate={{ opacity: 1, y: -24, scale: 1.1 }}
@@ -154,6 +160,14 @@ export function MissionCard({
           </motion.span>
         )}
       </AnimatePresence>
+
+      {showVictoryModal && (
+        <VictoryModal
+          title={mission.title}
+          xpAwarded={awardedXp ?? mission.xp_reward}
+          onClose={() => setShowVictoryModal(false)}
+        />
+      )}
     </GrowthCard>
   );
 }
