@@ -48,7 +48,7 @@ export function CategoryScores({ checks }: { checks: QuickAuditCheck[] }) {
             <span
               className={cn(
                 "text-lg font-semibold",
-                score === null ? "text-zinc-300" : "text-foreground",
+                score === null ? "text-zinc-500" : "text-foreground",
               )}
             >
               {score === null ? "—" : score}

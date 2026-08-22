@@ -38,7 +38,7 @@ export function OpportunityList({
             type="button"
             onClick={() => setFilter(f.value)}
             className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+              "rounded-full px-3 py-1.5 text-xs font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
               filter === f.value
                 ? "bg-brand-500 text-white"
                 : "bg-surface-muted text-zinc-600 hover:text-foreground",

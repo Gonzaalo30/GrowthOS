@@ -46,7 +46,7 @@ export function AuditLoadingSteps({ domain }: { domain: string }) {
                 <span className="h-2 w-2 animate-pulse rounded-full bg-brand-500" />
               ) : null}
             </span>
-            <span className={done ? "text-zinc-400 line-through" : "text-foreground"}>{label}</span>
+            <span className={done ? "text-zinc-500 line-through" : "text-foreground"}>{label}</span>
           </motion.div>
         );
       })}

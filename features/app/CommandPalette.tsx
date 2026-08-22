@@ -189,7 +189,7 @@ export function CommandPalette() {
           }}
           onKeyDown={handleInputKeyDown}
           placeholder="Busca una página o una misión pendiente…"
-          className="w-full border-b border-border px-5 py-4 text-sm text-foreground placeholder:text-zinc-400 outline-none"
+          className="w-full border-b border-border px-5 py-4 text-sm text-foreground placeholder:text-zinc-500 outline-none"
         />
         <div className="max-h-80 overflow-y-auto p-2">
           {filtered.length === 0 && (
@@ -202,12 +202,12 @@ export function CommandPalette() {
               onClick={() => runCommand(command)}
               onMouseEnter={() => setSelectedIndex(i)}
               className={cn(
-                "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors",
+                "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-500",
                 i === selectedIndex ? "bg-brand-50 text-brand-700" : "text-foreground hover:bg-surface-muted",
               )}
             >
               <span className="truncate font-medium">{command.label}</span>
-              <span className="shrink-0 whitespace-nowrap text-xs text-zinc-400">{command.hint}</span>
+              <span className="shrink-0 whitespace-nowrap text-xs text-zinc-500">{command.hint}</span>
             </button>
           ))}
         </div>

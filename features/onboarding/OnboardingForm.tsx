@@ -108,7 +108,7 @@ export function OnboardingForm({ domain: domainFromQuery }: { domain?: string })
                   type="button"
                   onClick={() => setBusinessType(type)}
                   className={cn(
-                    "rounded-xl border px-3 py-3 text-left text-sm font-medium transition-colors",
+                    "rounded-xl border px-3 py-3 text-left text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
                     businessType === type
                       ? "border-brand-500 bg-brand-50 text-brand-700"
                       : "border-border bg-white text-foreground hover:bg-surface-muted",
@@ -154,7 +154,7 @@ export function OnboardingForm({ domain: domainFromQuery }: { domain?: string })
                   type="button"
                   onClick={() => setCompanySize(size)}
                   className={cn(
-                    "rounded-xl border px-4 py-2.5 text-left text-sm font-medium transition-colors",
+                    "rounded-xl border px-4 py-2.5 text-left text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
                     companySize === size
                       ? "border-brand-500 bg-brand-50 text-brand-700"
                       : "border-border bg-white text-foreground hover:bg-surface-muted",

@@ -27,7 +27,7 @@ export function BillingInfoForm({ billingInfo }: { billingInfo: BillingInfo }) {
       </label>
 
       <label className="text-sm font-medium text-foreground">
-        NIF / CIF <span className="font-normal text-zinc-400">(opcional)</span>
+        NIF / CIF <span className="font-normal text-zinc-500">(opcional)</span>
         <Input
           name="taxId"
           defaultValue={billingInfo.taxId ?? ""}

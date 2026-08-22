@@ -26,7 +26,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-zinc-600 transition-colors hover:text-foreground"
+              className="rounded-md text-sm text-zinc-600 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
             >
               {link.label}
             </Link>
@@ -34,7 +34,10 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 sm:flex">
-          <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-foreground">
+          <Link
+            href="/login"
+            className="rounded-md text-sm font-medium text-zinc-600 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+          >
             Iniciar sesión
           </Link>
           <Link href="/signup">
@@ -46,7 +49,7 @@ export function Header() {
           type="button"
           aria-label="Abrir menú"
           onClick={() => setMenuOpen((open) => !open)}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-foreground sm:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-foreground outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:hidden"
         >
           {menuOpen ? (
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
@@ -67,7 +70,7 @@ export function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="rounded-lg px-2 py-2 text-sm text-zinc-600 hover:bg-surface-muted hover:text-foreground"
+              className="rounded-lg px-2 py-2 text-sm text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
             >
               {link.label}
             </Link>
@@ -76,7 +79,7 @@ export function Header() {
             <Link
               href="/login"
               onClick={() => setMenuOpen(false)}
-              className="rounded-lg px-2 py-2 text-sm font-medium text-zinc-600 hover:bg-surface-muted hover:text-foreground"
+              className="rounded-lg px-2 py-2 text-sm font-medium text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
             >
               Iniciar sesión
             </Link>

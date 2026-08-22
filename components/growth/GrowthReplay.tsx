@@ -55,7 +55,7 @@ export function GrowthReplay({
       <div className="flex items-center justify-center gap-6">
         <div className="text-center">
           <p className="text-xs text-zinc-500">Antes · {formatDate(first.recordedAt, dateFormat)}</p>
-          <p className="text-3xl font-semibold text-zinc-400">{first.score}</p>
+          <p className="text-3xl font-semibold text-zinc-500">{first.score}</p>
         </div>
         <span className="text-2xl text-zinc-300">→</span>
         <div className="text-center">

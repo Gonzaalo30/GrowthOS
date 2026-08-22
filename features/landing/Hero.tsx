@@ -141,7 +141,7 @@ export function Hero() {
                     <span className="text-xs text-zinc-500">Growth Score</span>
                     <span className="text-2xl font-semibold tracking-tight text-foreground">
                       {preview.score}
-                      <span className="text-sm font-normal text-zinc-400">/100</span>
+                      <span className="text-sm font-normal text-zinc-500">/100</span>
                     </span>
                     {preview.failedCount > 0 && (
                       <p className="text-xs text-amber-700">

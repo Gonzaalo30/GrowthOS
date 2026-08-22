@@ -227,6 +227,12 @@ Tercera tanda de la misma auditoría, sección "Mejoras Medias (1-3h)":
 - [x] **"Sistema de rachas total"**: no hacía falta nada nuevo — racha, XP y niveles ya llevan construidos desde el Sprint 2; el Momentum Score es el único componente real que faltaba de lo que pedía este punto.
 - [x] Verificado en pestaña limpia con datos reales: negocio de prueba con 4 Quick Wins asignados esta semana y 1 completado → "1 de 4 Quick Wins esta semana", barra en gris (por debajo del umbral de "buen ritmo").
 
+## Sprint 4.11 — Contraste y foco accesibles (COMPLETADO 2026-08-23)
+La auditoría externa (sección A, punto 9) señalaba `text-gray-400` con contraste insuficiente y falta de anillos de foco. Se verificó de verdad en vez de asumir, calculando la ratio de contraste real de cada color contra fondo blanco:
+- [x] **`zinc-400` confirmado como fallo real**: 2.56:1 contra blanco, por debajo incluso del umbral de texto grande (3:1), no solo del de texto normal (4.5:1). `zinc-500` da 4.83:1, cumple AA con margen. Corregidos los 11 usos reales de `text-zinc-400`/`placeholder:text-zinc-400`/`text-zinc-300` en la app (nav móvil, Cmd+K, inputs, FAQ, cofre diario, Growth Replay, Hero, facturación, categorías del score) a `zinc-500`. Se dejó sin tocar el único caso puramente decorativo (la flecha "→" del Growth Replay, no es texto con información propia).
+- [x] **Anillos de foco visibles y consistentes** (`focus-visible:ring-2 focus-visible:ring-brand-500`, con `ring-offset-2` en botones sueltos y `ring-inset` en barras/listas sin espacio alrededor): añadidos al `Button` e `Input` compartidos (cubre la mayoría de la app de un solo cambio) y a todos los elementos interactivos que no pasaban por ellos — cabeceras (marketing y app), nav inferior móvil, Cmd+K, acordeón de FAQ, filtros del Centro de Mejoras, tarjetas de elección del onboarding. Antes dependían del contorno azul por defecto del navegador (visible pero inconsistente con la marca); ahora todos usan el mismo anillo naranja.
+- [x] Verificado con navegación real solo con teclado (Tab) y lectura de estilos computados (no solo capturas, que no reflejan `:focus-visible` de forma fiable): confirmado `box-shadow` con anillo blanco + naranja en el nav de la cabecera y en los ítems del Cmd+K, y el color `zinc-500` real aplicado en el texto corregido.
+
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
 - OAuth Google Business

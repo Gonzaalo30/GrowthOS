@@ -47,7 +47,7 @@ export function DailyChest({ alreadyOpenedToday }: { alreadyOpenedToday: boolean
               </p>
             )}
             {!result && <p className="text-sm text-zinc-500">Ya has abierto tu cofre de hoy. Vuelve mañana.</p>}
-            <p className="text-xs text-zinc-400">Vuelve mañana a por otro</p>
+            <p className="text-xs text-zinc-500">Vuelve mañana a por otro</p>
           </>
         )}
       </motion.div>
