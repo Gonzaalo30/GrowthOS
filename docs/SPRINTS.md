@@ -258,7 +258,7 @@ El fundador pasó 5 ideas más de la misma auditoría externa. De las 5, solo 3 
 - [x] **Weekly Brief** (`lib/weeklyBrief.ts`, `features/dashboard/WeeklyBrief.tsx`): versión honesta sin audio ni email (esos necesitan texto-a-voz y Resend, ninguno conectado) — card que aparece los lunes (calculado en el navegador, no en el servidor UTC, mismo motivo que `Greeting.tsx`) con el XP real ganado la última semana y las hasta 3 misiones pendientes de mayor prioridad (semanal primero, luego diarias por `sequence_number`).
 - [x] **Cofres con plantillas de copy reales** (migración `0017`: nuevo valor de enum `template` + columna `daily_chests.template_id`; `lib/copyTemplates.ts`): tercer tipo de recompensa del cofre diario (50% XP / 30% misión bonus / 20% plantilla), con una plantilla real por tipo de negocio (8 en total) resolviendo una situación concreta y frecuente de ese sector — reactivar clientes, recordatorio de revisión/ITV, seguimiento de presupuesto, carrito abandonado, etc., nunca relleno genérico. El resultado del cofre ahora persiste el día entero (antes se perdía al recargar la página).
 - [x] Verificado en pestaña limpia: Modo Foco Ciego con cronómetro en vivo y tutorial real; Weekly Brief con XP/racha/misiones reales (forzado temporalmente a "lunes" solo para la prueba visual, revertido antes de comitear — hoy no era lunes).
-- **Pendiente de verificación en vivo**: la recompensa de plantilla del cofre (código completo y sin errores de tipos, pero no probada de extremo a extremo hasta que se aplique la migración `0017` en Supabase).
+- [x] **Verificado de extremo a extremo tras aplicar la migración `0017`**: cofre reseteado manualmente vía service-role para forzar varios intentos (probabilidad del 20%), rama `template` confirmada — plantilla real renderizada (asunto + mensaje) y botón "Copiar plantilla" funcionando (portapapeles, sin errores de consola).
 
 ## Sprint 4.15 — Seguridad real: 2FA y sesiones (COMPLETADO 2026-08-23)
 Última tanda de la auditoría, sobre "Seguridad & Gobernanza". De 3 puntos, solo 2 eran reales sin inventar datos: audit log con nombres de usuarios (GrowthOS no tiene equipos/multi-usuario) y lista de sesiones con dispositivo/IP/ubicación (Supabase no expone esos metadatos; el ejemplo traía una IP y ubicación inventadas) se descartaron.
@@ -275,7 +275,14 @@ El fundador pidió redondear la sección de Perfil estilo "producto top de YC". 
 - **Descartado**: selector de "Modo de Enfoque" (Crecimiento/Optimización/Supervivencia) para "calibrar a la IA" — sin IA conectada, sería un desplegable que no hace nada.
 - **Código de ejemplo no usado**: de nuevo tema oscuro (zinc-900, gradientes índigo/púrpura) y datos 100% inventados ("Javier Domínguez", "3,420 XP Totales", "14 días de racha", "3 de 12 desbloqueados").
 - [x] Verificado en pestaña limpia: anillo gris correcto para nivel Arranque, badge de nivel + racha real junto al avatar, campo de cargo con placeholder, y "LOGROS 2/11" con los logros reales del negocio de prueba.
-- **Pendiente de verificación en vivo**: guardar el campo de cargo (necesita la migración `0018` en Supabase; el resto de esta tanda no depende de ella).
+- [x] **Verificado tras aplicar la migración `0018`**: campo de cargo guardado ("Dueña de Clínica Dental Sonrisa") y persistente tras recarga completa de página.
+
+## Sprint 4.17 — Consejos de experto por misión (COMPLETADO 2026-08-23)
+El fundador pasó la idea de "micro-lecciones de 30 segundos" bajo cada misión, en primera persona con anécdotas suyas ("En mi última startup esto duplicó la conversión de golpe").
+- **Descartada la atribución personal inventada**: el fundador no tiene esa anécdota concreta, así que escribírsela habría sido el mismo tipo de dato falso ya rechazado en tandas anteriores (testimonios, jerga VC). Confirmado con el fundador: se construyó en voz neutra, sin fingir experiencias personales.
+- [x] **Campo `tip` en `MissionTemplate`** (`lib/missionTemplates.ts`): un consejo práctico real por plantilla (58 en total: 45 diarias + 13 semanales), específico a cada misión y basado en prácticas reales de SEO/UX/conversión — no relleno genérico repetido.
+- [x] Mostrado bajo el tutorial paso a paso en `MissionCard` (al abrir "¿Cómo lo hago?") y en `FocusMode` (adaptado a su tema oscuro), con el mismo formato 💡 en ambos sitios.
+- [x] Verificado en pestaña limpia: tip visible correctamente en la tarjeta normal y en Modo Enfoque, sin errores de consola; `tsc --noEmit`, `eslint` y `next build` limpios.
 
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)

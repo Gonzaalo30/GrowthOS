@@ -151,6 +151,9 @@ export function MissionCard({
               </li>
             ))}
           </ol>
+          {template.tip && (
+            <p className="mt-3 rounded-lg bg-brand-50 p-3 text-sm text-brand-800">💡 {template.tip}</p>
+          )}
           <div className="mt-3 border-t border-border pt-3">
             <p className="text-sm text-zinc-600">
               ¿Prefieres no ocuparte de esto?{" "}

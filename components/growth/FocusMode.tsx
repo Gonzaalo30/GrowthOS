@@ -98,6 +98,10 @@ export function FocusMode({
           </ol>
         )}
 
+        {template?.tip && (
+          <p className="mt-4 rounded-lg bg-zinc-900 p-3 text-left text-sm text-brand-300">💡 {template.tip}</p>
+        )}
+
         {verifyError && <p className="mt-4 text-sm text-red-400">{verifyError}</p>}
 
         <div className="mt-8 flex flex-col items-center gap-3">

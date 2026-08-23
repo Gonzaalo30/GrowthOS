@@ -33,6 +33,8 @@ export interface MissionTemplate {
   auditTrigger?: QuickAuditCheck["id"];
   /** Pasos cortos para hacerlo uno mismo, gratis */
   tutorial: string[];
+  /** Consejo práctico adicional, en voz neutra (sin anécdotas personales inventadas) */
+  tip?: string;
 }
 
 // Librería de misiones diarias. El motor de auditoría completo (Sprint 3) añadirá
@@ -59,6 +61,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Elige la más reciente sin respuesta y pulsa \"Responder\".",
       "Da las gracias, y si es negativa, discúlpate sin excusas y ofrece solucionarlo fuera de la reseña.",
     ],
+    tip: "Responde siempre en menos de 48 horas — cuanto más tardas, menos cuenta como respuesta activa para quien la lee después.",
   },
   {
     id: "daily-update-title",
@@ -79,6 +82,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Escribe: qué eres + dónde estás. Ejemplo: \"Clínica Dental Sonrisa — Madrid Centro\".",
       "Guarda y comprueba en Google (búscate a ti mismo) que el cambio se refleja en 24-48h.",
     ],
+    tip: "Evita títulos genéricos tipo \"Inicio\" o \"Bienvenido\" — Google los ignora y la gente no sabe qué está viendo.",
   },
   {
     id: "daily-meta-description",
@@ -99,6 +103,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Incluye tu ciudad o zona si trabajas de forma local.",
       "Guarda los cambios.",
     ],
+    tip: "Escribe la descripción pensando en la pregunta que resuelve tu negocio, no en frases genéricas como \"la mejor calidad\".",
   },
   {
     id: "daily-check-ssl",
@@ -119,6 +124,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Actívalo si está desactivado. Si no lo encuentras, escribe a soporte del hosting y pide que activen el SSL.",
       "Una vez activo, comprueba que tu web carga con \"https://\" y el candado en el navegador.",
     ],
+    tip: "Sin candado, Chrome muestra \"No seguro\" junto a tu web — muchos visitantes se van solo con verlo, sin llegar a leer nada.",
   },
   {
     id: "daily-check-mobile",
@@ -139,6 +145,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Prueba tu formulario de contacto o botón de llamada desde el móvil.",
       "Si algo se ve roto o muy pequeño, anótalo para tu diseñador web o gestor de la página.",
     ],
+    tip: "Prueba también con una sola mano, como haría alguien caminando por la calle — es como te va a visitar la mayoría.",
   },
   {
     id: "daily-add-schema",
@@ -159,6 +166,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Si no usas WordPress, pide a quien gestione tu web que añada \"marcado Schema.org\" tipo LocalBusiness — es un cambio técnico pequeño.",
       "Comprueba el resultado con la herramienta gratuita \"Rich Results Test\" de Google, pegando la URL de tu web.",
     ],
+    tip: "Cuantos más campos rellenes (horario, teléfono, tipo de negocio), más probable que Google te muestre destacado, no solo en una lista.",
   },
   {
     id: "daily-add-robots",
@@ -178,6 +186,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "El contenido mínimo recomendado es dos líneas: \"User-agent: *\" y debajo \"Allow: /\".",
       "Si no puedes editarlo tú, pide a quien gestione tu web que lo añada — es un archivo de texto muy simple.",
     ],
+    tip: "No lo compliques de más: para casi cualquier negocio local, las dos líneas básicas son suficientes.",
   },
   {
     id: "daily-add-sitemap",
@@ -198,6 +207,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Date de alta gratis en Google Search Console si todavía no lo has hecho.",
       "Dentro de Search Console, ve a \"Sitemaps\" y pega la URL de tu sitemap para enviarlo a Google.",
     ],
+    tip: "Si tu web cambia poco, esto lo haces una vez y te olvidas — no hace falta repetirlo cada semana.",
   },
   {
     id: "daily-improve-speed",
@@ -218,6 +228,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Si usas WordPress, instala un plugin de caché (WP Super Cache o similar) — suele mejorar mucho el tiempo de carga con un solo clic.",
       "Si tu hosting es muy barato o compartido, valora si merece la pena mejorar el plan — también influye en la velocidad.",
     ],
+    tip: "Empieza siempre por las imágenes: suelen ser el 80% del peso de una página que carga lenta.",
   },
   {
     id: "daily-fix-broken-links",
@@ -238,6 +249,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Corrige la URL de destino o elimina el enlace si ya no aplica.",
       "Si son muchos, herramientas gratuitas como \"Dr. Link Check\" revisan toda la web de una vez.",
     ],
+    tip: "Revisa primero los enlaces del menú y del pie de página — son los que más se pulsan y los que más se olvidan.",
   },
   {
     id: "daily-update-hours",
@@ -257,6 +269,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Revisa cada día de la semana y corrige lo que no coincida con tu horario real.",
       "No olvides los festivos o cierres especiales (\"Horario especial\").",
     ],
+    tip: "Si cierras por vacaciones o festivos, ponlo con antelación — evita que la gente se presente para nada.",
   },
   {
     id: "daily-visible-phone",
@@ -275,6 +288,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Si tarda más de 5 segundos, añádelo en la cabecera (arriba del todo) y en el pie de página.",
       "En móvil, considera que el teléfono sea pulsable (que abra directamente la llamada).",
     ],
+    tip: "Si tienes que usar Ctrl+F para encontrar tu propio teléfono, tus clientes tampoco lo van a encontrar.",
   },
   {
     id: "daily-contact-form-test",
@@ -294,6 +308,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Comprueba que te llega el email (revisa también la carpeta de spam).",
       "Si no llega nada en unos minutos, avisa a quien gestione tu web — el formulario está roto.",
     ],
+    tip: "Prueba también desde el móvil, no solo desde el ordenador — a veces falla justo ahí.",
   },
 
   // --- Universales, prioridad media ---
@@ -314,6 +329,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Entra en Google Business Profile → \"Fotos\" → \"Añadir foto\".",
       "Súbela y clasifícala (interior, exterior, equipo...).",
     ],
+    tip: "Evita fotos de stock o muy antiguas — la gente nota la diferencia y genera más confianza ver tu negocio real.",
   },
   {
     id: "daily-compress-image",
@@ -333,6 +349,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Descarga la versión comprimida (suele pesar 60-80% menos sin notarse la diferencia).",
       "Vuelve a subirla a tu web sustituyendo la original.",
     ],
+    tip: "Una imagen de más de 500 KB casi siempre se puede comprimir sin que se note la diferencia a simple vista.",
   },
   {
     id: "daily-cta-button",
@@ -351,6 +368,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Pregúntate: ¿lo ves en los primeros 3 segundos sin hacer scroll?",
       "Si no, en el editor de tu web súbelo más arriba o cámbialo a un color que destaque más.",
     ],
+    tip: "El color del botón importa menos que el contraste: debe destacar claramente del resto de la página.",
   },
   {
     id: "daily-social-links",
@@ -369,6 +387,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Añade los iconos o enlaces de texto a cada red.",
       "Comprueba que cada enlace abre el perfil correcto (no una página de inicio genérica).",
     ],
+    tip: "Enlaza solo las redes que actualizas de verdad — una red abandonada resta más confianza de la que suma.",
   },
   {
     id: "daily-whatsapp-link",
@@ -387,6 +406,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Añade ese enlace como botón en tu web (cabecera, pie o flotante).",
       "Pruébalo tú mismo desde el móvil para confirmar que abre WhatsApp correctamente.",
     ],
+    tip: "Añade un mensaje predefinido corto — reduce la fricción de tener que pensar qué escribir primero.",
   },
   {
     id: "daily-faq-add",
@@ -404,6 +424,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Escribe la pregunta tal cual la hacen, y una respuesta clara y corta.",
       "Añádela a tu web (si no tienes sección de FAQ, puedes ponerla en la página de contacto por ahora).",
     ],
+    tip: "Usa las palabras exactas que usa el cliente al preguntar, no como tú lo explicarías internamente.",
   },
   {
     id: "daily-google-map-check",
@@ -421,6 +442,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Comprueba que el pin está exactamente en tu puerta, no en la manzana de al lado.",
       "Si está mal, entra en Google Business Profile → \"Editar perfil\" → \"Ubicación\" y arrastra el pin al sitio correcto.",
     ],
+    tip: "Comprueba también que la dirección en texto coincide exactamente con el pin — a veces se desincronizan.",
   },
   {
     id: "daily-testimonial-add",
@@ -438,6 +460,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Copia el texto (o pídeselo por escrito si es de palabra).",
       "Añádelo a tu web con el nombre de pila del cliente (con su permiso).",
     ],
+    tip: "Un testimonio específico (\"redujo mi tiempo de espera\") convence más que uno genérico (\"muy buen servicio\").",
   },
 
   // --- Universales, prioridad baja ("tonterías" para más adelante) ---
@@ -458,6 +481,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Publícala en tu red social principal con 1-2 frases.",
       "Añade tu ciudad o barrio como ubicación si la app lo permite.",
     ],
+    tip: "No hace falta que sea perfecto — la constancia importa más que la producción cuidada en este tipo de publicación.",
   },
   {
     id: "daily-alt-text",
@@ -475,6 +499,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Busca el campo \"Texto alternativo\" o \"Alt text\" en sus propiedades.",
       "Describe la imagen de forma simple: qué es y, si aplica, tu ciudad. Ej: \"Fachada de la clínica en Madrid\".",
     ],
+    tip: "Describe lo que se ve, no palabras clave sueltas — Google penaliza el texto alternativo forzado.",
   },
   {
     id: "daily-favicon",
@@ -492,6 +517,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Súbelo a favicon.io para generar el archivo en el formato correcto.",
       "En el panel de tu web, busca \"Favicon\" o \"Icono del sitio\" y súbelo.",
     ],
+    tip: "Usa un icono simple y reconocible a tamaño pequeño — un logo con mucho detalle se vuelve ilegible en la pestaña.",
   },
   {
     id: "daily-footer-copyright",
@@ -508,6 +534,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Ve al pie de página de tu web.",
       "Si el año de copyright está desactualizado, edítalo (o pon un rango, ej. \"2020-2026\", para no tener que tocarlo cada año).",
     ],
+    tip: "Un rango de años (\"2020-2026\") te evita tener que volver a tocarlo cada enero.",
   },
   {
     id: "daily-spelling-check",
@@ -524,6 +551,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Copia el texto de tu página principal y pégalo en un corrector como el de Google Docs o LanguageTool.",
       "Revisa las sugerencias y corrige lo que aplique en tu web.",
     ],
+    tip: "Lee el texto en voz alta — así detectas errores que se te escapan al leerlo por encima.",
   },
   {
     id: "daily-image-filename",
@@ -541,6 +569,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Descárgala, renómbrala describiendo qué es + tu ciudad, separado por guiones (ej. \"taller-mecanico-valencia.jpg\").",
       "Vuelve a subirla sustituyendo la original.",
     ],
+    tip: "Incluye tu ciudad en el nombre del archivo si trabajas en local — ayuda más de lo que parece en búsquedas cercanas.",
   },
 
   // --- Restaurante ---
@@ -560,6 +589,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Hazle una foto con luz natural, a ser posible antes de que se enfríe.",
       "Súbela a Google Business Profile → \"Fotos\" → \"Comida y bebida\".",
     ],
+    tip: "Fotografía el plato recién servido, antes de que se enfríe o se mueva la presentación.",
   },
   {
     id: "daily-restaurant-reserve-button",
@@ -577,6 +607,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Si tienes un sistema de reservas online (o WhatsApp), enlázalo ahí.",
       "Si no tienes ninguno, de momento puedes enlazar tu número de teléfono como \"reserva por llamada\".",
     ],
+    tip: "Cuantos menos pasos entre \"quiero reservar\" y \"reservado\", menos reservas se pierden a mitad de camino.",
   },
   {
     id: "daily-restaurant-menu-update",
@@ -594,6 +625,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Publícalo en tu web (sección menú) y en tus redes sociales.",
       "Si usas Google Business Profile, también puedes añadirlo como publicación del día.",
     ],
+    tip: "Publica también los platos que se han agotado por hoy — evita la decepción de pedir algo que ya no hay.",
   },
   {
     id: "daily-restaurant-allergens",
@@ -611,6 +643,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Para cada plato de tu carta, marca qué alérgenos contiene.",
       "Añade esta información a tu menú online, con un símbolo o nota junto a cada plato.",
     ],
+    tip: "Márcalo con símbolos claros junto a cada plato, no en un documento aparte que nadie va a buscar.",
   },
 
   // --- Clínica (incluye dental, fisioterapia y similares) ---
@@ -630,6 +663,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Lista tus especialidades concretas (ej. \"ortodoncia\", \"fisioterapia deportiva\", en vez de solo \"clínica\").",
       "Guarda los cambios.",
     ],
+    tip: "Usa el término que usa el paciente al buscar (\"dolor de espalda\"), no solo el técnico (\"lumbalgia\").",
   },
   {
     id: "daily-clinic-booking-form",
@@ -648,6 +682,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Comprueba que te llega la notificación (email, SMS o donde corresponda).",
       "Si falla, avisa a quien gestione tu web o tu sistema de citas cuanto antes.",
     ],
+    tip: "Comprueba también qué pasa si cancelas la cita de prueba — ese flujo se prueba mucho menos y falla más.",
   },
   {
     id: "daily-clinic-team-photo",
@@ -664,6 +699,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Haz una foto del equipo (con su permiso) o de una sala limpia y ordenada.",
       "Súbela a Google Business Profile y a tu web, en la sección \"Sobre nosotros\" o similar.",
     ],
+    tip: "Una sonrisa natural en la foto reduce más la ansiedad del paciente que una foto muy posada.",
   },
   {
     id: "daily-clinic-health-tip",
@@ -681,6 +717,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Escríbelo en 3-4 frases sencillas, sin tecnicismos.",
       "Publícalo en tus redes sociales o en el blog de tu web si tienes.",
     ],
+    tip: "Elige la duda que más se repite, no la más interesante técnicamente — es la que más gente busca.",
   },
 
   // --- Inmobiliaria ---
@@ -700,6 +737,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Compara el precio publicado en tu web con el precio real actual.",
       "Corrígelo si hace falta, y aprovecha para comprobar que sigue disponible.",
     ],
+    tip: "Revisa también que la disponibilidad sea correcta — un precio bien puesto de una propiedad ya vendida genera la misma frustración.",
   },
   {
     id: "daily-inmobiliaria-more-photos",
@@ -717,6 +755,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Si puedes, haz fotos nuevas con luz natural (abre persianas/cortinas) desde varios ángulos por habitación.",
       "Súbelas a la ficha de la propiedad en tu web o portal inmobiliario.",
     ],
+    tip: "Empieza siempre por la foto de portada — es la que decide si alguien entra a ver el resto.",
   },
 
   // --- Taller ---
@@ -736,6 +775,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Añade los que falten (ej. \"cambio de neumáticos\", \"ITV\", \"diagnosis electrónica\").",
       "Quita los que ya no ofrezcas.",
     ],
+    tip: "Sé igual de claro con lo que NO haces — evita llamadas que luego no puedes atender y generan mala experiencia.",
   },
   {
     id: "daily-taller-brands",
@@ -752,6 +792,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Haz una lista de las marcas de coche o moto con las que trabajas habitualmente.",
       "Añádelas a la descripción de tu ficha de Google Business y a tu web.",
     ],
+    tip: "Ordénalas por las marcas más buscadas en tu zona, no alfabéticamente — las primeras se leen más.",
   },
 
   // --- Hotel ---
@@ -771,6 +812,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Haz varias fotos: general, cama, baño.",
       "Súbelas a Google Business Profile y a tu web/portal de reservas.",
     ],
+    tip: "Fotografía la habitación tal cual la vería el huésped al entrar, no solo detalles sueltos.",
   },
   {
     id: "daily-hotel-amenities",
@@ -787,6 +829,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Haz una lista de todos tus servicios (piscina, desayuno, parking, wifi, mascotas...).",
       "En Google Business Profile → \"Editar perfil\" → \"Servicios\", marca cada uno que ofrezcas.",
     ],
+    tip: "Marca también los servicios gratuitos que a veces se dan por hecho, como el wifi — mucha gente sí filtra por ello.",
   },
 
   // --- Ecommerce ---
@@ -807,6 +850,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Si vendes ropa o algo con tamaño, incluye una foto con una referencia de escala.",
       "Sube las fotos nuevas sustituyendo o añadiéndolas a la ficha del producto.",
     ],
+    tip: "La foto de detalle (textura, costura, acabado) es la que más reduce devoluciones por \"no era lo que esperaba\".",
   },
   {
     id: "daily-ecommerce-shipping-info",
@@ -824,6 +868,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Si no se ve, añade una línea visible en la ficha de producto o en la cabecera (\"Envío gratis desde X €\" o \"Envío en 24-48h\").",
       "Si tu plataforma lo permite (Shopify, WooCommerce, PrestaShop), activa una barra o aviso fijo con esta información.",
     ],
+    tip: "Cuanto más tarde aparece el coste de envío, más carritos se abandonan justo en ese paso.",
   },
   {
     id: "daily-ecommerce-stock-accuracy",
@@ -841,6 +886,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Marca como agotado (o retira temporalmente) cualquier producto sin stock real.",
       "Si gestionas stock a mano, considera fijar un día fijo a la semana solo para esta revisión.",
     ],
+    tip: "Prioriza los productos más vendidos — ahí un error de stock afecta a más pedidos.",
   },
   {
     id: "daily-ecommerce-return-policy",
@@ -858,6 +904,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Publícalo en una página propia (\"Devoluciones\") enlazada desde el pie de página.",
       "Añade un enlace corto a esa página también en la ficha de producto, cerca del botón de compra.",
     ],
+    tip: "Cuanto más simple sea el proceso que describes, más confianza da — no hace falta redactarlo en lenguaje legal.",
   },
 ];
 
@@ -880,6 +927,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Copia el código generado (JSON-LD).",
       "Pégalo en el `<head>` de tu página principal (pide ayuda a quien gestione tu web si no sabes acceder al código).",
     ],
+    tip: "Verifica el resultado con la herramienta \"Rich Results Test\" de Google antes de darlo por hecho — un error de formato invalida todo el marcado.",
   },
   {
     id: "weekly-analytics",
@@ -899,6 +947,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Copia el ID de medición (empieza por \"G-\").",
       "Pégalo en tu web (muchos gestores como WordPress lo piden en un plugin o en \"Configuración > Analítica\").",
     ],
+    tip: "No necesitas mirarlo todos los días al principio — revísalo una vez por semana para no perder tiempo con datos que aún no dicen nada.",
   },
   {
     id: "weekly-search-console",
@@ -917,6 +966,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Verifica la propiedad siguiendo el método que te ofrezca (normalmente subir un archivo o añadir un registro DNS).",
       "Una vez verificado, envía tu sitemap si lo tienes (o pídeselo a quien gestione tu web).",
     ],
+    tip: "Presta atención especial a la pestaña \"Cobertura\" — ahí Google te avisa de páginas que no está pudiendo indexar.",
   },
   {
     id: "weekly-speed",
@@ -936,6 +986,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Empieza por comprimir imágenes grandes (ver la misión diaria de comprimir imágenes).",
       "Si tu web es lenta por el propio hosting, considera pedir presupuesto de mejora — es donde más ayuda un profesional.",
     ],
+    tip: "Céntrate primero en el móvil, no en el ordenador — la mayoría de tus visitantes llegan desde ahí y suele ir más lento.",
   },
   {
     id: "weekly-tag-manager",
@@ -955,6 +1006,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Pégalos en tu web: uno justo después de `<head>` y otro justo después de `<body>`.",
       "Si no te sientes cómodo tocando el código, es un buen momento para pedir ayuda técnica puntual.",
     ],
+    tip: "No añadas nada más de momento — instalarlo ya es el paso importante, lo demás puede esperar.",
   },
   {
     id: "weekly-heatmap",
@@ -974,6 +1026,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Pégalo en tu web (o en Google Tag Manager si ya lo tienes instalado).",
       "Espera unos días de tráfico y revisa el mapa de calor de tu página principal.",
     ],
+    tip: "Espera al menos una semana de tráfico real antes de sacar conclusiones — con pocos datos el mapa puede engañar.",
   },
   {
     id: "weekly-directories",
@@ -992,6 +1045,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Registra tu negocio en cada uno con los mismos datos exactos (nombre, dirección, teléfono) que en Google.",
       "Enlaza tu web en cada ficha si te lo permiten.",
     ],
+    tip: "Usa exactamente los mismos datos (nombre, dirección, teléfono) en todos los directorios — la inconsistencia perjudica tu posicionamiento local.",
   },
   {
     id: "weekly-faq-page",
@@ -1009,6 +1063,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Escribe una respuesta clara y corta para cada una.",
       "Crea una nueva página en tu web llamada \"Preguntas frecuentes\" y organízalas por tema.",
     ],
+    tip: "Ordénalas de más a menos frecuentes — la primera pregunta que ve alguien debe ser la que más se repite.",
   },
   {
     id: "weekly-restaurant-online-booking",
@@ -1027,6 +1082,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Crea tu cuenta y configura tus horarios y aforo por turno.",
       "Añade el botón o widget de reserva en tu web y en tu ficha de Google Business.",
     ],
+    tip: "Configura un recordatorio automático antes de la reserva si la herramienta lo permite — reduce mucho las ausencias sin avisar.",
   },
   {
     id: "weekly-clinic-online-booking",
@@ -1044,6 +1100,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Configura tu agenda, duración de cita y huecos disponibles.",
       "Añade el enlace o widget de reserva en tu web y en Google Business Profile.",
     ],
+    tip: "Deja también un hueco de margen entre citas — un sistema sin colchón genera retrasos en cadena.",
   },
   {
     id: "weekly-hotel-booking-engine",
@@ -1061,6 +1118,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Cuenta cuántos pasos/clics necesitas hasta confirmar.",
       "Si hay pasos que no son imprescindibles (registro obligatorio, demasiados campos), pide a quien gestione tu web que los reduzca.",
     ],
+    tip: "El registro obligatorio antes de reservar es uno de los motivos más comunes de abandono — permite reservar como invitado si puedes.",
   },
   {
     id: "weekly-inmobiliaria-virtual-tour",
@@ -1078,6 +1136,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Sube el vídeo a YouTube (puede ser \"no listado\") o directamente a tu web.",
       "Enlázalo en la ficha de esa propiedad.",
     ],
+    tip: "Un vídeo grabado con calma y sin cortes bruscos transmite más confianza que uno muy editado.",
   },
   {
     id: "weekly-ecommerce-checkout-test",
@@ -1096,6 +1155,7 @@ export const WEEKLY_MISSION_TEMPLATES: MissionTemplate[] = [
       "Comprueba si te obliga a crear una cuenta — si es así, considera permitir \"comprar como invitado\".",
       "Anota cualquier paso confuso o campo innecesario y pide a quien gestione tu tienda que lo simplifique.",
     ],
+    tip: "Cuenta los campos obligatorios uno a uno — cada campo de más es una oportunidad para que alguien abandone.",
   },
 ];
 
