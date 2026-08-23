@@ -134,6 +134,55 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      pagespeed_snapshots: {
+        Row: {
+          id: string;
+          business_id: string;
+          mobile_score: number | null;
+          mobile_lcp_ms: number | null;
+          mobile_cls: number | null;
+          mobile_tbt_ms: number | null;
+          desktop_score: number | null;
+          desktop_lcp_ms: number | null;
+          desktop_cls: number | null;
+          desktop_tbt_ms: number | null;
+          accessibility_score: number | null;
+          best_practices_score: number | null;
+          seo_score: number | null;
+          checked_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          mobile_score?: number | null;
+          mobile_lcp_ms?: number | null;
+          mobile_cls?: number | null;
+          mobile_tbt_ms?: number | null;
+          desktop_score?: number | null;
+          desktop_lcp_ms?: number | null;
+          desktop_cls?: number | null;
+          desktop_tbt_ms?: number | null;
+          accessibility_score?: number | null;
+          best_practices_score?: number | null;
+          seo_score?: number | null;
+          checked_at?: string;
+        };
+        Update: Partial<{
+          mobile_score: number | null;
+          mobile_lcp_ms: number | null;
+          mobile_cls: number | null;
+          mobile_tbt_ms: number | null;
+          desktop_score: number | null;
+          desktop_lcp_ms: number | null;
+          desktop_cls: number | null;
+          desktop_tbt_ms: number | null;
+          accessibility_score: number | null;
+          best_practices_score: number | null;
+          seo_score: number | null;
+          checked_at: string;
+        }>;
+        Relationships: [];
+      };
       missions: {
         Row: {
           id: string;

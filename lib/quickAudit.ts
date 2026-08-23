@@ -52,7 +52,9 @@ async function isSafeHost(url: string): Promise<boolean> {
   }
 }
 
-async function safeFetchText(url: string): Promise<{ html: string; usedUrl: string; elapsedMs: number } | null> {
+async function safeFetchText(
+  url: string,
+): Promise<{ html: string; usedUrl: string; elapsedMs: number; headers: Headers } | null> {
   if (!(await isSafeHost(url))) return null;
 
   const controller = new AbortController();
@@ -78,9 +80,32 @@ async function safeFetchText(url: string): Promise<{ html: string; usedUrl: stri
       if (bytes > MAX_BODY_BYTES) break;
       html += decoder.decode(value, { stream: true });
     }
-    return { html, usedUrl: res.url, elapsedMs: Date.now() - startedAt };
+    return { html, usedUrl: res.url, elapsedMs: Date.now() - startedAt, headers: res.headers };
   } catch {
     return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/** true si http:// redirige de verdad a https:// (no solo si https responde por su cuenta). */
+async function checkHttpsRedirect(domain: string): Promise<boolean> {
+  const url = `http://${domain}`;
+  if (!(await isSafeHost(url))) return false;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), LINK_CHECK_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      redirect: "manual",
+      headers: { "User-Agent": "GrowthOS-QuickAudit/1.0" },
+    });
+    if (res.status < 300 || res.status >= 400) return false;
+    const location = res.headers.get("location") ?? "";
+    return location.startsWith("https://");
+  } catch {
+    return false;
   } finally {
     clearTimeout(timeout);
   }
@@ -146,6 +171,16 @@ function extractTag(html: string, regex: RegExp): string | null {
   return match ? match[1].trim() : null;
 }
 
+const MAX_IMAGES_TO_SAMPLE = 8;
+
+/** Heurística (no un Lighthouse real): entre una muestra de imágenes, ¿la mayoría declara ancho y alto? */
+function mostImagesAreSized(html: string): boolean {
+  const imgTags = [...html.matchAll(/<img\s[^>]*>/gi)].slice(0, MAX_IMAGES_TO_SAMPLE).map((m) => m[0]);
+  if (imgTags.length === 0) return true;
+  const sized = imgTags.filter((tag) => /\swidth=["']?\d/i.test(tag) && /\sheight=["']?\d/i.test(tag));
+  return sized.length / imgTags.length >= 0.5;
+}
+
 export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
   const httpsResult = await safeFetchText(`https://${domain}`);
   const result = httpsResult ?? (await safeFetchText(`http://${domain}`));
@@ -168,14 +203,18 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
   const hasH1 = /<h1[^>]*>[^<]+<\/h1>/i.test(result.html);
   const hasViewport = /<meta[^>]+name=["']viewport["']/i.test(result.html);
   const hasSchema = /<script[^>]+type=["']application\/ld\+json["']/i.test(result.html) || /itemscope/i.test(result.html);
+  const hasFavicon = /<link[^>]+rel=["'](?:shortcut icon|icon)["']/i.test(result.html);
+  const hasCompression = /\b(gzip|br)\b/i.test(result.headers.get("content-encoding") ?? "");
+  const imagesSized = mostImagesAreSized(result.html);
 
   const origin = new URL(result.usedUrl).origin;
   const sampledLinks = extractInternalLinks(result.html, origin, MAX_LINKS_TO_CHECK);
 
-  const [hasRobots, hasSitemap, brokenLinkCount] = await Promise.all([
+  const [hasRobots, hasSitemap, brokenLinkCount, httpsRedirects] = await Promise.all([
     urlExists(`${origin}/robots.txt`),
     urlExists(`${origin}/sitemap.xml`),
     countBrokenLinks(sampledLinks),
+    hasSsl ? checkHttpsRedirect(domain) : Promise.resolve(false),
   ]);
 
   const checks: QuickAuditCheck[] = [
@@ -270,6 +309,42 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
           ? "Los enlaces que revisamos en tu página principal funcionan bien."
           : `Encontramos ${brokenLinkCount} ${brokenLinkCount === 1 ? "enlace roto" : "enlaces rotos"} en tu página principal.`,
       category: "confianza",
+    },
+    {
+      id: "httpsRedirect",
+      label: "HTTP redirige a HTTPS",
+      passed: httpsRedirects,
+      detail: httpsRedirects
+        ? "Quien escriba tu web sin \"https\" llega igualmente a la versión segura."
+        : "La versión sin \"https\" de tu web no redirige a la segura — algunos visitantes podrían quedarse en ella sin darse cuenta.",
+      category: "confianza",
+    },
+    {
+      id: "compression",
+      label: "Compresión de contenido",
+      passed: hasCompression,
+      detail: hasCompression
+        ? "Tu web comprime el contenido antes de enviarlo, lo que la hace cargar más rápido."
+        : "Tu web no está comprimiendo el contenido (gzip/brotli) — activarlo suele acelerar la carga sin coste.",
+      category: "velocidad",
+    },
+    {
+      id: "favicon",
+      label: "Favicon",
+      passed: hasFavicon,
+      detail: hasFavicon
+        ? "Tu web declara un favicon — el icono que se ve en la pestaña del navegador."
+        : "No encontramos un favicon declarado en tu web (algunos navegadores prueban /favicon.ico igualmente, pero es mejor declararlo).",
+      category: "seo",
+    },
+    {
+      id: "imageSizing",
+      label: "Imágenes con tamaño definido",
+      passed: imagesSized,
+      detail: imagesSized
+        ? "La mayoría de tus imágenes declaran su tamaño, así que no deberían provocar saltos al cargar la página."
+        : "Varias imágenes no declaran ancho y alto — pueden hacer que el contenido \"salte\" mientras la página carga.",
+      category: "velocidad",
     },
   ];
 

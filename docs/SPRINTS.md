@@ -313,10 +313,17 @@ El fundador pidió que una misma persona pueda gestionar varios negocios/dominio
 - [x] `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] Verificado en vivo de extremo a extremo tras aplicar la migración `0020`: creado un segundo negocio real desde "+ Añadir otro negocio" (quedó activo automáticamente con sus propios Quick Wins y 0 XP), cambio al primero desde el selector (sus propios 55 XP y misiones reales), y confirmado que la elección persiste tras recargar la página completa.
 
+## Sprint 4.20 — Análisis más real: 14 comprobaciones + velocidad real con PageSpeed Insights (COMPLETADO 2026-08-23, pendiente de clave de API para probar PageSpeed en vivo)
+El fundador vio solo 10 comprobaciones en "Potencial de crecimiento" y las notó pobres, citando PageSpeed Insights como ejemplo de herramienta gratuita a usar. `runQuickAudit()` (`lib/quickAudit.ts`) es rápido a propósito porque lo usan 4 flujos que necesitan respuesta inmediata (onboarding, verificar una misión, refrescar el dashboard, y la herramienta pública de la home) — Lighthouse/PageSpeed tarda 15-45s por dispositivo, así que no podía meterse ahí sin romper esos 4 flujos. Se separó en dos piezas reales:
+- [x] **4 comprobaciones nuevas sin latencia añadida** (usan el HTML/cabeceras que ya se descargaban): compresión de contenido (gzip/br), HTTP redirige de verdad a HTTPS (antes solo se comprobaba que HTTPS respondiera, no que la versión insegura estuviera cerrada), favicon declarado, imágenes con ancho/alto definidos (evita saltos de layout). Pasa de 10 a 14 comprobaciones reales — verificado en vivo contra `example.com` con un reanálisis real: "Cumples 9 de 14", las 4 nuevas con datos reales en el desglose.
+- [x] **Panel nuevo y separado "Velocidad real (Google PageSpeed Insights)"** (`components/growth/PageSpeedCard.tsx`, `lib/pageSpeed.ts`, `services/pageSpeed.service.ts`, migración `0021`): solo dentro del dashboard, bajo demanda con un botón ("Analizar velocidad real", aviso honesto de ~30s de espera) — nunca automático, para no bloquear ningún flujo. Llama a la API real de Google (`pagespeedonline/v5/runPagespeed`) en móvil y escritorio en paralelo vía `app/api/pagespeed/check/route.ts` (Route Handler con `maxDuration = 60`, no Server Action, por si Lighthouse tarda más de lo normal), y guarda puntuación + Core Web Vitals (LCP/CLS/TBT) reales + accesibilidad/buenas prácticas/SEO de Lighthouse.
+- [x] **No se mezcla con el Growth Score**: sigue siendo el único número que mueve XP/niveles, para que no signifique cosas distintas según si alguien pulsó el botón de PageSpeed o no.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios.
+- **Pendiente, no lo puedo hacer yo**: el fundador tiene que crear una clave de API de Google (mucho más simple que el OAuth de Search Console/Analytics — sin pantalla de consentimiento, solo activar "PageSpeed Insights API" y crear una clave) y pegarla como `GOOGLE_PAGESPEED_API_KEY`, además de aplicar la migración `0021`. Sin eso, verificado hasta donde se pudo: las 14 comprobaciones y el estado vacío del panel de PageSpeed, en vivo y sin errores.
+
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
 - OAuth Google Business
 
 ## Fuera de alcance del MVP (explícito)
-- Multi-tenant / múltiples negocios por cuenta (posible pivote a agencias, no ahora)
 - Cualquier flujo que pida contraseñas de terceros directamente (siempre OAuth)

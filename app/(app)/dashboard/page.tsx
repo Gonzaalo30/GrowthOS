@@ -15,6 +15,7 @@ import {
 } from "@/services/audit.service";
 import { getTodayChest, countChestsOpened } from "@/services/chest.service";
 import { getRequestsForBusiness } from "@/services/opportunity.service";
+import { getSnapshot as getPageSpeedSnapshot } from "@/services/pageSpeed.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
@@ -111,6 +112,15 @@ export default async function DashboardPage({
     // dashboard sigue funcionando sin la sección de logros
   }
 
+  // Panel opcional bajo demanda: si falla al leerlo, el resto del dashboard
+  // sigue funcionando igualmente.
+  let pageSpeedSnapshot = null;
+  try {
+    pageSpeedSnapshot = await getPageSpeedSnapshot(supabase, business.id);
+  } catch {
+    // se muestra como "todavía no analizado" en vez de romper la página
+  }
+
   return (
     <DashboardView
       business={business}
@@ -131,6 +141,7 @@ export default async function DashboardPage({
       welcomeMissionId={bienvenida}
       momentum={momentum}
       weeklyBrief={weeklyBrief}
+      pageSpeedSnapshot={pageSpeedSnapshot}
     />
   );
 }

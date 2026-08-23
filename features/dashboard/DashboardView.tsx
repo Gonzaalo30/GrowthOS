@@ -17,6 +17,7 @@ import { Achievements } from "@/components/growth/Achievements";
 import { PlanBadge } from "@/components/growth/PlanBadge";
 import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
 import { DashboardTabs } from "@/components/growth/DashboardTabs";
+import { PageSpeedCard } from "@/components/growth/PageSpeedCard";
 import { Greeting } from "@/features/dashboard/Greeting";
 import { WeeklyBrief } from "@/features/dashboard/WeeklyBrief";
 import { getLevelProgress } from "@/lib/levels";
@@ -31,6 +32,7 @@ import type { DateFormat } from "@/types/database.types";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
+type PageSpeedSnapshot = Database["public"]["Tables"]["pagespeed_snapshots"]["Row"];
 
 export function DashboardView({
   business,
@@ -47,6 +49,7 @@ export function DashboardView({
   welcomeMissionId,
   momentum,
   weeklyBrief,
+  pageSpeedSnapshot,
 }: {
   business: Business;
   missions: Mission[];
@@ -62,6 +65,7 @@ export function DashboardView({
   momentum: MomentumResult | null;
   weeklyBrief: WeeklyBriefData;
   welcomeMissionId?: string;
+  pageSpeedSnapshot: PageSpeedSnapshot | null;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const allDailyMissions = missions
@@ -176,6 +180,8 @@ export function DashboardView({
 
                     {canRefreshOnDemand(business.plan) && <RefreshScoreButton />}
                   </GrowthCard>
+
+                  <PageSpeedCard snapshot={pageSpeedSnapshot} />
 
                   <div>
                     <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
