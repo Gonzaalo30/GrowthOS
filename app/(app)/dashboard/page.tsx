@@ -20,6 +20,7 @@ import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
 import { computeAchievements } from "@/lib/achievements";
 import { computeMomentumScore } from "@/lib/momentum";
+import { computeWeeklyBrief } from "@/lib/weeklyBrief";
 import { dailyQuickWinCap } from "@/lib/plans";
 
 const CALENDAR_WEEKS = 12;
@@ -66,6 +67,7 @@ export default async function DashboardPage({
   }
 
   const momentum = computeMomentumScore(missions);
+  const weeklyBrief = computeWeeklyBrief(missions);
 
   const profile = await getProfile(supabase, user.id);
 
@@ -119,11 +121,16 @@ export default async function DashboardPage({
       dailyCounts={Object.fromEntries(dailyCounts)}
       scoreTimeline={scoreTimeline}
       replayMissions={replayMissions}
-      chestOpenedToday={Boolean(todayChest)}
+      todayChest={
+        todayChest
+          ? { rewardType: todayChest.reward_type, xpAwarded: todayChest.xp_awarded, templateId: todayChest.template_id }
+          : null
+      }
       achievements={achievements}
       dateFormat={profile.date_format}
       welcomeMissionId={bienvenida}
       momentum={momentum}
+      weeklyBrief={weeklyBrief}
     />
   );
 }

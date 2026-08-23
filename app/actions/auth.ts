@@ -32,6 +32,14 @@ export async function loginAction(
     return { error: "Email o contraseña incorrectos." };
   }
 
+  // Si la cuenta tiene verificación en dos pasos activada, la contraseña
+  // sola solo llega a "aal1" — hace falta el código de la app para subir a
+  // "aal2" antes de dejar pasar al dashboard.
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== aal.nextLevel) {
+    redirect("/verificar-2fa");
+  }
+
   redirect("/dashboard");
 }
 

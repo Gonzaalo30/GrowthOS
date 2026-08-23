@@ -11,12 +11,13 @@ import { ScoreBreakdown } from "@/components/growth/ScoreBreakdown";
 import { CategoryScores } from "@/components/growth/CategoryScores";
 import { GrowthCalendar } from "@/components/growth/GrowthCalendar";
 import { GrowthReplay } from "@/components/growth/GrowthReplay";
-import { DailyChest } from "@/components/growth/DailyChest";
+import { DailyChest, type TodayChestInfo } from "@/components/growth/DailyChest";
 import { MascotMessage } from "@/components/growth/Mascot";
 import { Achievements } from "@/components/growth/Achievements";
 import { PlanBadge } from "@/components/growth/PlanBadge";
 import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
 import { Greeting } from "@/features/dashboard/Greeting";
+import { WeeklyBrief } from "@/features/dashboard/WeeklyBrief";
 import { getLevelProgress } from "@/lib/levels";
 import { canRefreshOnDemand } from "@/lib/plans";
 import type { Database } from "@/types/database.types";
@@ -24,6 +25,7 @@ import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audi
 import type { QuickAuditCheck } from "@/lib/quickAudit";
 import type { Achievement } from "@/lib/achievements";
 import type { MomentumResult } from "@/lib/momentum";
+import type { WeeklyBrief as WeeklyBriefData } from "@/lib/weeklyBrief";
 import type { DateFormat } from "@/types/database.types";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
@@ -38,11 +40,12 @@ export function DashboardView({
   dailyCounts,
   scoreTimeline,
   replayMissions,
-  chestOpenedToday,
+  todayChest,
   achievements,
   dateFormat,
   welcomeMissionId,
   momentum,
+  weeklyBrief,
 }: {
   business: Business;
   missions: Mission[];
@@ -52,10 +55,11 @@ export function DashboardView({
   dailyCounts: Record<string, number>;
   scoreTimeline: GrowthScorePoint[];
   replayMissions: Pick<Mission, "id" | "title" | "completed_at">[];
-  chestOpenedToday: boolean;
+  todayChest: TodayChestInfo | null;
   achievements: Achievement[];
   dateFormat: DateFormat;
   momentum: MomentumResult | null;
+  weeklyBrief: WeeklyBriefData;
   welcomeMissionId?: string;
 }) {
   const today = new Date().toISOString().slice(0, 10);
@@ -101,6 +105,12 @@ export function DashboardView({
         </p>
       </div>
 
+      <WeeklyBrief
+        name={profileName}
+        xpLastWeek={weeklyBrief.xpLastWeek}
+        streak={business.streak_count}
+        missions={weeklyBrief.missions}
+      />
       {welcomeMission && (
         <div>
           <GrowthCard className="border-2 border-brand-400 bg-gradient-to-br from-brand-50 to-transparent shadow-md">
@@ -188,7 +198,7 @@ export function DashboardView({
         </div>
 
         <div className="flex flex-col gap-6">
-          <DailyChest alreadyOpenedToday={chestOpenedToday} />
+          <DailyChest todayChest={todayChest} />
 
           <GrowthReplay
             timeline={scoreTimeline}

@@ -1,7 +1,7 @@
 export type MissionType = "daily" | "weekly";
 export type MissionDifficulty = "easy" | "medium" | "hard";
 export type OpportunityRequestStatus = "pending" | "contacted" | "done";
-export type DailyChestReward = "xp" | "bonus_mission";
+export type DailyChestReward = "xp" | "bonus_mission" | "template";
 export type BusinessPlan = "starter" | "growth" | "autopilot";
 export type DateFormat = "long" | "short_dmy" | "short_mdy";
 
@@ -186,6 +186,7 @@ export interface Database {
           opened_date: string;
           reward_type: DailyChestReward;
           xp_awarded: number | null;
+          template_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -194,11 +195,13 @@ export interface Database {
           opened_date: string;
           reward_type: DailyChestReward;
           xp_awarded?: number | null;
+          template_id?: string | null;
           created_at?: string;
         };
         Update: Partial<{
           reward_type: DailyChestReward;
           xp_awarded: number | null;
+          template_id: string | null;
         }>;
         Relationships: [];
       };

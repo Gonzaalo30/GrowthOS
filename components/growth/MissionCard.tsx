@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { VictoryModal } from "@/components/growth/VictoryModal";
+import { FocusMode } from "@/components/growth/FocusMode";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { completeMissionAction } from "@/app/actions/missions";
@@ -36,6 +37,7 @@ export function MissionCard({
   const [showTutorial, setShowTutorial] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [showVictoryModal, setShowVictoryModal] = useState(false);
+  const [showFocusMode, setShowFocusMode] = useState(false);
   const isCompleted = Boolean(mission.completed_at) || justCompleted;
 
   const isWeekly = mission.type === "weekly";
@@ -50,7 +52,9 @@ export function MissionCard({
         setJustCompleted(true);
         setAwardedXp(result.xpAwarded ?? mission.xp_reward);
         setMultiplierApplied(Boolean(result.multiplierApplied));
-        if (celebrateWithModal) setShowVictoryModal(true);
+        // En modo enfoque ya se ve la propia pantalla de completada con
+        // confeti y XP — el Victory Screen aparte sería una doble celebración.
+        if (celebrateWithModal && !showFocusMode) setShowVictoryModal(true);
       } else {
         setVerifyError(result.error ?? "No hemos podido verificar esta misión. Inténtalo de nuevo.");
       }
@@ -90,15 +94,26 @@ export function MissionCard({
             </p>
           )}
 
-          {template && (
-            <button
-              type="button"
-              onClick={() => setShowTutorial((v) => !v)}
-              className="mt-2 text-xs font-medium text-zinc-500 underline decoration-dotted underline-offset-2 hover:text-foreground"
-            >
-              {showTutorial ? "Ocultar cómo hacerlo" : "¿Cómo lo hago?"}
-            </button>
-          )}
+          <div className="mt-2 flex items-center gap-3">
+            {template && (
+              <button
+                type="button"
+                onClick={() => setShowTutorial((v) => !v)}
+                className="text-xs font-medium text-zinc-500 underline decoration-dotted underline-offset-2 hover:text-foreground"
+              >
+                {showTutorial ? "Ocultar cómo hacerlo" : "¿Cómo lo hago?"}
+              </button>
+            )}
+            {!isCompleted && (
+              <button
+                type="button"
+                onClick={() => setShowFocusMode(true)}
+                className="text-xs font-medium text-zinc-500 underline decoration-dotted underline-offset-2 hover:text-foreground"
+              >
+                Modo enfoque
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
@@ -166,6 +181,20 @@ export function MissionCard({
           title={mission.title}
           xpAwarded={awardedXp ?? mission.xp_reward}
           onClose={() => setShowVictoryModal(false)}
+        />
+      )}
+
+      {showFocusMode && (
+        <FocusMode
+          mission={mission}
+          template={template}
+          isCompleted={isCompleted}
+          isPending={isPending}
+          isVerified={isVerified}
+          awardedXp={awardedXp}
+          verifyError={verifyError}
+          onComplete={handleComplete}
+          onClose={() => setShowFocusMode(false)}
         />
       )}
     </GrowthCard>

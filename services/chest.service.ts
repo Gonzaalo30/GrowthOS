@@ -21,13 +21,21 @@ export async function getTodayChest(supabase: Client, businessId: string) {
 
 const XP_REWARD_OPTIONS = [5, 10, 15, 20];
 
-export function rollChestReward(): { type: "xp"; xp: number } | { type: "bonus_mission" } {
-  // 60% XP, 40% misión extra — ambas recompensas son reales, sin nada inventado.
-  if (Math.random() < 0.6) {
+export function rollChestReward():
+  | { type: "xp"; xp: number }
+  | { type: "bonus_mission" }
+  | { type: "template" } {
+  // 50% XP, 30% misión extra, 20% plantilla de copy — las tres son
+  // recompensas reales, sin nada inventado.
+  const roll = Math.random();
+  if (roll < 0.5) {
     const xp = XP_REWARD_OPTIONS[Math.floor(Math.random() * XP_REWARD_OPTIONS.length)];
     return { type: "xp", xp };
   }
-  return { type: "bonus_mission" };
+  if (roll < 0.8) {
+    return { type: "bonus_mission" };
+  }
+  return { type: "template" };
 }
 
 export async function countChestsOpened(supabase: Client, businessId: string): Promise<number> {
@@ -42,12 +50,19 @@ export async function countChestsOpened(supabase: Client, businessId: string): P
 export async function recordChestOpen(
   supabase: Client,
   businessId: string,
-  rewardType: "xp" | "bonus_mission",
+  rewardType: "xp" | "bonus_mission" | "template",
   xpAwarded: number | null,
+  templateId: string | null = null,
 ) {
   const { data, error } = await supabase
     .from("daily_chests")
-    .insert({ business_id: businessId, opened_date: todayDate(), reward_type: rewardType, xp_awarded: xpAwarded })
+    .insert({
+      business_id: businessId,
+      opened_date: todayDate(),
+      reward_type: rewardType,
+      xp_awarded: xpAwarded,
+      template_id: templateId,
+    })
     .select("*")
     .single();
 

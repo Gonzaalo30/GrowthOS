@@ -13,6 +13,9 @@ import { BillingInfoForm } from "@/features/account/BillingInfoForm";
 import { AvatarUpload } from "@/features/account/AvatarUpload";
 import { PasswordForm } from "@/features/account/PasswordForm";
 import { PreferencesForm } from "@/features/account/PreferencesForm";
+import { TwoFactorForm } from "@/features/account/TwoFactorForm";
+import { SignOutOtherSessionsButton } from "@/features/account/SignOutOtherSessionsButton";
+import { listMfaFactorsAction } from "@/app/actions/mfa";
 import { InvoiceHistory } from "@/components/account/InvoiceHistory";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
 import { getPlan } from "@/lib/plans";
@@ -38,6 +41,7 @@ export default async function AccountPage({
 
   const hasActiveSubscription = business.subscription_status === "active";
   const currentPlan = getPlan(business.plan);
+  const mfaFactors = await listMfaFactorsAction();
 
   // Facturación real de Stripe: si algo falla al leerla, el resto de la
   // página (perfil, negocio, plan) debe seguir funcionando igualmente.
@@ -81,6 +85,22 @@ export default async function AccountPage({
               <div className="border-t border-border pt-4">
                 <h3 className="mb-2 text-xs font-semibold text-zinc-500">Preferencias</h3>
                 <PreferencesForm dateFormat={profile.date_format} />
+              </div>
+            </div>
+          </GrowthCard>
+
+          <GrowthCard>
+            <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+              <span aria-hidden>🔒</span> Seguridad
+            </h2>
+            <div className="flex flex-col gap-6">
+              <div>
+                <h3 className="mb-2 text-xs font-semibold text-zinc-500">Verificación en dos pasos</h3>
+                <TwoFactorForm factors={mfaFactors} />
+              </div>
+              <div className="border-t border-border pt-4">
+                <h3 className="mb-2 text-xs font-semibold text-zinc-500">Sesiones</h3>
+                <SignOutOtherSessionsButton />
               </div>
             </div>
           </GrowthCard>
