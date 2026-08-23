@@ -19,6 +19,7 @@ export async function updateProfileAction(
   formData: FormData,
 ): Promise<AccountState> {
   const name = String(formData.get("name") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
   if (!name) return { error: "El nombre no puede estar vacío." };
 
   const supabase = await createClient();
@@ -27,7 +28,7 @@ export async function updateProfileAction(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Tu sesión ha caducado, inicia sesión de nuevo." };
 
-  await updateProfileName(supabase, user.id, name);
+  await updateProfileName(supabase, user.id, name, title || null);
   revalidatePath("/account");
   return { success: true };
 }

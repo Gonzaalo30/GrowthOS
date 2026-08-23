@@ -7,6 +7,9 @@ import { getBillingInfo, listInvoices, type BillingInfo, type InvoiceSummary } f
 import { getStripe } from "@/lib/stripe";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
+import { LevelBadge } from "@/components/growth/LevelBadge";
+import { StreakBadge } from "@/components/growth/StreakBadge";
+import { Achievements } from "@/components/growth/Achievements";
 import { ProfileForm } from "@/features/account/ProfileForm";
 import { BusinessForm } from "@/features/account/BusinessForm";
 import { BillingInfoForm } from "@/features/account/BillingInfoForm";
@@ -18,7 +21,9 @@ import { SignOutOtherSessionsButton } from "@/features/account/SignOutOtherSessi
 import { listMfaFactorsAction } from "@/app/actions/mfa";
 import { InvoiceHistory } from "@/components/account/InvoiceHistory";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
+import { getAchievementsForBusiness } from "@/services/achievementSummary.service";
 import { getPlan } from "@/lib/plans";
+import { getLevelProgress, getLevelRingClass } from "@/lib/levels";
 
 export default async function AccountPage({
   searchParams,
@@ -42,6 +47,8 @@ export default async function AccountPage({
   const hasActiveSubscription = business.subscription_status === "active";
   const currentPlan = getPlan(business.plan);
   const mfaFactors = await listMfaFactorsAction();
+  const levelProgress = getLevelProgress(business.xp);
+  const achievements = await getAchievementsForBusiness(supabase, business);
 
   // Facturación real de Stripe: si algo falla al leerla, el resto de la
   // página (perfil, negocio, plan) debe seguir funcionando igualmente.
@@ -65,12 +72,21 @@ export default async function AccountPage({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
         <div className="flex flex-col gap-6">
-          <GrowthCard>
+          <GrowthCard glow>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Tu perfil</h2>
-            <div className="mb-4">
-              <AvatarUpload name={profile.name} avatarUrl={profile.avatar_url} />
+            <div className="mb-2">
+              <AvatarUpload
+                name={profile.name}
+                avatarUrl={profile.avatar_url}
+                ringClass={getLevelRingClass(levelProgress.level.name)}
+              />
             </div>
-            <ProfileForm name={profile.name} email={profile.email} />
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <LevelBadge level={levelProgress.level} />
+              <StreakBadge days={business.streak_count} />
+              {profile.title && <span className="text-sm text-zinc-600">{profile.title}</span>}
+            </div>
+            <ProfileForm name={profile.name} email={profile.email} title={profile.title} />
           </GrowthCard>
 
           <GrowthCard>
@@ -171,6 +187,8 @@ export default async function AccountPage({
               <InvoiceHistory invoices={invoices} dateFormat={profile.date_format} />
             </GrowthCard>
           )}
+
+          {achievements.length > 0 && <Achievements achievements={achievements} />}
         </div>
       </div>
     </div>

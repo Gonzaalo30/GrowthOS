@@ -39,3 +39,17 @@ export function getLevelProgress(xp: number): LevelProgress {
   const progress = (xp - current.minXp) / (next.minXp - current.minXp);
   return { level: current, next, progress, xpToNext: next.minXp - xp };
 }
+
+// Color del anillo del avatar según el nivel real — dentro de la paleta de
+// marca (naranja), con un acento dorado solo para el nivel máximo.
+const LEVEL_RING_CLASSES: Record<string, string> = {
+  Arranque: "ring-zinc-300",
+  "En marcha": "ring-brand-300",
+  Consolidado: "ring-brand-500",
+  Referencia: "ring-brand-600",
+  Líder: "ring-amber-400",
+};
+
+export function getLevelRingClass(levelName: string): string {
+  return LEVEL_RING_CLASSES[levelName] ?? "ring-zinc-300";
+}

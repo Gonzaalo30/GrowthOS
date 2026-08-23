@@ -7,7 +7,7 @@ import { updateProfileAction, type AccountState } from "@/app/actions/account";
 
 const initialState: AccountState = {};
 
-export function ProfileForm({ name, email }: { name: string; email: string }) {
+export function ProfileForm({ name, email, title }: { name: string; email: string; title: string | null }) {
   const [state, formAction, isPending] = useActionState(updateProfileAction, initialState);
 
   return (
@@ -15,6 +15,15 @@ export function ProfileForm({ name, email }: { name: string; email: string }) {
       <label className="text-sm font-medium text-foreground">
         Nombre
         <Input name="name" defaultValue={name} required autoComplete="name" className="mt-1" />
+      </label>
+      <label className="text-sm font-medium text-foreground">
+        Cargo o rol <span className="font-normal text-zinc-500">(opcional)</span>
+        <Input
+          name="title"
+          defaultValue={title ?? ""}
+          placeholder="Ej. Dueña de Clínica Dental Sonrisa"
+          className="mt-1"
+        />
       </label>
       <label className="text-sm font-medium text-foreground">
         Email

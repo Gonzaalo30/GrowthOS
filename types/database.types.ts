@@ -14,6 +14,7 @@ export interface Database {
           name: string;
           email: string;
           avatar_url: string | null;
+          title: string | null;
           date_format: DateFormat;
           created_at: string;
         };
@@ -22,6 +23,7 @@ export interface Database {
           name: string;
           email: string;
           avatar_url?: string | null;
+          title?: string | null;
           date_format?: DateFormat;
           created_at?: string;
         };
@@ -29,6 +31,7 @@ export interface Database {
           name: string;
           email: string;
           avatar_url: string | null;
+          title: string | null;
           date_format: DateFormat;
         }>;
         Relationships: [];

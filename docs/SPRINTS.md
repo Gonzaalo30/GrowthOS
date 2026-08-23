@@ -267,6 +267,16 @@ El fundador pasó 5 ideas más de la misma auditoría externa. De las 5, solo 3 
 - [x] Verificado de extremo a extremo con un generador de TOTP real (implementación propia de RFC 6238 en un script de prueba, borrado después): activar 2FA con el código real generado a partir de la clave que devolvió Supabase, cerrar sesión, volver a entrar y comprobar que pide el código antes de dejar pasar al dashboard, desactivar, y cerrar sesión en otros dispositivos manteniendo la propia activa.
 - **Incidencia real durante la verificación, no causada por este cambio**: un error transitorio "JWT issued at future" (desfase de reloj de 1-2 segundos) en la primera carga de `/account` tras reiniciar el servidor — se resolvió solo en la siguiente petición; confirmado con los logs del servidor (200 en las peticiones posteriores) que no era un fallo real de código.
 
+## Sprint 4.16 — Perfil con autoridad real: anillo de nivel, cargo y vitrina de logros (COMPLETADO 2026-08-23)
+El fundador pidió redondear la sección de Perfil estilo "producto top de YC". De 4 puntos, 3 eran reales y uno ya existía:
+- [x] **Anillo de nivel en el avatar** (`lib/levels.ts:getLevelRingClass`, `AvatarUpload`): color real según el nivel de verdad del negocio (Arranque=gris, En marcha/Consolidado/Referencia=tonos de marca naranja, Líder=dorado), dentro de la paleta de marca — no un semáforo de colores VC (bronce/plata/oro/esmeralda/diamante) sin relación con nuestros niveles reales.
+- [x] **Cargo o rol personalizado** (migración `0018`: `profiles.title`): campo de texto libre que el propio usuario escribe (ej. "Dueña de Clínica Dental Sonrisa"), visible bajo su nombre. Contenido 100% suyo, no una plantilla de "CEO @ Acme Inc. • Ex-Stripe" inventada.
+- [x] **"Vitrina de logros" en el perfil**: no se construyó nada nuevo — son los mismos 11 logros reales del dashboard (Sprint 3.10), ahora también mostrados en `/account` (`services/achievementSummary.service.ts`, reutiliza el mismo cálculo real, sin duplicar lógica). Se descartaron los logros de ejemplo de la propia propuesta ("First Blood", "Revenue Hacker: recuperó 1.000€ de fugas de Stripe") porque no hay nada real que trackear para ellos — el segundo depende del "Revenue Leak Finder" ya descartado.
+- **Descartado**: selector de "Modo de Enfoque" (Crecimiento/Optimización/Supervivencia) para "calibrar a la IA" — sin IA conectada, sería un desplegable que no hace nada.
+- **Código de ejemplo no usado**: de nuevo tema oscuro (zinc-900, gradientes índigo/púrpura) y datos 100% inventados ("Javier Domínguez", "3,420 XP Totales", "14 días de racha", "3 de 12 desbloqueados").
+- [x] Verificado en pestaña limpia: anillo gris correcto para nivel Arranque, badge de nivel + racha real junto al avatar, campo de cargo con placeholder, y "LOGROS 2/11" con los logros reales del negocio de prueba.
+- **Pendiente de verificación en vivo**: guardar el campo de cargo (necesita la migración `0018` en Supabase; el resto de esta tanda no depende de ella).
+
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
 - OAuth Google Business

@@ -9,8 +9,8 @@ export async function getProfile(supabase: Client, userId: string) {
   return data;
 }
 
-export async function updateProfileName(supabase: Client, userId: string, name: string) {
-  const { error } = await supabase.from("profiles").update({ name }).eq("id", userId);
+export async function updateProfileName(supabase: Client, userId: string, name: string, title: string | null) {
+  const { error } = await supabase.from("profiles").update({ name, title }).eq("id", userId);
   if (error) throw error;
 }
 

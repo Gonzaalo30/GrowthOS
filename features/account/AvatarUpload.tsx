@@ -2,16 +2,27 @@
 
 import { useActionState, useRef, useState } from "react";
 import { updateAvatarAction, type AccountState } from "@/app/actions/account";
+import { cn } from "@/lib/utils";
 
 const initialState: AccountState = {};
 
-export function AvatarUpload({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
+export function AvatarUpload({
+  name,
+  avatarUrl,
+  ringClass,
+}: {
+  name: string;
+  avatarUrl: string | null;
+  /** Color del anillo según el nivel real (ver lib/levels.ts:getLevelRingClass). */
+  ringClass?: string;
+}) {
   const [state, formAction, isPending] = useActionState(updateAvatarAction, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const initial = name.trim().charAt(0).toUpperCase() || "?";
   const displayUrl = preview ?? avatarUrl;
+  const ring = ringClass && cn("ring-4 ring-offset-2 ring-offset-surface", ringClass);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -24,9 +35,14 @@ export function AvatarUpload({ name, avatarUrl }: { name: string; avatarUrl: str
     <form ref={formRef} action={formAction} className="flex items-center gap-4">
       {displayUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- avatar viene de Supabase Storage, no de assets propios
-        <img src={displayUrl} alt="" className="h-16 w-16 rounded-full object-cover" />
+        <img src={displayUrl} alt="" className={cn("h-16 w-16 rounded-full object-cover", ring)} />
       ) : (
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
+        <div
+          className={cn(
+            "flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700",
+            ring,
+          )}
+        >
           {initial}
         </div>
       )}
