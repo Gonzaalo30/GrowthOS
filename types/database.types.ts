@@ -92,6 +92,45 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      google_integrations: {
+        Row: {
+          id: string;
+          business_id: string;
+          google_email: string;
+          refresh_token_encrypted: string;
+          search_console_site_url: string | null;
+          ga4_property_id: string | null;
+          ga4_property_name: string | null;
+          search_console_data: unknown | null;
+          analytics_data: unknown | null;
+          last_synced_at: string | null;
+          connected_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          google_email: string;
+          refresh_token_encrypted: string;
+          search_console_site_url?: string | null;
+          ga4_property_id?: string | null;
+          ga4_property_name?: string | null;
+          search_console_data?: unknown | null;
+          analytics_data?: unknown | null;
+          last_synced_at?: string | null;
+          connected_at?: string;
+        };
+        Update: Partial<{
+          google_email: string;
+          refresh_token_encrypted: string;
+          search_console_site_url: string | null;
+          ga4_property_id: string | null;
+          ga4_property_name: string | null;
+          search_console_data: unknown | null;
+          analytics_data: unknown | null;
+          last_synced_at: string | null;
+        }>;
+        Relationships: [];
+      };
       missions: {
         Row: {
           id: string;

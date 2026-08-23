@@ -75,3 +75,8 @@ export function dailyQuickWinCap(planId: string | null | undefined): number {
 export function canRefreshOnDemand(planId: string | null | undefined): boolean {
   return planId === "growth" || planId === "autopilot";
 }
+
+/** Si el plan permite conectar Google Search Console y Analytics. */
+export function canUseGoogleIntegrations(planId: string | null | undefined): boolean {
+  return planId === "growth" || planId === "autopilot";
+}

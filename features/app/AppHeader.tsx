@@ -13,6 +13,7 @@ type Notification = Database["public"]["Tables"]["notifications"]["Row"];
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/marketplace", label: "Centro de Mejoras" },
+  { href: "/integraciones", label: "Analítica" },
   { href: "/account", label: "Mi cuenta" },
 ];
 

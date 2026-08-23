@@ -284,10 +284,20 @@ El fundador pasó la idea de "micro-lecciones de 30 segundos" bajo cada misión,
 - [x] Mostrado bajo el tutorial paso a paso en `MissionCard` (al abrir "¿Cómo lo hago?") y en `FocusMode` (adaptado a su tema oscuro), con el mismo formato 💡 en ambos sitios.
 - [x] Verificado en pestaña limpia: tip visible correctamente en la tarjeta normal y en Modo Enfoque, sin errores de consola; `tsc --noEmit`, `eslint` y `next build` limpios.
 
+## Sprint 5.1 — Google Search Console + Analytics reales (planes Growth/Autopilot) (COMPLETADO 2026-08-23, pendiente de credenciales para probar en vivo)
+El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Analytics con un chat de IA. El código de ejemplo era 100% simulado: respuestas de IA con `setTimeout` y texto hardcodeado, usuario inventado ("Javier"), tema oscuro, y un precio ($149/mes) que no encaja con los planes reales. Se dividió en dos partes con el fundador: solo se construye la de datos reales por ahora; el chat de IA necesitaría conectar y pagar una API de LLM real, decisión aparte para otro día.
+- [x] **OAuth real con Google** (`lib/googleApis.ts`, paquete oficial `googleapis`): flujo propio de OAuth2 (no mezclado con el login de Supabase, que sigue siendo email/contraseña), con protección CSRF por cookie de estado (`app/actions/googleIntegration.ts`, `app/api/integrations/google/callback/route.ts`).
+- [x] **Refresh token cifrado en reposo** (`lib/googleTokenCrypto.ts`, AES-256-GCM con `crypto` nativo) — es una credencial de larga duración con acceso de lectura a los datos reales del negocio.
+- [x] **Selección real de sitio/propiedad**: tras conectar, se listan los sitios de Search Console y las propiedades de GA4 reales a las que tiene acceso la cuenta (nada de campos de texto libre propensos a error).
+- [x] **Métricas reales** (`fetchSearchConsoleSummary`, `fetchAnalyticsSummary`): clics/impresiones/CTR/posición y sesiones/conversiones/rebote de los últimos 28 días con variación real frente al periodo anterior, más tablas de top consultas/páginas/canales — todo directo de las APIs de Google, nada inventado.
+- [x] **Patrón de refresco perezoso** (`refreshDataIfStale`): igual que `refreshGrowthScoreIfStale`, sin añadir infraestructura de cron nueva; solo se guarda el último snapshot (jsonb), no una serie histórica.
+- [x] **Muro de pago real** (`canUseGoogleIntegrations` en `lib/plans.ts`): disponible en Growth/Autopilot, con el copy de planes real (no el precio inventado de la propuesta).
+- [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
+- **Pendiente, no lo puedo hacer yo**: el fundador tiene que crear el proyecto y las credenciales OAuth en Google Cloud (activar Search Console API + Analytics Data API + Analytics Admin API, configurar la pantalla de consentimiento en modo Testing, crear el Client ID/Secret) y pegarlas en `.env.local` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_TOKEN_ENCRYPTION_KEY`), además de aplicar la migración `0019` en Supabase. Sin eso, verificado hasta donde se pudo: estado de muro de pago correcto en pestaña limpia, enlace de navegación y comando del Cmd+K funcionando.
+
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
 - OAuth Google Business
-- OAuth Google Search Console + GA4
 
 ## Fuera de alcance del MVP (explícito)
 - Multi-tenant / múltiples negocios por cuenta (posible pivote a agencias, no ahora)
