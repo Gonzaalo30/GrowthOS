@@ -26,7 +26,7 @@ export default async function MarketplacePage({
   const purchasedIds = requests.filter((r) => r.paid).map((r) => r.opportunity_id);
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-12">
       <div>
         <h1 className="text-xl font-semibold text-foreground">Centro de Mejoras</h1>
         <p className="mt-1 text-sm text-zinc-600">

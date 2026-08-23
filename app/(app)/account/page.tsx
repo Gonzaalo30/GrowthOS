@@ -67,7 +67,7 @@ export default async function AccountPage({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-12">
       <h1 className="text-xl font-semibold text-foreground">Mi cuenta</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">

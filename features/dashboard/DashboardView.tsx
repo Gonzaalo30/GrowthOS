@@ -95,7 +95,7 @@ export function DashboardView({
       : 0;
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-12">
       <div>
         <Greeting name={profileName} />
         <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-zinc-600">
