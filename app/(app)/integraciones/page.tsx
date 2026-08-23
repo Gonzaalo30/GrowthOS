@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { canUseGoogleIntegrations, getPlan } from "@/lib/plans";
 import {
   getIntegration,
@@ -21,7 +21,7 @@ export default async function IntegracionesPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   if (!canUseGoogleIntegrations(business.plan)) {

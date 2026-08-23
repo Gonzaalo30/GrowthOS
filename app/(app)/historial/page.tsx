@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getProfile } from "@/services/profile.service";
 import { getAllCompletedMissions } from "@/services/mission.service";
 import { getGrowthScoreTimeline } from "@/services/audit.service";
@@ -15,7 +15,7 @@ export default async function HistorialPage() {
 
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   const [profile, completedMissions, scoreTimeline, requests] = await Promise.all([

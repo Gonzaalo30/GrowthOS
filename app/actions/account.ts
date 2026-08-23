@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner, updateBusiness } from "@/services/business.service";
+import { getActiveBusiness, updateBusiness } from "@/services/business.service";
 import { updateProfileName, updateAvatarUrl, updateDateFormat } from "@/services/profile.service";
 import { uploadAvatar } from "@/services/avatar.service";
 import { normalizeDomain } from "@/lib/utils";
@@ -55,7 +55,7 @@ export async function updateBusinessAction(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Tu sesión ha caducado, inicia sesión de nuevo." };
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) return { error: "No tienes un negocio asociado." };
 
   await updateBusiness(supabase, business.id, { domain, businessType, city, companySize });

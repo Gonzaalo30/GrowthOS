@@ -4,8 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/actions/auth";
-import { getCommandPaletteContextAction, type CommandPaletteMission } from "@/app/actions/commandPalette";
+import {
+  getCommandPaletteContextAction,
+  type CommandPaletteMission,
+  type CommandPaletteBusiness,
+} from "@/app/actions/commandPalette";
 import { forceRefreshGrowthScoreAction } from "@/app/actions/audit";
+import { switchActiveBusinessAction } from "@/app/actions/business";
 
 interface NavCommand {
   kind: "nav";
@@ -49,6 +54,7 @@ export function CommandPalette() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [missions, setMissions] = useState<CommandPaletteMission[] | null>(null);
   const [canRefresh, setCanRefresh] = useState(false);
+  const [otherBusinesses, setOtherBusinesses] = useState<CommandPaletteBusiness[]>([]);
   const [, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -86,6 +92,7 @@ export function CommandPalette() {
           const result = await getCommandPaletteContextAction();
           setMissions(result.missions);
           setCanRefresh(result.canRefresh);
+          setOtherBusinesses(result.otherBusinesses);
         });
       }
     }
@@ -94,6 +101,21 @@ export function CommandPalette() {
 
   const actionCommands: ActionCommand[] = useMemo(() => {
     const commands: ActionCommand[] = [];
+    for (const business of otherBusinesses) {
+      commands.push({
+        kind: "action",
+        id: `switch-business-${business.id}`,
+        label: `Cambiar a ${business.domain}`,
+        hint: "Negocio",
+        run: () => {
+          startTransition(async () => {
+            const formData = new FormData();
+            formData.set("businessId", business.id);
+            await switchActiveBusinessAction(formData);
+          });
+        },
+      });
+    }
     if (canRefresh) {
       commands.push({
         kind: "action",
@@ -122,7 +144,7 @@ export function CommandPalette() {
     });
     return commands;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- router/startTransition son estables entre renders
-  }, [canRefresh]);
+  }, [canRefresh, otherBusinesses]);
 
   const missionCommands: MissionCommand[] = useMemo(
     () =>

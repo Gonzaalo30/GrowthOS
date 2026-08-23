@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getStripe } from "@/lib/stripe";
 import { getPlan, type PlanId } from "@/lib/plans";
 
@@ -27,7 +27,7 @@ export async function createPlanCheckoutAction(
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   const priceId = process.env[plan.priceEnvVar];
@@ -78,7 +78,7 @@ export async function createBillingPortalSessionAction() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   if (!business.stripe_customer_id) {

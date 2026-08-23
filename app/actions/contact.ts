@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { sendContactMessage } from "@/services/contact.service";
 import { trackEvent } from "@/lib/analytics";
 
@@ -29,7 +29,7 @@ export async function sendContactMessageAction(
 
   let businessId: string | null = null;
   if (user) {
-    const business = await getBusinessByOwner(supabase, user.id);
+    const business = await getActiveBusiness(supabase, user.id);
     businessId = business?.id ?? null;
   }
 

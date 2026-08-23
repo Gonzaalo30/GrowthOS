@@ -27,3 +27,8 @@ export async function updateDateFormat(
   const { error } = await supabase.from("profiles").update({ date_format: dateFormat }).eq("id", userId);
   if (error) throw error;
 }
+
+export async function updateActiveBusiness(supabase: Client, userId: string, businessId: string) {
+  const { error } = await supabase.from("profiles").update({ active_business_id: businessId }).eq("id", userId);
+  if (error) throw error;
+}

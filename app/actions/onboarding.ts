@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createBusiness } from "@/services/business.service";
+import { updateActiveBusiness } from "@/services/profile.service";
 import {
   seedMissionsForBusiness,
   getMissionsForBusiness,
@@ -59,6 +60,10 @@ export async function completeOnboardingAction(
 
   await seedMissionsForBusiness(supabase, business.id, businessType, audit);
   await recordGrowthScoreBaseline(supabase, business.id, business.growth_score, audit.unreachable ? [] : audit.checks);
+  // El negocio recién creado pasa a ser el activo, para que el dashboard al
+  // que redirige lo muestre a él (relevante sobre todo al añadir un segundo
+  // negocio, no solo el primero).
+  await updateActiveBusiness(supabase, user.id, business.id);
 
   // Elegimos, si existe, una misión de activación que no necesite verificación
   // real (autodeclarada) — así el primer "gana XP ahora mismo" en el dashboard

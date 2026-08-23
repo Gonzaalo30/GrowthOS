@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getProfile } from "@/services/profile.service";
 import { getBillingInfo, listInvoices, type BillingInfo, type InvoiceSummary } from "@/services/billing.service";
 import { getStripe } from "@/lib/stripe";
@@ -39,7 +39,7 @@ export default async function AccountPage({
 
   const [profile, business] = await Promise.all([
     getProfile(supabase, user.id),
-    getBusinessByOwner(supabase, user.id),
+    getActiveBusiness(supabase, user.id),
   ]);
 
   if (!business) redirect("/onboarding");

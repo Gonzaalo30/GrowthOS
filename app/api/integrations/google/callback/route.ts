@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { exchangeCodeForTokens } from "@/lib/googleApis";
 import { saveInitialConnection } from "@/services/googleIntegration.service";
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(`${origin}/login`);
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) return NextResponse.redirect(`${origin}/onboarding`);
 
   try {

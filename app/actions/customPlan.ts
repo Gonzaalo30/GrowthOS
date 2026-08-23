@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { requestCustomPlan } from "@/services/customPlan.service";
 
 export interface CustomPlanState {
@@ -26,7 +26,7 @@ export async function requestCustomPlanAction(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Inicia sesión primero para que sepamos qué negocio es." };
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) return { error: "No tienes un negocio asociado todavía." };
 
   await requestCustomPlan(supabase, business.id, details, contactEmail);

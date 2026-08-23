@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getStripe } from "@/lib/stripe";
 import { updateBillingInfo } from "@/services/billing.service";
 import { COUNTRIES } from "@/lib/countries";
@@ -36,7 +36,7 @@ export async function updateBillingInfoAction(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Tu sesión ha caducado, inicia sesión de nuevo." };
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business?.stripe_customer_id) {
     return { error: "Todavía no tienes datos de facturación — se crean al suscribirte por primera vez." };
   }

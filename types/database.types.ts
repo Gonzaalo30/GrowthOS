@@ -16,6 +16,7 @@ export interface Database {
           avatar_url: string | null;
           title: string | null;
           date_format: DateFormat;
+          active_business_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -25,6 +26,7 @@ export interface Database {
           avatar_url?: string | null;
           title?: string | null;
           date_format?: DateFormat;
+          active_business_id?: string | null;
           created_at?: string;
         };
         Update: Partial<{
@@ -33,6 +35,7 @@ export interface Database {
           avatar_url: string | null;
           title: string | null;
           date_format: DateFormat;
+          active_business_id: string | null;
         }>;
         Relationships: [];
       };

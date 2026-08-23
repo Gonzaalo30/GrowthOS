@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getProfile } from "@/services/profile.service";
 import {
   ensureDailyMissions,
@@ -38,12 +38,12 @@ export default async function DashboardPage({
 
   if (!user) redirect("/signup");
 
-  let business = await getBusinessByOwner(supabase, user.id);
+  let business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   const scoreRefresh = await refreshGrowthScoreIfStale(supabase, business.id, business.domain);
   if (scoreRefresh.refreshed) {
-    business = await getBusinessByOwner(supabase, user.id);
+    business = await getActiveBusiness(supabase, user.id);
     if (!business) redirect("/onboarding");
   }
 

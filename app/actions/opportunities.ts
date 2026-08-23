@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getStripe } from "@/lib/stripe";
 import { OPPORTUNITIES } from "@/lib/opportunities";
 
@@ -17,7 +17,7 @@ export async function createOpportunityCheckoutAction(opportunityId: string) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";

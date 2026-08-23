@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { PlanCard } from "@/features/billing/PlanCard";
@@ -19,7 +19,7 @@ export default async function PreciosPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const business = user ? await getBusinessByOwner(supabase, user.id) : null;
+  const business = user ? await getActiveBusiness(supabase, user.id) : null;
   const hasActiveSubscription = business?.subscription_status === "active";
 
   return (

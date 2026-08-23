@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getMissionsForBusiness, addBonusDailyMission } from "@/services/mission.service";
 import { getTodayChest, rollChestReward, recordChestOpen } from "@/services/chest.service";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
@@ -24,7 +24,7 @@ export async function openDailyChestAction(): Promise<OpenChestResult> {
   } = await supabase.auth.getUser();
   if (!user) throw new Error("No autenticado");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) throw new Error("Negocio no encontrado");
 
   const existing = await getTodayChest(supabase, business.id);

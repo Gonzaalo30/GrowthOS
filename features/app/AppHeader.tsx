@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOutAction } from "@/app/actions/auth";
 import { markNotificationsReadAction } from "@/app/actions/notifications";
+import { switchActiveBusinessAction } from "@/app/actions/business";
 import { LevelBadge } from "@/components/growth/LevelBadge";
 import { getLevelProgress } from "@/lib/levels";
+import { cn } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 
 type Notification = Database["public"]["Tables"]["notifications"]["Row"];
+type BusinessOption = { id: string; domain: string };
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
@@ -21,13 +24,18 @@ export function AppHeader({
   notifications = [],
   avatarUrl,
   xp,
+  businesses = [],
+  activeBusinessId,
 }: {
   notifications?: Notification[];
   avatarUrl?: string | null;
   xp?: number | null;
+  businesses?: BusinessOption[];
+  activeBusinessId?: string | null;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
   const [items, setItems] = useState(notifications);
   const [isMac, setIsMac] = useState(false);
 
@@ -54,6 +62,53 @@ export function AppHeader({
           <Link href="/dashboard" className="text-lg font-semibold tracking-tight text-foreground">
             Growth<span className="text-brand-500">OS</span>
           </Link>
+
+          {businesses.length > 1 && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setSwitcherOpen((v) => !v)}
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-zinc-600 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+              >
+                {businesses.find((b) => b.id === activeBusinessId)?.domain ?? "Elegir negocio"}
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+
+              {switcherOpen && (
+                <div className="absolute left-0 top-10 z-10 w-64 rounded-xl border border-border bg-white p-2 shadow-lg">
+                  <ul className="flex flex-col gap-0.5">
+                    {businesses.map((b) => (
+                      <li key={b.id}>
+                        <form action={switchActiveBusinessAction}>
+                          <input type="hidden" name="businessId" value={b.id} />
+                          <button
+                            type="submit"
+                            className={cn(
+                              "flex w-full items-center justify-between gap-2 rounded-lg px-2 py-2 text-left text-sm outline-none transition-colors hover:bg-surface-muted",
+                              b.id === activeBusinessId ? "font-medium text-brand-700" : "text-foreground",
+                            )}
+                          >
+                            {b.domain}
+                            {b.id === activeBusinessId && <span aria-hidden>✓</span>}
+                          </button>
+                        </form>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href="/onboarding?nuevo=1"
+                    onClick={() => setSwitcherOpen(false)}
+                    className="mt-1 block rounded-lg px-2 py-2 text-sm font-medium text-brand-600 outline-none hover:bg-surface-muted"
+                  >
+                    + Añadir otro negocio
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+
           {xp !== null && xp !== undefined && (
             <Link href="/dashboard" className="flex items-center gap-1.5">
               <LevelBadge level={getLevelProgress(xp).level} />

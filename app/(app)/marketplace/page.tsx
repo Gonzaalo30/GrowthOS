@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { getRequestsForBusiness } from "@/services/opportunity.service";
 import { OpportunityList } from "@/features/marketplace/OpportunityList";
 import { GrowthCard } from "@/components/growth/GrowthCard";
@@ -19,7 +19,7 @@ export default async function MarketplacePage({
 
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   const requests = await getRequestsForBusiness(supabase, business.id);

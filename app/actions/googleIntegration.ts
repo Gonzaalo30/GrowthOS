@@ -4,7 +4,7 @@ import { randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { canUseGoogleIntegrations } from "@/lib/plans";
 import { buildGoogleAuthUrl } from "@/lib/googleApis";
 import * as googleIntegrationService from "@/services/googleIntegration.service";
@@ -27,7 +27,7 @@ export async function connectGoogleAction() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
   if (!canUseGoogleIntegrations(business.plan)) redirect("/precios");
 
@@ -69,7 +69,7 @@ export async function selectGooglePropertiesAction(
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   try {
@@ -94,7 +94,7 @@ export async function refreshGoogleDataAction() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   const integration = await googleIntegrationService.getIntegration(supabase, business.id);
@@ -115,7 +115,7 @@ export async function disconnectGoogleAction() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
   await googleIntegrationService.disconnect(supabase, business.id);

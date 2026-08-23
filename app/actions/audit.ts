@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { getBusinessByOwner } from "@/services/business.service";
+import { getActiveBusiness } from "@/services/business.service";
 import { forceRefreshGrowthScore } from "@/services/audit.service";
 import { canRefreshOnDemand } from "@/lib/plans";
 
@@ -18,7 +18,7 @@ export async function forceRefreshGrowthScoreAction(): Promise<ForceRefreshResul
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Tu sesión ha caducado, inicia sesión de nuevo." };
 
-  const business = await getBusinessByOwner(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) return { success: false, error: "No tienes un negocio asociado." };
 
   if (!canRefreshOnDemand(business.plan)) {
