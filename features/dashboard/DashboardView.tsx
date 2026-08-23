@@ -16,6 +16,7 @@ import { MascotMessage } from "@/components/growth/Mascot";
 import { Achievements } from "@/components/growth/Achievements";
 import { PlanBadge } from "@/components/growth/PlanBadge";
 import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
+import { DashboardTabs } from "@/components/growth/DashboardTabs";
 import { Greeting } from "@/features/dashboard/Greeting";
 import { WeeklyBrief } from "@/features/dashboard/WeeklyBrief";
 import { getLevelProgress } from "@/lib/levels";
@@ -135,93 +136,108 @@ export function DashboardView({
         <MascotMessage message={`Hoy puedes subir al nivel ${levelProgress.next.name} si completas tus Quick Wins.`} />
       )}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
-        <div className="flex flex-col gap-6 lg:col-span-2">
-          <GrowthCard glow className="flex flex-col gap-6">
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-              <ScoreCircle score={business.growth_score} potential={business.growth_potential} />
-              <div className="text-center sm:text-left">
-                <div className="flex flex-col items-center gap-2 sm:flex-row">
-                  <h1 className="text-lg font-semibold text-foreground">{business.domain}</h1>
-                  <LevelBadge level={levelProgress.level} />
-                  <StreakBadge days={business.streak_count} />
-                  <PlanBadge planId={business.plan} />
-                </div>
-                <p className="mt-1 text-sm text-zinc-600">
-                  Hoy tienes <span className="font-medium text-foreground">{pendingDaily} Quick Wins</span>
-                  {weeklyMission && !weeklyMission.completed_at && (
-                    <> y <span className="font-medium text-foreground">1 misión semanal</span></>
+      <DashboardTabs
+        tabs={[
+          {
+            id: "tareas",
+            label: "Tareas",
+            content: (
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
+                <div className="flex flex-col gap-6 lg:col-span-2">
+                  <GrowthCard glow className="flex flex-col gap-6">
+                    <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+                      <ScoreCircle score={business.growth_score} potential={business.growth_potential} />
+                      <div className="text-center sm:text-left">
+                        <div className="flex flex-col items-center gap-2 sm:flex-row">
+                          <h1 className="text-lg font-semibold text-foreground">{business.domain}</h1>
+                          <LevelBadge level={levelProgress.level} />
+                          <StreakBadge days={business.streak_count} />
+                          <PlanBadge planId={business.plan} />
+                        </div>
+                        <p className="mt-1 text-sm text-zinc-600">
+                          Hoy tienes <span className="font-medium text-foreground">{pendingDaily} Quick Wins</span>
+                          {weeklyMission && !weeklyMission.completed_at && (
+                            <> y <span className="font-medium text-foreground">1 misión semanal</span></>
+                          )}
+                          .
+                        </p>
+                      </div>
+                    </div>
+
+                    <XPBar xp={business.xp} progress={levelProgress} />
+                    <MomentumScore data={momentum} />
+
+                    {scoreBreakdown && scoreBreakdown.length > 0 && (
+                      <>
+                        <CategoryScores checks={scoreBreakdown} />
+                        <ScoreBreakdown checks={scoreBreakdown} />
+                      </>
+                    )}
+
+                    {canRefreshOnDemand(business.plan) && <RefreshScoreButton />}
+                  </GrowthCard>
+
+                  <div>
+                    <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                      Quick Wins de hoy
+                    </h2>
+                    <div className="flex flex-col gap-3">
+                      {visibleDailyMissionsToday.map((mission) => (
+                        <MissionCard
+                          key={mission.id}
+                          mission={mission}
+                          quickWinNumber={mission.sequence_number ?? undefined}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {weeklyMission && (
+                    <div>
+                      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                        Misión de la semana
+                      </h2>
+                      <MissionCard mission={weeklyMission} celebrateWithModal />
+                    </div>
                   )}
-                  .
-                </p>
+                </div>
+
+                <div className="flex flex-col gap-6">
+                  <DailyChest todayChest={todayChest} />
+                </div>
               </div>
-            </div>
+            ),
+          },
+          {
+            id: "progreso",
+            label: "Progreso",
+            content: (
+              <div className="flex flex-col gap-6">
+                <GrowthCalendar counts={dailyCounts} />
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+                  <GrowthReplay
+                    timeline={scoreTimeline}
+                    completedMissions={replayMissions}
+                    dateFormat={dateFormat}
+                    canRefresh={canRefreshOnDemand(business.plan)}
+                  />
+                  {achievements.length > 0 && <Achievements achievements={achievements} />}
+                </div>
+              </div>
+            ),
+          },
+        ]}
+      />
 
-            <XPBar xp={business.xp} progress={levelProgress} />
-            <MomentumScore data={momentum} />
-
-            {scoreBreakdown && scoreBreakdown.length > 0 && (
-              <>
-                <CategoryScores checks={scoreBreakdown} />
-                <ScoreBreakdown checks={scoreBreakdown} />
-              </>
-            )}
-
-            {canRefreshOnDemand(business.plan) && <RefreshScoreButton />}
-          </GrowthCard>
-
+      <Link href="/marketplace">
+        <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-400">
           <div>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-              Quick Wins de hoy
-            </h2>
-            <div className="flex flex-col gap-3">
-              {visibleDailyMissionsToday.map((mission) => (
-                <MissionCard
-                  key={mission.id}
-                  mission={mission}
-                  quickWinNumber={mission.sequence_number ?? undefined}
-                />
-              ))}
-            </div>
+            <h2 className="font-medium text-foreground">Centro de Mejoras</h2>
+            <p className="mt-1 text-sm text-zinc-600">Mejoras con precio cerrado, cuando quieras ir más rápido.</p>
           </div>
-
-          {weeklyMission && (
-            <div>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-                Misión de la semana
-              </h2>
-              <MissionCard mission={weeklyMission} celebrateWithModal />
-            </div>
-          )}
-
-          <GrowthCalendar counts={dailyCounts} />
-        </div>
-
-        <div className="flex flex-col gap-6">
-          <DailyChest todayChest={todayChest} />
-
-          <GrowthReplay
-            timeline={scoreTimeline}
-            completedMissions={replayMissions}
-            dateFormat={dateFormat}
-            canRefresh={canRefreshOnDemand(business.plan)}
-          />
-
-          {achievements.length > 0 && <Achievements achievements={achievements} />}
-
-          <Link href="/marketplace">
-            <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-400">
-              <div>
-                <h2 className="font-medium text-foreground">Centro de Mejoras</h2>
-                <p className="mt-1 text-sm text-zinc-600">
-                  Mejoras con precio cerrado, cuando quieras ir más rápido.
-                </p>
-              </div>
-              <span className="text-brand-600">→</span>
-            </GrowthCard>
-          </Link>
-        </div>
-      </div>
+          <span className="text-brand-600">→</span>
+        </GrowthCard>
+      </Link>
     </div>
   );
 }

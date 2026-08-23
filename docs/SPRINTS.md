@@ -284,6 +284,14 @@ El fundador pasó la idea de "micro-lecciones de 30 segundos" bajo cada misión,
 - [x] Mostrado bajo el tutorial paso a paso en `MissionCard` (al abrir "¿Cómo lo hago?") y en `FocusMode` (adaptado a su tema oscuro), con el mismo formato 💡 en ambos sitios.
 - [x] Verificado en pestaña limpia: tip visible correctamente en la tarjeta normal y en Modo Enfoque, sin errores de consola; `tsc --noEmit`, `eslint` y `next build` limpios.
 
+## Sprint 4.18 — Dashboard en pestañas: Tareas / Progreso (COMPLETADO 2026-08-23)
+El fundador pidió separar el dashboard en dos vistas para no mezclar "lo que toca hacer hoy" con "cómo voy en el tiempo".
+- [x] **`DashboardTabs`** (`components/growth/DashboardTabs.tsx`), componente genérico reutilizable de pestañas accesibles (`role="tablist"/"tab"/"tabpanel"`), con el mismo estilo de píldora ya usado en los filtros del Centro de Mejoras.
+- [x] **Pestaña "Tareas"** (por defecto): Growth Score, Quick Wins, misión semanal y cofre diario — todo lo que se usa a diario.
+- [x] **Pestaña "Progreso"**: Calendario de Crecimiento, Growth Replay y Logros — todo lo que se consulta para ver evolución, no para actuar.
+- [x] "Centro de Mejoras" se queda fuera de las pestañas, siempre visible, por ser un aviso comercial aparte.
+- [x] Verificado en pestaña limpia (cambio real de contenido al pulsar cada pestaña, sin errores de consola); `eslint`, `tsc --noEmit` y `next build` limpios.
+
 ## Sprint 5.1 — Google Search Console + Analytics reales (planes Growth/Autopilot) (COMPLETADO 2026-08-23, pendiente de credenciales para probar en vivo)
 El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Analytics con un chat de IA. El código de ejemplo era 100% simulado: respuestas de IA con `setTimeout` y texto hardcodeado, usuario inventado ("Javier"), tema oscuro, y un precio ($149/mes) que no encaja con los planes reales. Se dividió en dos partes con el fundador: solo se construye la de datos reales por ahora; el chat de IA necesitaría conectar y pagar una API de LLM real, decisión aparte para otro día.
 - [x] **OAuth real con Google** (`lib/googleApis.ts`, paquete oficial `googleapis`): flujo propio de OAuth2 (no mezclado con el login de Supabase, que sigue siendo email/contraseña), con protección CSRF por cookie de estado (`app/actions/googleIntegration.ts`, `app/api/integrations/google/callback/route.ts`).
