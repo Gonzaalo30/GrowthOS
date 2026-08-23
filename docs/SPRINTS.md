@@ -303,7 +303,7 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - **Pendiente, no lo puedo hacer yo**: el fundador tiene que crear el proyecto y las credenciales OAuth en Google Cloud (activar Search Console API + Analytics Data API + Analytics Admin API, configurar la pantalla de consentimiento en modo Testing, crear el Client ID/Secret) y pegarlas en `.env.local` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_TOKEN_ENCRYPTION_KEY`), además de aplicar la migración `0019` en Supabase. Sin eso, verificado hasta donde se pudo: estado de muro de pago correcto en pestaña limpia, enlace de navegación y comando del Cmd+K funcionando.
 
-## Sprint 4.19 — Varios negocios por cuenta (COMPLETADO 2026-08-23, pendiente de migración para probar en vivo)
+## Sprint 4.19 — Varios negocios por cuenta (COMPLETADO 2026-08-23)
 El fundador pidió que una misma persona pueda gestionar varios negocios/dominios desde una cuenta. Se confirmó con él el modelo: cada negocio sigue siendo independiente de verdad (su propio Growth Score, XP, plan de pago y cliente de Stripe) — no se comparte un plan entre negocios de la misma cuenta.
 - [x] **Migración `0020`**: elimina la restricción `businesses_owner_id_unique`; añade `profiles.active_business_id` (el negocio que se está viendo ahora mismo, guardado en el perfil para que persista entre dispositivos, no en una cookie).
 - [x] **`getActiveBusiness`** (`services/business.service.ts`) sustituye a `getBusinessByOwner` en los 21 sitios que lo usaban — resuelve el negocio activo real (o el más reciente si no hay ninguno guardado todavía), sin romper ninguna página existente.
@@ -311,7 +311,7 @@ El fundador pidió que una misma persona pueda gestionar varios negocios/dominio
 - [x] **Flujo de alta reutilizado**: `/onboarding?nuevo=1` reabre el mismo asistente para dar de alta un segundo negocio (antes bloqueado si ya existía uno); el negocio recién creado queda activo automáticamente.
 - [x] RLS no necesitó ningún cambio: las políticas de las tablas hijas ya comprueban propiedad vía `business_id`, no asumen un único negocio por owner.
 - [x] `eslint`, `tsc --noEmit` y `next build` limpios.
-- **Pendiente, no lo puedo hacer yo**: aplicar la migración `0020` en Supabase. Sin eso, verificado hasta donde se pudo (build limpio); la prueba en vivo (crear un segundo negocio, cambiar entre ellos, confirmar que persiste tras recargar) queda para en cuanto se aplique.
+- [x] Verificado en vivo de extremo a extremo tras aplicar la migración `0020`: creado un segundo negocio real desde "+ Añadir otro negocio" (quedó activo automáticamente con sus propios Quick Wins y 0 XP), cambio al primero desde el selector (sus propios 55 XP y misiones reales), y confirmado que la elección persiste tras recargar la página completa.
 
 ## Sprint 5 — Integraciones
 - Plugin WordPress (integración futura, no parte del core SaaS)
