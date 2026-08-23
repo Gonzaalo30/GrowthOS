@@ -236,7 +236,7 @@ export function DashboardView({
       />
 
       <Link href="/marketplace">
-        <GrowthCard className="flex items-center justify-between transition-colors hover:border-brand-400">
+        <GrowthCard className="flex items-center justify-between transition-all hover:-translate-y-0.5 hover:border-brand-400 hover:shadow-md">
           <div>
             <h2 className="font-medium text-foreground">Centro de Mejoras</h2>
             <p className="mt-1 text-sm text-zinc-600">Mejoras con precio cerrado, cuando quieras ir más rápido.</p>

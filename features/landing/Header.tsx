@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 
 const NAV_LINKS = [
@@ -63,32 +64,42 @@ export function Header() {
         </button>
       </div>
 
-      {menuOpen && (
-        <nav className="flex flex-col gap-1 border-t border-border px-6 py-4 sm:hidden">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="rounded-lg px-2 py-2 text-sm text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-            <Link
-              href="/login"
-              onClick={() => setMenuOpen(false)}
-              className="rounded-lg px-2 py-2 text-sm font-medium text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
-            >
-              Iniciar sesión
-            </Link>
-            <Link href="/signup" onClick={() => setMenuOpen(false)}>
-              <Button className="w-full">Empezar gratis</Button>
-            </Link>
-          </div>
-        </nav>
-      )}
+      <AnimatePresence initial={false}>
+        {menuOpen && (
+          <motion.nav
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="flex flex-col gap-1 overflow-hidden border-t border-border px-6 sm:hidden"
+          >
+            <div className="flex flex-col gap-1 py-4">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg px-2 py-2 text-sm text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg px-2 py-2 text-sm font-medium text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                >
+                  Iniciar sesión
+                </Link>
+                <Link href="/signup" onClick={() => setMenuOpen(false)}>
+                  <Button className="w-full">Empezar gratis</Button>
+                </Link>
+              </div>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface Tab {
@@ -34,11 +35,22 @@ export function DashboardTabs({ tabs }: { tabs: Tab[] }) {
         ))}
       </div>
 
-      {tabs.map((tab) => (
-        <div key={tab.id} role="tabpanel" hidden={activeId !== tab.id}>
-          {tab.content}
-        </div>
-      ))}
+      <AnimatePresence mode="wait">
+        {tabs
+          .filter((tab) => tab.id === activeId)
+          .map((tab) => (
+            <motion.div
+              key={tab.id}
+              role="tabpanel"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.15 }}
+            >
+              {tab.content}
+            </motion.div>
+          ))}
+      </AnimatePresence>
     </div>
   );
 }

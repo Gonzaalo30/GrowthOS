@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { signOutAction } from "@/app/actions/auth";
 import {
@@ -193,49 +194,59 @@ export function CommandPalette() {
     }
   }
 
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-24 backdrop-blur-sm"
-      onClick={close}
-    >
-      <div
-        className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <input
-          ref={inputRef}
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setSelectedIndex(0);
-          }}
-          onKeyDown={handleInputKeyDown}
-          placeholder="Busca una página o una misión pendiente…"
-          className="w-full border-b border-border px-5 py-4 text-sm text-foreground placeholder:text-zinc-500 outline-none"
-        />
-        <div className="max-h-80 overflow-y-auto p-2">
-          {filtered.length === 0 && (
-            <p className="px-3 py-4 text-center text-sm text-zinc-500">Sin resultados.</p>
-          )}
-          {filtered.map((command, i) => (
-            <button
-              key={`${command.kind}-${command.id}`}
-              type="button"
-              onClick={() => runCommand(command)}
-              onMouseEnter={() => setSelectedIndex(i)}
-              className={cn(
-                "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-500",
-                i === selectedIndex ? "bg-brand-50 text-brand-700" : "text-foreground hover:bg-surface-muted",
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-24 backdrop-blur-sm"
+          onClick={close}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSelectedIndex(0);
+              }}
+              onKeyDown={handleInputKeyDown}
+              placeholder="Busca una página o una misión pendiente…"
+              className="w-full border-b border-border px-5 py-4 text-sm text-foreground placeholder:text-zinc-500 outline-none"
+            />
+            <div className="max-h-80 overflow-y-auto p-2">
+              {filtered.length === 0 && (
+                <p className="px-3 py-4 text-center text-sm text-zinc-500">Sin resultados.</p>
               )}
-            >
-              <span className="truncate font-medium">{command.label}</span>
-              <span className="shrink-0 whitespace-nowrap text-xs text-zinc-500">{command.hint}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+              {filtered.map((command, i) => (
+                <button
+                  key={`${command.kind}-${command.id}`}
+                  type="button"
+                  onClick={() => runCommand(command)}
+                  onMouseEnter={() => setSelectedIndex(i)}
+                  className={cn(
+                    "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-500",
+                    i === selectedIndex ? "bg-brand-50 text-brand-700" : "text-foreground hover:bg-surface-muted",
+                  )}
+                >
+                  <span className="truncate font-medium">{command.label}</span>
+                  <span className="shrink-0 whitespace-nowrap text-xs text-zinc-500">{command.hint}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
