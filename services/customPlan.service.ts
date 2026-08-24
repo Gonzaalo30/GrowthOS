@@ -5,12 +5,13 @@ type Client = SupabaseClient<Database>;
 
 export async function requestCustomPlan(
   supabase: Client,
-  businessId: string,
-  details: string,
-  contactEmail: string,
+  data: { name: string; details: string; contactEmail: string; businessId: string | null },
 ) {
-  const { error } = await supabase
-    .from("custom_plan_requests")
-    .insert({ business_id: businessId, details, contact_email: contactEmail });
+  const { error } = await supabase.from("custom_plan_requests").insert({
+    business_id: data.businessId,
+    name: data.name,
+    details: data.details,
+    contact_email: data.contactEmail,
+  });
   if (error) throw error;
 }

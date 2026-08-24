@@ -374,7 +374,8 @@ export interface Database {
       custom_plan_requests: {
         Row: {
           id: string;
-          business_id: string;
+          business_id: string | null;
+          name: string | null;
           details: string;
           contact_email: string;
           status: OpportunityRequestStatus;
@@ -382,7 +383,8 @@ export interface Database {
         };
         Insert: {
           id?: string;
-          business_id: string;
+          business_id?: string | null;
+          name?: string | null;
           details: string;
           contact_email: string;
           status?: OpportunityRequestStatus;
