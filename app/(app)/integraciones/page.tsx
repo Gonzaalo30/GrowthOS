@@ -12,9 +12,9 @@ import { GoogleIntegrationView } from "@/features/integrations/GoogleIntegration
 export default async function IntegracionesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ connected?: string; error?: string }>;
+  searchParams: Promise<{ connected?: string; error?: string; switchSC?: string; switchGA?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, switchSC, switchGA } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -43,10 +43,10 @@ export default async function IntegracionesPage({
   }
 
   // Se piden las opciones reales de Google mientras falte configurar
-  // cualquiera de los dos — cada bloque (Search Console / Analytics) es
-  // independiente, uno puede quedar sin configurar indefinidamente.
+  // cualquiera de los dos, o si el usuario quiere cambiar el sitio/propiedad
+  // ya elegido — cada bloque (Search Console / Analytics) es independiente.
   let availableProperties: Awaited<ReturnType<typeof listAvailableProperties>> = null;
-  if (integration && (!hasSearchConsole || !hasAnalytics)) {
+  if (integration && (!hasSearchConsole || !hasAnalytics || switchSC === "1" || switchGA === "1")) {
     try {
       availableProperties = await listAvailableProperties(supabase, business.id);
     } catch {
@@ -61,6 +61,8 @@ export default async function IntegracionesPage({
       integration={integration}
       availableProperties={availableProperties}
       error={error}
+      switchSearchConsole={switchSC === "1"}
+      switchAnalytics={switchGA === "1"}
     />
   );
 }

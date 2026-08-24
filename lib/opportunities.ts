@@ -137,6 +137,28 @@ export const OPPORTUNITIES: Opportunity[] = [
     category: "conversion",
   },
   {
+    id: "gsc-analytics-setup",
+    title: "Te configuramos Search Console y Analytics",
+    description:
+      "Damos de alta y verificamos tu propiedad en Google Search Console y tu propiedad en Google Analytics, y las dejamos listas para conectar aquí en GrowthOS.",
+    priceCents: 9900,
+    pricing: "one_time",
+    expectedImpact: "Empiezas a ver tus datos reales de SEO y tráfico sin tener que averiguar tú cómo darlos de alta",
+    implementationTime: "2-3 días laborables",
+    category: "google",
+  },
+  {
+    id: "cookies-rgpd",
+    title: "Configurar cookies y cumplimiento RGPD",
+    description:
+      "Implementamos un banner de cookies real y revisamos los avisos legales básicos de tu web para que cumplas con el RGPD.",
+    priceCents: 12900,
+    pricing: "one_time",
+    expectedImpact: "Dejas de exponerte a sanciones por no pedir consentimiento de cookies correctamente",
+    implementationTime: "2-4 días laborables",
+    category: "seguridad",
+  },
+  {
     id: "landing-optimizada",
     title: "Optimizar tu página para conversión",
     description:

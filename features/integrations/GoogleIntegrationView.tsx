@@ -43,15 +43,21 @@ export function GoogleIntegrationView({
   integration,
   availableProperties,
   error,
+  switchSearchConsole = false,
+  switchAnalytics = false,
 }: {
   locked: boolean;
   plan: Plan;
   integration?: GoogleIntegration | null;
   availableProperties?: { sites: { siteUrl: string }[]; properties: { propertyId: string; propertyName: string }[] } | null;
   error?: string;
+  switchSearchConsole?: boolean;
+  switchAnalytics?: boolean;
 }) {
   const hasSearchConsole = Boolean(integration?.search_console_site_url);
   const hasAnalytics = Boolean(integration?.ga4_property_id);
+  const showSearchConsoleForm = !hasSearchConsole || switchSearchConsole;
+  const showAnalyticsForm = !hasAnalytics || switchAnalytics;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-12">
@@ -131,19 +137,43 @@ export function GoogleIntegrationView({
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Search Console</h2>
                 {hasSearchConsole && (
-                  <form action={clearSearchConsoleSiteAction}>
-                    <button type="submit" className="text-xs text-zinc-500 underline underline-offset-2 hover:text-red-600">
-                      Quitar
-                    </button>
-                  </form>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={showSearchConsoleForm ? "/integraciones" : "/integraciones?switchSC=1"}
+                      className="text-xs text-zinc-500 underline underline-offset-2 hover:text-brand-600"
+                    >
+                      {showSearchConsoleForm ? "Cancelar" : "Cambiar sitio"}
+                    </Link>
+                    {!showSearchConsoleForm && (
+                      <form action={clearSearchConsoleSiteAction}>
+                        <button
+                          type="submit"
+                          className="text-xs text-zinc-500 underline underline-offset-2 hover:text-red-600"
+                        >
+                          Quitar
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 )}
               </div>
-              {hasSearchConsole && integration.search_console_data ? (
+              {showSearchConsoleForm ? (
+                <>
+                  {hasSearchConsole && (
+                    <p className="mb-2 text-xs text-zinc-500">
+                      Conectado ahora: <span className="font-medium">{integration.search_console_site_url}</span>
+                    </p>
+                  )}
+                  <SelectSearchConsoleSiteForm
+                    sites={availableProperties?.sites ?? []}
+                    currentSiteUrl={integration.search_console_site_url}
+                  />
+                  <GoogleSetupHelp type="search_console" />
+                </>
+              ) : integration.search_console_data ? (
                 <SearchConsoleMetrics data={integration.search_console_data as unknown as SearchConsoleSummary} />
-              ) : hasSearchConsole ? (
-                <p className="text-sm text-zinc-500">Sincronizando…</p>
               ) : (
-                <SelectSearchConsoleSiteForm sites={availableProperties?.sites ?? []} />
+                <p className="text-sm text-zinc-500">Sincronizando…</p>
               )}
             </GrowthCard>
 
@@ -151,25 +181,88 @@ export function GoogleIntegrationView({
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Google Analytics</h2>
                 {hasAnalytics && (
-                  <form action={clearAnalyticsPropertyAction}>
-                    <button type="submit" className="text-xs text-zinc-500 underline underline-offset-2 hover:text-red-600">
-                      Quitar
-                    </button>
-                  </form>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={showAnalyticsForm ? "/integraciones" : "/integraciones?switchGA=1"}
+                      className="text-xs text-zinc-500 underline underline-offset-2 hover:text-brand-600"
+                    >
+                      {showAnalyticsForm ? "Cancelar" : "Cambiar propiedad"}
+                    </Link>
+                    {!showAnalyticsForm && (
+                      <form action={clearAnalyticsPropertyAction}>
+                        <button
+                          type="submit"
+                          className="text-xs text-zinc-500 underline underline-offset-2 hover:text-red-600"
+                        >
+                          Quitar
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 )}
               </div>
-              {hasAnalytics && integration.analytics_data ? (
+              {showAnalyticsForm ? (
+                <>
+                  {hasAnalytics && (
+                    <p className="mb-2 text-xs text-zinc-500">
+                      Conectada ahora: <span className="font-medium">{integration.ga4_property_name}</span>
+                    </p>
+                  )}
+                  <SelectAnalyticsPropertyForm
+                    properties={availableProperties?.properties ?? []}
+                    currentPropertyId={integration.ga4_property_id}
+                  />
+                  <GoogleSetupHelp type="analytics" />
+                </>
+              ) : integration.analytics_data ? (
                 <AnalyticsMetrics data={integration.analytics_data as unknown as AnalyticsSummary} />
-              ) : hasAnalytics ? (
-                <p className="text-sm text-zinc-500">Sincronizando…</p>
               ) : (
-                <SelectAnalyticsPropertyForm properties={availableProperties?.properties ?? []} />
+                <p className="text-sm text-zinc-500">Sincronizando…</p>
               )}
             </GrowthCard>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function GoogleSetupHelp({ type }: { type: "search_console" | "analytics" }) {
+  const content =
+    type === "search_console"
+      ? {
+          title: "¿No tienes Search Console todavía?",
+          steps: [
+            "Entra en search.google.com/search-console con tu cuenta de Google.",
+            "Añade tu web como propiedad (con el dominio completo, ej. tuweb.com).",
+            "Verifica que eres el dueño — la forma más simple suele ser subir un archivo HTML o añadir una etiqueta a tu web.",
+          ],
+        }
+      : {
+          title: "¿No tienes Google Analytics todavía?",
+          steps: [
+            "Entra en analytics.google.com con tu cuenta de Google.",
+            "Crea una cuenta y una propiedad para tu negocio.",
+            "Pega el fragmento de código que te da Google en tu web (o pide ayuda si no sabes tocar el código).",
+          ],
+        };
+
+  return (
+    <details className="mt-4 rounded-lg border border-border bg-surface px-3 py-2">
+      <summary className="cursor-pointer text-xs font-medium text-zinc-600">{content.title}</summary>
+      <ol className="mt-2 flex list-decimal flex-col gap-1 pl-4 text-xs text-zinc-600">
+        {content.steps.map((step, i) => (
+          <li key={i}>{step}</li>
+        ))}
+      </ol>
+      <p className="mt-2 text-xs text-zinc-500">
+        ¿Prefieres que lo hagamos nosotros por ti?{" "}
+        <Link href="/marketplace" className="font-medium text-brand-600 underline underline-offset-2">
+          Te lo configuramos por un precio cerrado en el Centro de Mejoras
+        </Link>
+        .
+      </p>
+    </details>
   );
 }
 

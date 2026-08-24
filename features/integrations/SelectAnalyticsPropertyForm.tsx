@@ -10,7 +10,13 @@ import type { GoogleAnalyticsPropertyOption } from "@/lib/googleApis";
 
 const initialState: GoogleIntegrationActionState = {};
 
-export function SelectAnalyticsPropertyForm({ properties }: { properties: GoogleAnalyticsPropertyOption[] }) {
+export function SelectAnalyticsPropertyForm({
+  properties,
+  currentPropertyId,
+}: {
+  properties: GoogleAnalyticsPropertyOption[];
+  currentPropertyId?: string | null;
+}) {
   const [state, formAction, isPending] = useActionState(selectAnalyticsPropertyAction, initialState);
 
   return (
@@ -21,6 +27,7 @@ export function SelectAnalyticsPropertyForm({ properties }: { properties: Google
           name="propertyId"
           required
           disabled={properties.length === 0}
+          defaultValue={currentPropertyId ?? ""}
           onChange={(e) => {
             const name = e.target.selectedOptions[0]?.dataset.name ?? "";
             const hidden = e.currentTarget.form?.elements.namedItem("propertyName") as HTMLInputElement | null;
@@ -46,7 +53,7 @@ export function SelectAnalyticsPropertyForm({ properties }: { properties: Google
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={isPending || properties.length === 0} className="self-start">
-        {isPending ? "Conectando…" : "Conectar Analytics"}
+        {isPending ? "Guardando…" : currentPropertyId ? "Guardar cambio" : "Conectar Analytics"}
       </Button>
     </form>
   );

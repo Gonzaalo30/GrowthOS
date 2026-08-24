@@ -10,7 +10,13 @@ import type { GoogleSiteOption } from "@/lib/googleApis";
 
 const initialState: GoogleIntegrationActionState = {};
 
-export function SelectSearchConsoleSiteForm({ sites }: { sites: GoogleSiteOption[] }) {
+export function SelectSearchConsoleSiteForm({
+  sites,
+  currentSiteUrl,
+}: {
+  sites: GoogleSiteOption[];
+  currentSiteUrl?: string | null;
+}) {
   const [state, formAction, isPending] = useActionState(selectSearchConsoleSiteAction, initialState);
 
   return (
@@ -21,6 +27,7 @@ export function SelectSearchConsoleSiteForm({ sites }: { sites: GoogleSiteOption
           name="siteUrl"
           required
           disabled={sites.length === 0}
+          defaultValue={currentSiteUrl ?? ""}
           className="mt-1 w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <option value="">Elige un sitio…</option>
@@ -40,7 +47,7 @@ export function SelectSearchConsoleSiteForm({ sites }: { sites: GoogleSiteOption
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={isPending || sites.length === 0} className="self-start">
-        {isPending ? "Conectando…" : "Conectar Search Console"}
+        {isPending ? "Guardando…" : currentSiteUrl ? "Guardar cambio" : "Conectar Search Console"}
       </Button>
     </form>
   );

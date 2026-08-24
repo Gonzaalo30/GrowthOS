@@ -303,6 +303,13 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 5.3 — Cambiar sitio/propiedad de Google ya conectado, ayuda gratuita, y 2 mejoras nuevas de Marketplace (COMPLETADO 2026-08-24)
+El fundador detectó que, una vez elegido un sitio de Search Console o una propiedad de Analytics, no había forma de cambiarlo — solo "Quitar" (desconectar del todo). También pidió un texto gratuito para quien no tiene cuenta de Google todavía, y de ahí salieron dos ideas nuevas de Centro de Mejoras.
+- [x] **"Cambiar sitio"/"Cambiar propiedad"** junto a "Quitar" en `/integraciones` (`GoogleIntegrationView.tsx`) — abre el mismo selector sin perder la conexión de Google ni los datos del otro bloque, con la opción actual premarcada y el botón diciendo "Guardar cambio". Arregla también un bug real: la lista de sitios/propiedades de Google solo se pedía cuando faltaba alguno de los dos por configurar — nunca se podía recargar la lista una vez ambos estaban ya elegidos.
+- [x] **Ayuda gratuita** ("¿No tienes Search Console/Analytics todavía?") como desplegable con los pasos reales para darse de alta, con enlace al Centro de Mejoras para quien prefiera que se lo hagamos nosotros.
+- [x] **2 mejoras nuevas en `lib/opportunities.ts`**: "Te configuramos Search Console y Analytics" (99€, categoría Google) y "Configurar cookies y cumplimiento RGPD" (129€, categoría Seguridad) — mismo catálogo y checkout real de Stripe que el resto, sin tabla nueva en BD.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios. Verificado en local que `/precios` muestra las 2 mejoras nuevas con su precio real.
+
 ## Sprint 4.25 — "Mi cuenta" reorganizada en pestañas (COMPLETADO 2026-08-24)
 El fundador vio la página de cuenta desordenada (tarjetas de pago, seguridad y perfil mezcladas en dos columnas) y pidió separarlo por temas.
 - [x] 4 pestañas con `DashboardTabs` (ya existía, reutilizado tal cual — mismo patrón que las pestañas del dashboard): **Perfil** (avatar, datos, preferencias, logros), **Negocio**, **Facturación** (plan, aviso del 5% de fidelidad, datos de facturación, historial de facturas) y **Seguridad** (contraseña, verificación en dos pasos, sesiones).
