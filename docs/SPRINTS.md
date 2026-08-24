@@ -303,6 +303,12 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 4.27 — Search Console/Analytics como beneficio explícito de Growth (COMPLETADO 2026-08-24)
+El fundador pidió dejar claro en el precio que Growth/Autopilot incluyen conectar Search Console y Analytics reales, y que eso hace las misiones más personalizadas — ya era una función real (`canUseGoogleIntegrations`), pero no aparecía en el listado público de beneficios del plan.
+- [x] Nueva línea en `lib/plans.ts` (features de Growth, heredada por Autopilot vía "Todo lo del plan Growth"): "Conecta tu Search Console y Analytics reales para misiones más personalizadas".
+- [x] `eslint` y `tsc --noEmit` limpios. Verificado en local que aparece en `/precios` dentro de la tarjeta Growth.
+- **Descartado por ahora, no soy yo quien decide seguir**: detectar automáticamente si un negocio tiene ficha de Google Business a partir del dominio (vía scraping) no es viable ni permitido — la alternativa real es la API de Google Places (de pago, y exige guardar el nombre real del negocio en el onboarding, que hoy no se pide). Queda pendiente de decisión del fundador si se monta más adelante.
+
 ## Sprint 3.11 — Ajustes de landing: buscador centrado, footer sin datos personales, menú "Ayuda" (COMPLETADO 2026-08-24)
 El fundador notó el buscador de la home descentrado, no quería su nombre/NIF visibles en el footer de cada página, y pidió agrupar cómo funciona/contacto/soporte bajo un único menú de ayuda.
 - [x] **Buscador centrado de verdad** (`features/landing/Hero.tsx`): primero se probó mantener el panel de vista previa (Growth Score en directo mientras escribes) pero solo ocupando espacio cuando existía de verdad — pero el fundador prefirió quitar del todo esa vista previa antes de buscar, para que el buscador se quede centrado siempre, sin nada que lo desplace. Se elimina el panel, el debounce y `getHeroPreviewAction` (borrado por no usarse ya en ningún sitio) — el buscador vuelve a ser un formulario simple y centrado.

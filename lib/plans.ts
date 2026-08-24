@@ -39,6 +39,7 @@ export const PLANS: Plan[] = [
       "Todo lo del plan Gratis",
       "Quick Wins ilimitados al día",
       "Reanaliza tu web cuando quieras, sin esperar 7 días",
+      "Conecta tu Search Console y Analytics reales para misiones más personalizadas",
       "Insignia Growth en tu perfil",
     ],
   },
