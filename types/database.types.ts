@@ -195,6 +195,40 @@ export interface Database {
         }>;
         Relationships: [];
       };
+      google_business_checklists: {
+        Row: {
+          id: string;
+          business_id: string;
+          profile_url: string;
+          has_complete_hours: boolean;
+          has_enough_photos: boolean;
+          has_correct_category: boolean;
+          has_contact_info: boolean;
+          responds_to_reviews: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id: string;
+          profile_url: string;
+          has_complete_hours?: boolean;
+          has_enough_photos?: boolean;
+          has_correct_category?: boolean;
+          has_contact_info?: boolean;
+          responds_to_reviews?: boolean;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          profile_url: string;
+          has_complete_hours: boolean;
+          has_enough_photos: boolean;
+          has_correct_category: boolean;
+          has_contact_info: boolean;
+          responds_to_reviews: boolean;
+          updated_at: string;
+        }>;
+        Relationships: [];
+      };
       missions: {
         Row: {
           id: string;

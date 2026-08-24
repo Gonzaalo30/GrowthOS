@@ -3,6 +3,7 @@ import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { SelectSearchConsoleSiteForm } from "@/features/integrations/SelectSearchConsoleSiteForm";
 import { SelectAnalyticsPropertyForm } from "@/features/integrations/SelectAnalyticsPropertyForm";
+import { GoogleBusinessChecklistForm } from "@/features/integrations/GoogleBusinessChecklistForm";
 import {
   connectGoogleAction,
   refreshGoogleDataAction,
@@ -15,6 +16,7 @@ import type { Database } from "@/types/database.types";
 import type { SearchConsoleSummary, AnalyticsSummary } from "@/lib/googleApis";
 
 type GoogleIntegration = Database["public"]["Tables"]["google_integrations"]["Row"];
+type GoogleBusinessChecklist = Database["public"]["Tables"]["google_business_checklists"]["Row"];
 
 const ERROR_MESSAGES: Record<string, string> = {
   cancelado: "Has cancelado la conexión con Google.",
@@ -45,6 +47,7 @@ export function GoogleIntegrationView({
   error,
   switchSearchConsole = false,
   switchAnalytics = false,
+  checklist,
 }: {
   locked: boolean;
   plan: Plan;
@@ -53,6 +56,7 @@ export function GoogleIntegrationView({
   error?: string;
   switchSearchConsole?: boolean;
   switchAnalytics?: boolean;
+  checklist?: GoogleBusinessChecklist | null;
 }) {
   const hasSearchConsole = Boolean(integration?.search_console_site_url);
   const hasAnalytics = Boolean(integration?.ga4_property_id);
@@ -66,6 +70,12 @@ export function GoogleIntegrationView({
         <p className="mt-1 text-sm text-zinc-600">
           Tus datos reales de Google Search Console y Google Analytics, sin salir de GrowthOS.
         </p>
+        {!locked && (
+          <p className="mt-2 text-xs text-zinc-500">
+            Conectar esto hace que tus misiones y tu análisis se basen en datos reales y medibles, no solo en
+            lo que se ve desde fuera.
+          </p>
+        )}
       </div>
 
       {error && ERROR_MESSAGES[error] && (
@@ -222,6 +232,21 @@ export function GoogleIntegrationView({
             </GrowthCard>
           </div>
         </div>
+      )}
+
+      {!locked && (
+        <GrowthCard>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            Ficha de Google Business
+          </h2>
+          <p className="mt-1 text-sm text-zinc-600">
+            Sin conectar ninguna cuenta: pega la URL de tu ficha y cuéntanos honestamente cómo está — de cada
+            &quot;no&quot; te generamos una misión real y accionable para completarla.
+          </p>
+          <div className="mt-4">
+            <GoogleBusinessChecklistForm checklist={checklist ?? null} />
+          </div>
+        </GrowthCard>
       )}
     </div>
   );

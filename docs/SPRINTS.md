@@ -303,6 +303,16 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 5.5 — "Sello Local" real sin API de pago: checklist honesto + misiones (COMPLETADO 2026-08-24)
+El fundador quería una forma de analizar la ficha de Google Business de un negocio, pero descartó la vía con API de pago (Google Places) por coste y fiabilidad — pidió en su lugar que el propio negocio pegue la URL de su ficha y conteste un checklist honesto, sin nota numérica separada, solo misiones reales por cada cosa que falte.
+- [x] **Migración `0026`**: `google_business_checklists` (una fila por negocio: URL de la ficha + 5 booleanos reales — horario completo, ≥5 fotos, categoría correcta, teléfono/web, responde reseñas), con RLS igual que el resto de tablas por negocio.
+- [x] **Checklist en `/integraciones`** (`GoogleBusinessChecklistForm.tsx`), independiente de la conexión OAuth de Google — solo necesita el plan de pago, no hace falta conectar ninguna cuenta.
+- [x] **Misiones reales por cada "no"** (`services/googleBusinessMission.service.ts`): al guardar el checklist, cada ítem marcado como no cumplido genera una misión diaria real y accionable (ej. "Sube al menos 5 fotos reales a tu ficha de Google") si todavía no existe una para ese ítem — de una sola vez, no se repite cada día como las señales de Search Console/Analytics.
+- [x] **Sin nota/puntuación separada** — decisión explícita del fundador tras discutirlo: no se mezcla con el Growth Score ni se muestra un número aparte, solo el checklist y las misiones que genera.
+- [x] **Mensaje de fiabilidad**: en `/integraciones` se añade "Conectar esto hace que tus misiones y tu análisis se basen en datos reales y medibles, no solo en lo que se ve desde fuera" — es solo copy, no cambia el cálculo del Growth Score.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios.
+- **Pendiente, no lo puedo hacer yo**: aplicar la migración `0026` en Supabase (SQL Editor). Sin sesión real para verificar visualmente el checklist y las misiones generadas (requiere una cuenta de pago real), pendiente de confirmación del fundador tras aplicar la migración.
+
 ## Sprint 4.27 — Search Console/Analytics como beneficio explícito de Growth (COMPLETADO 2026-08-24)
 El fundador pidió dejar claro en el precio que Growth/Autopilot incluyen conectar Search Console y Analytics reales, y que eso hace las misiones más personalizadas — ya era una función real (`canUseGoogleIntegrations`), pero no aparecía en el listado público de beneficios del plan.
 - [x] Nueva línea en `lib/plans.ts` (features de Growth, heredada por Autopilot vía "Todo lo del plan Growth"): "Conecta tu Search Console y Analytics reales para misiones más personalizadas".

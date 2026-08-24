@@ -7,6 +7,7 @@ import {
   refreshDataIfStale,
   listAvailableProperties,
 } from "@/services/googleIntegration.service";
+import { getChecklist } from "@/services/googleBusinessChecklist.service";
 import { GoogleIntegrationView } from "@/features/integrations/GoogleIntegrationView";
 
 export default async function IntegracionesPage({
@@ -54,6 +55,15 @@ export default async function IntegracionesPage({
     }
   }
 
+  // Independiente de la conexión OAuth de Google — el checklist de la ficha
+  // de Business no necesita ninguna cuenta conectada, solo el plan de pago.
+  let checklist = null;
+  try {
+    checklist = await getChecklist(supabase, business.id);
+  } catch {
+    // se muestra el formulario vacío en vez de romper la página
+  }
+
   return (
     <GoogleIntegrationView
       locked={false}
@@ -63,6 +73,7 @@ export default async function IntegracionesPage({
       error={error}
       switchSearchConsole={switchSC === "1"}
       switchAnalytics={switchGA === "1"}
+      checklist={checklist}
     />
   );
 }
