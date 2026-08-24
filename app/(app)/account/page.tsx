@@ -177,6 +177,12 @@ export default async function AccountPage({
                 escríbenos si sigue fallando.
               </p>
             )}
+            {business.loyalty_discount_available && (
+              <p className="text-sm text-emerald-700">
+                🎁 Tienes un 5% de descuento para tu próxima compra — se aplica solo, tanto si compras un
+                plan o una mejora como si cambias de plan desde &quot;Gestionar suscripción&quot;.
+              </p>
+            )}
           </GrowthCard>
 
           {business.stripe_customer_id && (

@@ -326,6 +326,17 @@ Probando en vivo, el fundador encontró un fallo real: el flujo obligaba a elegi
 - [x] Ampliadas las llamadas a Google (`lib/googleApis.ts`) para traer posición por consulta (actual y del periodo anterior) y páginas por tráfico con su tasa de rebote real — sin llamadas nuevas fuera de lo que ya se pedía, mismo `Promise.all`.
 - [x] Verificado en vivo de extremo a extremo: snapshot real con una caída de posición real insertado, la misión apareció como Quick Win con los números reales exactos, sin tutorial, sin duplicarse al recargar el mismo día. `eslint`, `tsc --noEmit` y `next build` limpios.
 
+## Sprint 4.23 — Descuento de fidelidad del 5% (COMPLETADO 2026-08-24, pendiente de aplicar la migración en producción)
+El fundador pidió premiar la primera compra de cualquier cliente (plan Growth/Autopilot o cualquier mejora del Centro de Mejoras) con un 5% de descuento para la siguiente — de un solo uso de por vida, no repetible; futuras recompensas por fidelidad irán por niveles/cofres, no por más descuentos de Stripe.
+- [x] **Migración `0024`**: `businesses.loyalty_discount_available` / `loyalty_discount_used` — lleva la cuenta de si hay un 5% ganado y sin usar, y de si ya se usó alguna vez (para no volver a concederlo nunca).
+- [x] **Cupón real creado en Stripe** (`percent_off: 5, duration: "once"`, ID guardado como `STRIPE_LOYALTY_COUPON_ID`).
+- [x] **Concesión y consumo reales en el webhook** (`app/api/stripe/webhook/route.ts`): se concede en `checkout.session.completed` si es literalmente la primera compra de siempre del negocio (nunca antes tuvo `stripe_customer_id`, y nunca usó el descuento); se consume ahí mismo si la compra actual ya tenía uno disponible.
+- [x] **Aplicación en el checkout propio** (`createPlanCheckoutAction`, `createOpportunityCheckoutAction`): si hay un 5% disponible, se pasa `discounts: [{coupon}]` directo a la Checkout Session de Stripe.
+- [x] **También vía Portal de Cliente de Stripe** (pedido explícito del fundador, no solo el checkout propio): `customers.update({coupon})` ya no existe en la API actual de Stripe (se comprobó con el SDK instalado) — en su lugar, `createBillingPortalSessionAction` adjunta el cupón directamente a la suscripción real (`subscriptions.update`) justo antes de abrir el Portal, así que viaja con ella sea cual sea el cambio de plan que el cliente haga ahí. El webhook `customer.subscription.updated` detecta que se consumió (el cupón `once` desaparece solo de `subscription.discounts` al aplicarse en la factura) y lo marca gastado.
+- [x] Aviso real en `/account` ("🎁 Tienes un 5% de descuento...") cuando el negocio tiene uno disponible.
+- [x] `eslint` y `tsc --noEmit` limpios.
+- **Pendiente, no lo puedo hacer yo**: aplicar la migración `0024` en Supabase (SQL Editor) y añadir `STRIPE_LOYALTY_COUPON_ID` a las variables de entorno de Vercel + redeploy. Sin eso no se puede verificar en vivo con una compra real de prueba.
+
 ## Sprint 4.19 — Varios negocios por cuenta (COMPLETADO 2026-08-23)
 El fundador pidió que una misma persona pueda gestionar varios negocios/dominios desde una cuenta. Se confirmó con él el modelo: cada negocio sigue siendo independiente de verdad (su propio Growth Score, XP, plan de pago y cliente de Stripe) — no se comparte un plan entre negocios de la misma cuenta.
 - [x] **Migración `0020`**: elimina la restricción `businesses_owner_id_unique`; añade `profiles.active_business_id` (el negocio que se está viendo ahora mismo, guardado en el perfil para que persista entre dispositivos, no en una cookie).

@@ -60,6 +60,8 @@ export interface Database {
           stripe_subscription_id: string | null;
           subscription_status: string;
           plan: BusinessPlan;
+          loyalty_discount_available: boolean;
+          loyalty_discount_used: boolean;
           created_at: string;
         };
         Insert: {
@@ -79,6 +81,8 @@ export interface Database {
           stripe_subscription_id?: string | null;
           subscription_status?: string;
           plan?: BusinessPlan;
+          loyalty_discount_available?: boolean;
+          loyalty_discount_used?: boolean;
           created_at?: string;
         };
         Update: Partial<{
@@ -95,6 +99,8 @@ export interface Database {
           stripe_subscription_id: string | null;
           subscription_status: string;
           plan: BusinessPlan;
+          loyalty_discount_available: boolean;
+          loyalty_discount_used: boolean;
         }>;
         Relationships: [];
       };

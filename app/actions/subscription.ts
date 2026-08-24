@@ -37,6 +37,9 @@ export async function createPlanCheckoutAction(
 
   const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
+  const loyaltyCouponId = process.env.STRIPE_LOYALTY_COUPON_ID;
+  const applyLoyaltyDiscount = business.loyalty_discount_available && Boolean(loyaltyCouponId);
+
   let sessionUrl: string | null;
   try {
     const stripe = getStripe();
@@ -52,6 +55,9 @@ export async function createPlanCheckoutAction(
       // Managed Payments (Stripe como merchant of record) exige código de impuestos
       // por producto; lo desactivamos porque el MVP no lo necesita todavía.
       managed_payments: { enabled: false },
+      // El 5% de fidelidad (ganado en la primera compra) se aplica explícito
+      // aquí para no depender del cupón por defecto del cliente en Stripe.
+      ...(applyLoyaltyDiscount ? { discounts: [{ coupon: loyaltyCouponId }] } : {}),
     });
     sessionUrl = session.url;
   } catch {
@@ -90,6 +96,22 @@ export async function createBillingPortalSessionAction() {
   let portalUrl: string | null;
   try {
     const stripe = getStripe();
+
+    // El 5% de fidelidad pendiente se adjunta a la suscripción real justo
+    // antes de entrar al Portal, para que también se aplique si el cliente
+    // cambia de plan desde ahí — no solo si compra por nuestro checkout.
+    const loyaltyCouponId = process.env.STRIPE_LOYALTY_COUPON_ID;
+    if (business.loyalty_discount_available && loyaltyCouponId && business.stripe_subscription_id) {
+      try {
+        await stripe.subscriptions.update(business.stripe_subscription_id, {
+          discounts: [{ coupon: loyaltyCouponId }],
+        });
+      } catch {
+        // si falla, el cliente simplemente no ve el descuento en el Portal
+        // esta vez — no debe bloquear el acceso a gestionar su suscripción
+      }
+    }
+
     const session = await stripe.billingPortal.sessions.create({
       customer: business.stripe_customer_id,
       return_url: `${origin}/account`,

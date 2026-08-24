@@ -22,6 +22,8 @@ export async function createOpportunityCheckoutAction(opportunityId: string) {
 
   const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const isMonthly = opportunity.pricing === "monthly";
+  const loyaltyCouponId = process.env.STRIPE_LOYALTY_COUPON_ID;
+  const applyLoyaltyDiscount = business.loyalty_discount_available && Boolean(loyaltyCouponId);
 
   let sessionUrl: string | null;
   try {
@@ -60,6 +62,9 @@ export async function createOpportunityCheckoutAction(opportunityId: string) {
           }
         : {}),
       managed_payments: { enabled: false },
+      // El 5% de fidelidad (ganado en la primera compra) se aplica explícito
+      // aquí para no depender del cupón por defecto del cliente en Stripe.
+      ...(applyLoyaltyDiscount ? { discounts: [{ coupon: loyaltyCouponId }] } : {}),
     });
     sessionUrl = session.url;
   } catch {
