@@ -34,7 +34,14 @@ export default async function AdminAutopilotPage() {
           <GrowthCard key={business.businessId} className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h2 className="font-medium text-foreground">{business.domain}</h2>
+                <h2 className="flex items-center gap-2 font-medium text-foreground">
+                  {business.domain}
+                  {business.isTopLevel && (
+                    <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                      🏆 Nivel máximo · prioridad
+                    </span>
+                  )}
+                </h2>
                 <p className="text-xs text-zinc-500">
                   {business.ownerName} · {business.ownerEmail}
                 </p>

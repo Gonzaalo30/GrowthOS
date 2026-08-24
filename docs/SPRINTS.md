@@ -303,6 +303,15 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 4.24 — 10 niveles con beneficios reales (COMPLETADO 2026-08-24)
+El fundador quería un motivo real para seguir subiendo de nivel, más allá de la insignia — pero con cuidado de no dar en el plan Gratis algo que quite sentido a pagar Growth (29€, Quick Wins ilimitados).
+- [x] **`lib/levels.ts`** ampliado de 5 a 10 niveles (los 4 primeros con el mismo XP de siempre, para no reordenar a nadie con XP ya acumulado). Cada nivel tiene color propio (anillo de avatar + insignia), escalando de gris → naranja → azul/morado/rosa → dorado en el nivel 10.
+- [x] **+1 Quick Win pendiente** en el plan Gratis en el nivel 5, y otro +1 en el nivel 10 (de 3 a 5 como máximo) — deliberadamente solo 2 hitos, no en los 10 niveles, para que ni al nivel máximo gratis se acerque al tope de Growth/Autopilot (20). `dailyQuickWinCap()` ahora recibe también el XP real de la cuenta.
+- [x] **Mejores probabilidades de cofre diario** a partir del nivel 5 y del nivel 8 (`rollChestReward()` ahora recibe el nivel) — más XP alta y menos "solo plantilla" cuanto más alto el nivel.
+- [x] **Prioridad real en tu panel de admin de Autopilot**: los clientes de nivel 10 aparecen primero y marcados "🏆 Nivel máximo · prioridad" en `/admin/autopilot` — te ayuda a decidir a quién atender antes con tu tiempo limitado, sin comprometerte a trabajo extra.
+- [x] Los logros por nivel (`lib/achievements.ts`) ya eran genéricos sobre `LEVELS`, así que los 5 niveles nuevos generan sus logros solos, sin tocar ese archivo.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios. Verificado por script que cada frontera de nivel (0/100/300/700/1500/2500/4000/6000/8500/12000 XP) cae en el nivel y bonus correctos — sin sesión real para comprobar visualmente el badge/cofre en el dashboard, pendiente de confirmación del fundador en la web real.
+
 ## Sprint 4.22 — Plan Personalizado como 4ª tarjeta real, abierto a quien no tiene cuenta (COMPLETADO 2026-08-24)
 El fundador pidió una tarjeta más en `/precios`, al mismo nivel que Gratis/Growth/Autopilot, para quien no sabe qué plan le conviene: analizamos su situación y presupuesto, con un formulario que confirma que nos pondremos en contacto.
 - [x] El formulario de plan personalizado (ya existía, pero exigía sesión iniciada y negocio ya creado) pasa a funcionar **sin cuenta**, igual que el formulario de contacto — es precisamente antes de decidirse cuando alguien no sabe qué plan encaja. Migración `0023`: `custom_plan_requests.business_id` deja de ser obligatorio, y se añade `name` (antes no se pedía).

@@ -19,20 +19,30 @@ export async function getTodayChest(supabase: Client, businessId: string) {
   return data;
 }
 
-const XP_REWARD_OPTIONS = [5, 10, 15, 20];
+const XP_REWARD_OPTIONS: Record<"base" | "mid" | "high", number[]> = {
+  base: [5, 10, 15, 20],
+  mid: [10, 15, 20, 25],
+  high: [15, 20, 25, 30],
+};
 
-export function rollChestReward():
-  | { type: "xp"; xp: number }
-  | { type: "bonus_mission" }
-  | { type: "template" } {
-  // 50% XP, 30% misión extra, 20% plantilla de copy — las tres son
-  // recompensas reales, sin nada inventado.
+/**
+ * Cofre diario: mismas tres recompensas reales para todos, pero mejores
+ * probabilidades (y XP más alta) a partir del nivel 5 y otra vez del 8 — uno
+ * de los beneficios reales de subir de nivel.
+ */
+export function rollChestReward(
+  level: number,
+): { type: "xp"; xp: number } | { type: "bonus_mission" } | { type: "template" } {
+  const tier = level >= 8 ? "high" : level >= 5 ? "mid" : "base";
+  const odds = tier === "high" ? { xp: 0.65, bonusMission: 0.95 } : tier === "mid" ? { xp: 0.6, bonusMission: 0.92 } : { xp: 0.5, bonusMission: 0.8 };
+
   const roll = Math.random();
-  if (roll < 0.5) {
-    const xp = XP_REWARD_OPTIONS[Math.floor(Math.random() * XP_REWARD_OPTIONS.length)];
+  if (roll < odds.xp) {
+    const options = XP_REWARD_OPTIONS[tier];
+    const xp = options[Math.floor(Math.random() * options.length)];
     return { type: "xp", xp };
   }
-  if (roll < 0.8) {
+  if (roll < odds.bonusMission) {
     return { type: "bonus_mission" };
   }
   return { type: "template" };

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveBusiness } from "@/services/business.service";
 import { getMissionsForBusiness, addBonusDailyMission } from "@/services/mission.service";
 import { getTodayChest, rollChestReward, recordChestOpen } from "@/services/chest.service";
+import { getLevelNumber } from "@/lib/levels";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import { getTemplatesForBusinessType, getTemplateById } from "@/lib/copyTemplates";
 import type { BusinessType } from "@/lib/missionTemplates";
@@ -37,7 +38,7 @@ export async function openDailyChestAction(): Promise<OpenChestResult> {
     };
   }
 
-  const reward = rollChestReward();
+  const reward = rollChestReward(getLevelNumber(business.xp));
   const businessType = (BUSINESS_TYPES as readonly string[]).includes(business.business_type)
     ? (business.business_type as BusinessType)
     : null;

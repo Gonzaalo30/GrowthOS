@@ -1,3 +1,5 @@
+import { getLevelProgress } from "@/lib/levels";
+
 export type PlanId = "starter" | "growth" | "autopilot";
 
 export interface Plan {
@@ -66,9 +68,14 @@ export function planIdForPriceId(priceId: string | null | undefined): PlanId | n
   return null;
 }
 
-/** Nº máximo de Quick Wins pendientes a la vez. Growth y Autopilot no tienen tope real. */
-export function dailyQuickWinCap(planId: string | null | undefined): number {
-  return planId === "growth" || planId === "autopilot" ? 20 : 3;
+/**
+ * Nº máximo de Quick Wins pendientes a la vez. Growth y Autopilot no tienen
+ * tope real. El bonus de nivel (ver `lib/levels.ts`, hitos en nivel 5 y 10)
+ * se suma también en plan Gratis — a propósito no le acerca al tope de pago.
+ */
+export function dailyQuickWinCap(planId: string | null | undefined, xp: number): number {
+  const base = planId === "growth" || planId === "autopilot" ? 20 : 3;
+  return base + getLevelProgress(xp).level.bonusQuickWins;
 }
 
 /** Si el plan permite reanalizar la web cuando quiera, sin esperar el ciclo de 7 días. */

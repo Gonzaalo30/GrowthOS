@@ -74,7 +74,7 @@ export default async function DashboardPage({
       businessType,
       failedChecks,
       missions,
-      dailyQuickWinCap(business.plan),
+      dailyQuickWinCap(business.plan, business.xp),
     );
     missions = await getMissionsForBusiness(supabase, business.id);
   }
