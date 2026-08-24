@@ -8,7 +8,8 @@ import { OPPORTUNITY_CATEGORY_LABELS, type Opportunity } from "@/lib/opportuniti
 
 function formatPrice(opportunity: Opportunity) {
   const amount = `${(opportunity.priceCents / 100).toLocaleString("es-ES")} €`;
-  return opportunity.pricing === "monthly" ? `${amount}/mes` : amount;
+  const withCadence = opportunity.pricing === "monthly" ? `${amount}/mes` : amount;
+  return opportunity.priceIsFrom ? `Desde ${withCadence}` : withCadence;
 }
 
 export function OpportunityCard({
@@ -56,7 +57,9 @@ export function OpportunityCard({
             : "Ya comprado"
           : isPending
             ? "Redirigiendo…"
-            : `Comprar por ${formatPrice(opportunity)}`}
+            : opportunity.priceIsFrom
+              ? `Comprar ${formatPrice(opportunity).toLowerCase()}`
+              : `Comprar por ${formatPrice(opportunity)}`}
       </Button>
     </GrowthCard>
   );

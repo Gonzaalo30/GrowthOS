@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveBusiness } from "@/services/business.service";
@@ -9,6 +10,7 @@ import { computeAchievements } from "@/lib/achievements";
 import { OpportunityList } from "@/features/marketplace/OpportunityList";
 import { OpportunityPurchaseCelebration } from "@/features/marketplace/OpportunityPurchaseCelebration";
 import { GrowthCard } from "@/components/growth/GrowthCard";
+import { Button } from "@/components/ui/Button";
 import { OPPORTUNITIES } from "@/lib/opportunities";
 
 export default async function MarketplacePage({
@@ -106,6 +108,16 @@ export default async function MarketplacePage({
       </p>
 
       <OpportunityList opportunities={OPPORTUNITIES} purchasedIds={purchasedIds} />
+
+      <GrowthCard className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium text-foreground">¿No sabes qué mejora necesitas?</p>
+          <p className="text-sm text-zinc-600">Cuéntanos tu caso y te asesoramos, sin compromiso.</p>
+        </div>
+        <Link href="/contacto">
+          <Button variant="secondary">Necesito asesoría</Button>
+        </Link>
+      </GrowthCard>
     </div>
   );
 }

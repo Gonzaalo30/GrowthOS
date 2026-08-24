@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveBusiness } from "@/services/business.service";
 import { sendContactMessage } from "@/services/contact.service";
 import { trackEvent } from "@/lib/analytics";
+import { sendNotificationEmail } from "@/lib/email";
 
 export interface ContactFormState {
   error?: string;
@@ -38,6 +39,12 @@ export async function sendContactMessageAction(
   } catch {
     return { error: "No hemos podido enviar tu mensaje. Inténtalo de nuevo en un momento." };
   }
+
+  // El mensaje ya quedó guardado — si el email de aviso falla, no rompe el envío.
+  await sendNotificationEmail({
+    subject: `Nuevo mensaje de contacto — ${name}`,
+    text: `Nombre: ${name}\nEmail: ${email}\n\n${message}`,
+  });
 
   await trackEvent(supabase, "contact_message_sent", businessId);
   return { success: true };

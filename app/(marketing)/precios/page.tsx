@@ -7,9 +7,10 @@ import { PlanCard } from "@/features/billing/PlanCard";
 import { PLANS } from "@/lib/plans";
 import { OPPORTUNITIES } from "@/lib/opportunities";
 
-function formatOpportunityPrice(cents: number, pricing: "one_time" | "monthly") {
+function formatOpportunityPrice(cents: number, pricing: "one_time" | "monthly", priceIsFrom?: boolean) {
   const amount = `${(cents / 100).toLocaleString("es-ES")} €`;
-  return pricing === "monthly" ? `${amount}/mes` : amount;
+  const withCadence = pricing === "monthly" ? `${amount}/mes` : amount;
+  return priceIsFrom ? `Desde ${withCadence}` : withCadence;
 }
 
 export default async function PreciosPage() {
@@ -92,7 +93,7 @@ export default async function PreciosPage() {
             <GrowthCard key={item.id} className="flex items-center justify-between gap-3">
               <span className="text-sm font-medium text-foreground">{item.title}</span>
               <span className="whitespace-nowrap text-sm font-semibold text-brand-600">
-                {formatOpportunityPrice(item.priceCents, item.pricing)}
+                {formatOpportunityPrice(item.priceCents, item.pricing, item.priceIsFrom)}
               </span>
             </GrowthCard>
           ))}

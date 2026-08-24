@@ -20,6 +20,12 @@ export interface Opportunity {
   /** Para one_time: cuándo se entrega. Para monthly: cómo funciona el servicio recurrente. */
   implementationTime: string;
   category: OpportunityCategory;
+  /**
+   * true cuando el trabajo real varía mucho según la web (ej. mantenimiento) —
+   * se muestra "Desde X€" y el checkout cobra ese mínimo; si tu web necesita
+   * más trabajo del esperado, se habla aparte con el cliente.
+   */
+  priceIsFrom?: boolean;
 }
 
 // Catálogo del Centro de Mejoras. Pago real vía Stripe Checkout (pago único o
@@ -39,9 +45,9 @@ export const OPPORTUNITIES: Opportunity[] = [
   },
   {
     id: "google-business-management",
-    title: "Gestión mensual de tu ficha de Google Business",
+    title: "Sello Local — seguimiento mensual de tu ficha de Google Business",
     description:
-      "Publicamos novedades, respondemos tus reseñas y mantenemos la ficha actualizada cada mes, para que nunca quede abandonada.",
+      "Seguimiento real cada mes: publicamos novedades, respondemos tus reseñas y vigilamos las señales que Google valora para posicionarte localmente (actividad, reseñas, datos completos), para que la ficha nunca quede abandonada.",
     priceCents: 4900,
     pricing: "monthly",
     expectedImpact: "Ficha siempre activa y mejor posicionamiento local sostenido en el tiempo",
@@ -63,12 +69,13 @@ export const OPPORTUNITIES: Opportunity[] = [
     id: "web-maintenance",
     title: "Mantenimiento mensual de tu web",
     description:
-      "Copias de seguridad, actualizaciones y una comprobación mensual de que todo sigue funcionando correctamente (enlaces, formularios, velocidad).",
+      "Copias de seguridad, actualizaciones y una comprobación mensual de que todo sigue funcionando correctamente (enlaces, formularios, velocidad). El precio final depende de la complejidad de tu web — este es el mínimo de entrada.",
     priceCents: 3900,
     pricing: "monthly",
     expectedImpact: "Menos sustos: detectamos los problemas antes de que te los diga un cliente",
     implementationTime: "Servicio mensual, sin permanencia — cancelas cuando quieras",
     category: "velocidad",
+    priceIsFrom: true,
   },
   {
     id: "schema",

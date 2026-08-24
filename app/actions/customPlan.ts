@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveBusiness } from "@/services/business.service";
 import { requestCustomPlan } from "@/services/customPlan.service";
 import { trackEvent } from "@/lib/analytics";
+import { sendNotificationEmail } from "@/lib/email";
 
 export interface CustomPlanState {
   error?: string;
@@ -41,6 +42,12 @@ export async function requestCustomPlanAction(
   } catch {
     return { error: "No hemos podido enviar tu solicitud. Inténtalo de nuevo en un momento." };
   }
+
+  // La solicitud ya quedó guardada — si el email de aviso falla, no rompe el envío.
+  await sendNotificationEmail({
+    subject: `Nueva solicitud de plan personalizado — ${name}`,
+    text: `Nombre: ${name}\nEmail de contacto: ${contactEmail}\n\n${details}`,
+  });
 
   await trackEvent(supabase, "custom_plan_requested", businessId);
   return { success: true };
