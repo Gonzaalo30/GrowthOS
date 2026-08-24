@@ -303,6 +303,12 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 4.25 — "Mi cuenta" reorganizada en pestañas (COMPLETADO 2026-08-24)
+El fundador vio la página de cuenta desordenada (tarjetas de pago, seguridad y perfil mezcladas en dos columnas) y pidió separarlo por temas.
+- [x] 4 pestañas con `DashboardTabs` (ya existía, reutilizado tal cual — mismo patrón que las pestañas del dashboard): **Perfil** (avatar, datos, preferencias, logros), **Negocio**, **Facturación** (plan, aviso del 5% de fidelidad, datos de facturación, historial de facturas) y **Seguridad** (contraseña, verificación en dos pasos, sesiones).
+- [x] Ningún dato ni acción cambia — es solo reorganización visual, todos los Server Actions y las mismas comprobaciones siguen igual.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios.
+
 ## Sprint 4.24 — 10 niveles con beneficios reales (COMPLETADO 2026-08-24)
 El fundador quería un motivo real para seguir subiendo de nivel, más allá de la insignia — pero con cuidado de no dar en el plan Gratis algo que quite sentido a pagar Growth (29€, Quick Wins ilimitados).
 - [x] **`lib/levels.ts`** ampliado de 5 a 10 niveles (los 4 primeros con el mismo XP de siempre, para no reordenar a nadie con XP ya acumulado). Cada nivel tiene color propio (anillo de avatar + insignia), escalando de gris → naranja → azul/morado/rosa → dorado en el nivel 10.
