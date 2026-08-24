@@ -44,7 +44,7 @@ export async function createOpportunityCheckoutAction(opportunityId: string) {
           quantity: 1,
         },
       ],
-      success_url: `${origin}/marketplace?compra=exito`,
+      success_url: `${origin}/marketplace?compra=exito&item=${opportunity.id}`,
       cancel_url: `${origin}/marketplace?compra=cancelado`,
       client_reference_id: business.id,
       // Reutilizamos el mismo cliente de Stripe que el de la suscripción de plan

@@ -41,6 +41,23 @@ async function resolveLoyaltyDiscountUpdate(
   return {};
 }
 
+/**
+ * Contador real de "compras de plan" — solo sube aquí, al comprar un plan
+ * nuevo por checkout (nunca al cambiar de plan desde el Portal, eso es
+ * `customer.subscription.updated`, no una compra nueva). Base real para los
+ * logros de "compra X veces" en `lib/achievements.ts`.
+ */
+async function incrementPlanPurchaseCount(supabase: SupabaseClient<Database>, businessId: string): Promise<number> {
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("plan_purchase_count")
+    .eq("id", businessId)
+    .single();
+  const next = (business?.plan_purchase_count ?? 0) + 1;
+  await supabase.from("businesses").update({ plan_purchase_count: next }).eq("id", businessId);
+  return next;
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
@@ -118,6 +135,7 @@ export async function POST(request: NextRequest) {
             ...loyaltyUpdate,
           })
           .eq("id", businessId);
+        await incrementPlanPurchaseCount(supabase, businessId);
         await trackEvent(supabase, "checkout_completed", businessId, { plan });
       }
       break;

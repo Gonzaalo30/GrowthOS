@@ -31,6 +31,7 @@ export async function getAchievementsForBusiness(supabase: Client, business: Bus
       opportunityRequests: requests.length,
       scoreImproved:
         scoreTimeline.length >= 2 && scoreTimeline[scoreTimeline.length - 1].score > scoreTimeline[0].score,
+      purchaseCount: business.plan_purchase_count + requests.length,
     });
   } catch {
     return [];

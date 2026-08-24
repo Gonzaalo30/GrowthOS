@@ -16,6 +16,8 @@ export interface AchievementInput {
   chestsOpened: number;
   opportunityRequests: number;
   scoreImproved: boolean;
+  /** Compras totales de siempre: planes contratados + mejoras del Centro de Mejoras. */
+  purchaseCount: number;
 }
 
 /**
@@ -81,6 +83,27 @@ export function computeAchievements(input: AchievementInput): Achievement[] {
       title: "Primera mejora solicitada",
       description: "Solicita tu primera mejora del Centro de Mejoras.",
       unlocked: input.opportunityRequests >= 1,
+    },
+    {
+      id: "first-purchase",
+      emoji: "🛍️",
+      title: "Primera compra",
+      description: "Compra tu primer plan o mejora.",
+      unlocked: input.purchaseCount >= 1,
+    },
+    {
+      id: "purchases-5",
+      emoji: "💳",
+      title: "Cliente recurrente",
+      description: "Suma 5 compras entre planes y mejoras.",
+      unlocked: input.purchaseCount >= 5,
+    },
+    {
+      id: "purchases-10",
+      emoji: "💎",
+      title: "Cliente de confianza",
+      description: "Suma 10 compras entre planes y mejoras.",
+      unlocked: input.purchaseCount >= 10,
     },
   ];
 }

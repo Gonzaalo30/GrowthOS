@@ -62,6 +62,7 @@ export interface Database {
           plan: BusinessPlan;
           loyalty_discount_available: boolean;
           loyalty_discount_used: boolean;
+          plan_purchase_count: number;
           created_at: string;
         };
         Insert: {
@@ -83,6 +84,7 @@ export interface Database {
           plan?: BusinessPlan;
           loyalty_discount_available?: boolean;
           loyalty_discount_used?: boolean;
+          plan_purchase_count?: number;
           created_at?: string;
         };
         Update: Partial<{
@@ -101,6 +103,7 @@ export interface Database {
           plan: BusinessPlan;
           loyalty_discount_available: boolean;
           loyalty_discount_used: boolean;
+          plan_purchase_count: number;
         }>;
         Relationships: [];
       };

@@ -23,16 +23,17 @@ import type { BusinessType } from "@/lib/missionTemplates";
 import { computeAchievements } from "@/lib/achievements";
 import { computeMomentumScore } from "@/lib/momentum";
 import { computeWeeklyBrief } from "@/lib/weeklyBrief";
-import { dailyQuickWinCap } from "@/lib/plans";
+import { dailyQuickWinCap, getPlan } from "@/lib/plans";
+import { PlanPurchaseCelebration } from "@/features/dashboard/PlanPurchaseCelebration";
 
 const CALENDAR_WEEKS = 12;
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ bienvenida?: string }>;
+  searchParams: Promise<{ bienvenida?: string; plan?: string }>;
 }) {
-  const { bienvenida } = await searchParams;
+  const { bienvenida, plan: planPurchaseParam } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -106,11 +107,13 @@ export default async function DashboardPage({
   // Los logros son un extra: si algo falla al calcularlos, el resto del
   // dashboard debe seguir funcionando igualmente.
   let achievements: ReturnType<typeof computeAchievements> = [];
+  let purchaseCount = 0;
   try {
     const [chestsOpened, requests] = await Promise.all([
       countChestsOpened(supabase, business.id),
       getRequestsForBusiness(supabase, business.id),
     ]);
+    purchaseCount = business.plan_purchase_count + requests.length;
     achievements = computeAchievements({
       xp: business.xp,
       longestStreak: business.longest_streak,
@@ -119,10 +122,25 @@ export default async function DashboardPage({
       chestsOpened,
       opportunityRequests: requests.length,
       scoreImproved: scoreTimeline.length >= 2 && scoreTimeline[scoreTimeline.length - 1].score > scoreTimeline[0].score,
+      purchaseCount,
     });
   } catch {
     // dashboard sigue funcionando sin la sección de logros
   }
+
+  // Justo tras comprar un plan (redirect real de Stripe, ver
+  // createPlanCheckoutAction): si esta compra cruzó exactamente un hito de
+  // compras, se lo enseñamos junto con la celebración — nunca inventado, solo
+  // si el contador real coincide con el hito en este momento.
+  const justUnlockedAchievement =
+    planPurchaseParam === "success"
+      ? (achievements.find(
+          (a) =>
+            (a.id === "first-purchase" && purchaseCount === 1) ||
+            (a.id === "purchases-5" && purchaseCount === 5) ||
+            (a.id === "purchases-10" && purchaseCount === 10),
+        ) ?? null)
+      : null;
 
   // Panel opcional bajo demanda: si falla al leerlo, el resto del dashboard
   // sigue funcionando igualmente.
@@ -134,26 +152,31 @@ export default async function DashboardPage({
   }
 
   return (
-    <DashboardView
-      business={business}
-      missions={missions}
-      scoreRefresh={scoreRefresh}
-      scoreBreakdown={scoreBreakdown}
-      profileName={profile.name}
-      dailyCounts={Object.fromEntries(dailyCounts)}
-      scoreTimeline={scoreTimeline}
-      replayMissions={replayMissions}
-      todayChest={
-        todayChest
-          ? { rewardType: todayChest.reward_type, xpAwarded: todayChest.xp_awarded, templateId: todayChest.template_id }
-          : null
-      }
-      achievements={achievements}
-      dateFormat={profile.date_format}
-      welcomeMissionId={bienvenida}
-      momentum={momentum}
-      weeklyBrief={weeklyBrief}
-      pageSpeedSnapshot={pageSpeedSnapshot}
-    />
+    <>
+      {planPurchaseParam === "success" && business.plan !== "starter" && (
+        <PlanPurchaseCelebration plan={getPlan(business.plan)} justUnlockedAchievement={justUnlockedAchievement} />
+      )}
+      <DashboardView
+        business={business}
+        missions={missions}
+        scoreRefresh={scoreRefresh}
+        scoreBreakdown={scoreBreakdown}
+        profileName={profile.name}
+        dailyCounts={Object.fromEntries(dailyCounts)}
+        scoreTimeline={scoreTimeline}
+        replayMissions={replayMissions}
+        todayChest={
+          todayChest
+            ? { rewardType: todayChest.reward_type, xpAwarded: todayChest.xp_awarded, templateId: todayChest.template_id }
+            : null
+        }
+        achievements={achievements}
+        dateFormat={profile.date_format}
+        welcomeMissionId={bienvenida}
+        momentum={momentum}
+        weeklyBrief={weeklyBrief}
+        pageSpeedSnapshot={pageSpeedSnapshot}
+      />
+    </>
   );
 }
