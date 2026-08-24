@@ -35,7 +35,8 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/onboarding") ||
     request.nextUrl.pathname.startsWith("/marketplace") ||
     request.nextUrl.pathname.startsWith("/account") ||
-    request.nextUrl.pathname.startsWith("/integraciones");
+    request.nextUrl.pathname.startsWith("/integraciones") ||
+    request.nextUrl.pathname.startsWith("/admin");
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();

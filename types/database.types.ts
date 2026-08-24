@@ -17,6 +17,7 @@ export interface Database {
           title: string | null;
           date_format: DateFormat;
           active_business_id: string | null;
+          is_admin: boolean;
           created_at: string;
         };
         Insert: {
@@ -27,6 +28,7 @@ export interface Database {
           title?: string | null;
           date_format?: DateFormat;
           active_business_id?: string | null;
+          is_admin?: boolean;
           created_at?: string;
         };
         Update: Partial<{
@@ -36,6 +38,7 @@ export interface Database {
           title: string | null;
           date_format: DateFormat;
           active_business_id: string | null;
+          is_admin: boolean;
         }>;
         Relationships: [];
       };
@@ -198,6 +201,7 @@ export interface Database {
           template_id: string | null;
           sequence_number: number | null;
           completed_at: string | null;
+          completed_by_admin: boolean;
           created_at: string;
         };
         Insert: {
@@ -214,10 +218,12 @@ export interface Database {
           template_id?: string | null;
           sequence_number?: number | null;
           completed_at?: string | null;
+          completed_by_admin?: boolean;
           created_at?: string;
         };
         Update: Partial<{
           completed_at: string | null;
+          completed_by_admin: boolean;
         }>;
         Relationships: [];
       };

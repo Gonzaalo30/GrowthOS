@@ -1,0 +1,88 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { getProfile } from "@/services/profile.service";
+import { getAutopilotBusinessesOverview, WEEKLY_ADMIN_LIMIT } from "@/services/admin.service";
+import { GrowthCard } from "@/components/growth/GrowthCard";
+import { AdminMissionButton } from "@/features/admin/AdminMissionButton";
+
+export default async function AdminAutopilotPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const profile = await getProfile(supabase, user.id);
+  if (!profile.is_admin) redirect("/dashboard");
+
+  const businesses = await getAutopilotBusinessesOverview(supabase);
+
+  return (
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-12">
+      <div>
+        <h1 className="text-xl font-semibold text-foreground">Autopilot — Misiones pendientes</h1>
+        <p className="mt-1 text-sm text-zinc-600">
+          Marca una misión como implementada cuando hayas hecho el trabajo real en la web del cliente —
+          suma XP y racha de verdad en su cuenta, igual que si la hubiera completado él mismo.
+        </p>
+      </div>
+
+      {businesses.length === 0 ? (
+        <p className="text-sm text-zinc-500">No hay clientes Autopilot activos ahora mismo.</p>
+      ) : (
+        businesses.map((business) => (
+          <GrowthCard key={business.businessId} className="flex flex-col gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="font-medium text-foreground">{business.domain}</h2>
+                <p className="text-xs text-zinc-500">
+                  {business.ownerName} · {business.ownerEmail}
+                </p>
+              </div>
+              <span
+                className={
+                  business.weeklyAdminCompletions >= WEEKLY_ADMIN_LIMIT
+                    ? "text-xs font-medium text-red-600"
+                    : "text-xs font-medium text-zinc-500"
+                }
+              >
+                {business.weeklyAdminCompletions}/{WEEKLY_ADMIN_LIMIT} diarias implementadas esta semana
+              </span>
+            </div>
+
+            {business.pendingWeeklyMission && (
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-brand-200 bg-brand-50 px-3 py-2">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">Misión semanal</p>
+                  <p className="text-sm text-foreground">{business.pendingWeeklyMission.title}</p>
+                </div>
+                <AdminMissionButton missionId={business.pendingWeeklyMission.id} />
+              </div>
+            )}
+
+            {business.pendingDailyMissions.length === 0 ? (
+              <p className="text-sm text-zinc-500">Sin Quick Wins pendientes ahora mismo.</p>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {business.pendingDailyMissions.map((mission) => (
+                  <li
+                    key={mission.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+                  >
+                    <div>
+                      <p className="text-sm text-foreground">{mission.title}</p>
+                      <p className="text-xs text-zinc-500">
+                        +{mission.xp_reward} XP · {mission.time_estimate_minutes} min
+                      </p>
+                    </div>
+                    <AdminMissionButton missionId={mission.id} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </GrowthCard>
+        ))
+      )}
+    </div>
+  );
+}

@@ -55,7 +55,7 @@ export default async function MarketplacePage({
       <p className="text-xs text-zinc-500">
         Cómo funciona: compras la mejora → nuestro equipo te contacta por email o teléfono para pedirte
         los accesos necesarios → la implementamos. Las mejoras mensuales se pueden cancelar cuando
-        quieras desde &quot;Gestionar suscripción&quot; en Mi cuenta.
+        quieras desde &quot;Gestionar suscripción&quot; en Mi cuenta. Precios con IVA incluido.
       </p>
 
       <OpportunityList opportunities={OPPORTUNITIES} purchasedIds={purchasedIds} />

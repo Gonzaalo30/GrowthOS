@@ -48,8 +48,8 @@ export const PLANS: Plan[] = [
     tagline: "Para cuando no tienes tiempo de tocar nada. Lo hacemos nosotros.",
     features: [
       "Todo lo del plan Growth",
-      "Implementamos tus misiones diarias por ti",
-      "Implementamos tu misión semanal por ti",
+      "Implementamos hasta 4 Quick Wins diarios por semana",
+      "Implementamos tu misión semanal todas las semanas",
     ],
   },
 ];

@@ -42,7 +42,10 @@ export function PlanCard({
         <p className="mt-1 text-sm text-zinc-600">{plan.tagline}</p>
       </div>
 
-      <p className="text-3xl font-semibold text-foreground">{formatPrice(plan.priceCents)}</p>
+      <div>
+        <p className="text-3xl font-semibold text-foreground">{formatPrice(plan.priceCents)}</p>
+        {plan.priceCents > 0 && <p className="text-xs text-zinc-500">IVA incluido</p>}
+      </div>
 
       <ul className="flex flex-1 flex-col gap-2">
         {plan.features.map((feature) => (

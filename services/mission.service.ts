@@ -243,11 +243,19 @@ export interface CompleteMissionOutcome {
  * Si esta es la 3ª (o más) misión diaria completada hoy para este negocio,
  * duplica el XP de esta misión — recompensa real por rachas dentro del día,
  * no un multiplicador cosmético.
+ *
+ * `byAdmin`: el fundador la completa en nombre de un cliente Autopilot tras
+ * implementar el trabajo real — mismo XP/racha reales, solo se registra quién
+ * la marcó, para poder contar de verdad el límite semanal de servicio.
  */
-export async function completeMission(supabase: Client, missionId: string): Promise<CompleteMissionOutcome | null> {
+export async function completeMission(
+  supabase: Client,
+  missionId: string,
+  options?: { byAdmin?: boolean },
+): Promise<CompleteMissionOutcome | null> {
   const { data, error } = await supabase
     .from("missions")
-    .update({ completed_at: new Date().toISOString() })
+    .update({ completed_at: new Date().toISOString(), completed_by_admin: Boolean(options?.byAdmin) })
     .eq("id", missionId)
     .is("completed_at", null)
     .select("business_id, xp_reward, type")
@@ -305,4 +313,28 @@ export async function completeMission(supabase: Client, missionId: string): Prom
   }
 
   return { xpAwarded, multiplierApplied };
+}
+
+function startOfThisWeek(): Date {
+  const now = new Date();
+  const day = now.getUTCDay();
+  // Lunes como inicio de semana (day 0 = domingo, se retrocede 6 en ese caso).
+  const diffToMonday = day === 0 ? 6 : day - 1;
+  const monday = new Date(now);
+  monday.setUTCDate(now.getUTCDate() - diffToMonday);
+  monday.setUTCHours(0, 0, 0, 0);
+  return monday;
+}
+
+/** Cuántas misiones diarias ha implementado de verdad el admin esta semana para este negocio — el límite real de servicio de Autopilot. */
+export async function getWeeklyAdminCompletionCount(supabase: Client, businessId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("missions")
+    .select("id", { count: "exact", head: true })
+    .eq("business_id", businessId)
+    .eq("type", "daily")
+    .eq("completed_by_admin", true)
+    .gte("completed_at", startOfThisWeek().toISOString());
+  if (error) throw error;
+  return count ?? 0;
 }
