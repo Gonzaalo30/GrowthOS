@@ -6,14 +6,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 
 const NAV_LINKS = [
-  { href: "/como-funciona", label: "Cómo funciona" },
   { href: "/precios", label: "Precios" },
   { href: "/casos-de-exito", label: "Casos de éxito" },
+];
+
+const HELP_LINKS = [
+  { href: "/como-funciona", label: "Cómo funciona" },
   { href: "/faq", label: "FAQ" },
+  { href: "/contacto", label: "Contacto y soporte" },
 ];
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   return (
     <header className="border-b border-border bg-white">
@@ -32,6 +37,48 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+
+          <div className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setHelpOpen(false); }}>
+            <button
+              type="button"
+              aria-expanded={helpOpen}
+              onClick={() => setHelpOpen((open) => !open)}
+              className="flex items-center gap-1 rounded-md text-sm text-zinc-600 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            >
+              Ayuda
+              <svg
+                viewBox="0 0 24 24"
+                className={`h-3.5 w-3.5 transition-transform ${helpOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+            <AnimatePresence>
+              {helpOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 top-full z-10 mt-2 w-48 rounded-lg border border-border bg-white py-1.5 shadow-lg"
+                >
+                  {HELP_LINKS.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setHelpOpen(false)}
+                      className="block px-3 py-2 text-sm text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:bg-surface-muted"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </nav>
 
         <div className="hidden items-center gap-3 sm:flex">
@@ -75,6 +122,17 @@ export function Header() {
           >
             <div className="flex flex-col gap-1 py-4">
               {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg px-2 py-2 text-sm text-zinc-600 outline-none hover:bg-surface-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <p className="mt-2 px-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Ayuda</p>
+              {HELP_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}

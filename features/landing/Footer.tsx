@@ -15,7 +15,7 @@ export function Footer() {
     <footer className="border-t border-border bg-white">
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-3 px-6 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
         <p className="text-xs text-zinc-500">
-          © {new Date().getFullYear()} {LEGAL_INFO.tradeName} · {LEGAL_INFO.fullName} · NIF {LEGAL_INFO.nif}
+          © {new Date().getFullYear()} {LEGAL_INFO.tradeName}
         </p>
         <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
           {LEGAL_LINKS.map((link) => (

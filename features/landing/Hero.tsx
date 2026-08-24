@@ -114,50 +114,47 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="w-full max-w-xs md:w-72">
-          <AnimatePresence>
-            {showPreviewPanel && (
-              <motion.div
-                key="panel"
-                initial={{ opacity: 0, x: 12 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 12 }}
-                transition={{ duration: 0.25 }}
-                className="rounded-2xl border border-border bg-surface p-4 text-left shadow-sm"
-              >
-                {loading || !preview ? (
-                  <div className="flex flex-col gap-2 animate-pulse">
-                    <div className="h-3 w-24 rounded bg-surface-muted" />
-                    <div className="h-7 w-16 rounded bg-surface-muted" />
-                    <div className="h-3 w-full rounded bg-surface-muted" />
-                    <div className="h-3 w-3/4 rounded bg-surface-muted" />
-                  </div>
-                ) : preview.unreachable ? (
-                  <p className="text-xs text-zinc-500">
-                    No hemos podido analizar {preview.domain} todavía, pero puedes verlo igualmente.
-                  </p>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <span className="text-xs text-zinc-500">Growth Score</span>
-                    <span className="text-2xl font-semibold tracking-tight text-foreground">
-                      {preview.score}
-                      <span className="text-sm font-normal text-zinc-500">/100</span>
-                    </span>
-                    {preview.failedCount > 0 && (
-                      <p className="text-xs text-amber-700">
-                        ⚠️ {preview.failedCount} {preview.failedCount === 1 ? "acción" : "acciones"} para
-                        hoy
-                      </p>
-                    )}
-                    <p className="text-xs font-medium text-brand-600">
-                      + {preview.potential} potencial de mejora
+        <AnimatePresence>
+          {showPreviewPanel && (
+            <motion.div
+              key="panel"
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 12 }}
+              transition={{ duration: 0.25 }}
+              className="w-full max-w-xs rounded-2xl border border-border bg-surface p-4 text-left shadow-sm md:w-72"
+            >
+              {loading || !preview ? (
+                <div className="flex flex-col gap-2 animate-pulse">
+                  <div className="h-3 w-24 rounded bg-surface-muted" />
+                  <div className="h-7 w-16 rounded bg-surface-muted" />
+                  <div className="h-3 w-full rounded bg-surface-muted" />
+                  <div className="h-3 w-3/4 rounded bg-surface-muted" />
+                </div>
+              ) : preview.unreachable ? (
+                <p className="text-xs text-zinc-500">
+                  No hemos podido analizar {preview.domain} todavía, pero puedes verlo igualmente.
+                </p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs text-zinc-500">Growth Score</span>
+                  <span className="text-2xl font-semibold tracking-tight text-foreground">
+                    {preview.score}
+                    <span className="text-sm font-normal text-zinc-500">/100</span>
+                  </span>
+                  {preview.failedCount > 0 && (
+                    <p className="text-xs text-amber-700">
+                      ⚠️ {preview.failedCount} {preview.failedCount === 1 ? "acción" : "acciones"} para hoy
                     </p>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                  )}
+                  <p className="text-xs font-medium text-brand-600">
+                    + {preview.potential} potencial de mejora
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
