@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
-import { SelectPropertiesForm } from "@/features/integrations/SelectPropertiesForm";
+import { SelectSearchConsoleSiteForm } from "@/features/integrations/SelectSearchConsoleSiteForm";
+import { SelectAnalyticsPropertyForm } from "@/features/integrations/SelectAnalyticsPropertyForm";
 import {
   connectGoogleAction,
   refreshGoogleDataAction,
   disconnectGoogleAction,
+  clearSearchConsoleSiteAction,
+  clearAnalyticsPropertyAction,
 } from "@/app/actions/googleIntegration";
 import type { Plan } from "@/lib/plans";
 import type { Database } from "@/types/database.types";
@@ -47,6 +50,9 @@ export function GoogleIntegrationView({
   availableProperties?: { sites: { siteUrl: string }[]; properties: { propertyId: string; propertyName: string }[] } | null;
   error?: string;
 }) {
+  const hasSearchConsole = Boolean(integration?.search_console_site_url);
+  const hasAnalytics = Boolean(integration?.ga4_property_id);
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-12">
       <div>
@@ -78,23 +84,14 @@ export function GoogleIntegrationView({
           <h2 className="text-lg font-semibold text-foreground">Conecta tu cuenta de Google</h2>
           <p className="max-w-md text-sm text-zinc-600">
             Te llevamos a Google para que autorices el acceso de solo lectura a tu Search Console y tu Analytics.
+            Después eliges qué sitio y qué propiedad quieres ver aquí — puedes configurar solo uno de los dos si es
+            lo único que tienes.
           </p>
           <form action={connectGoogleAction}>
             <Button type="submit" className="mt-1">
-              Conectar Google Search Console y Analytics
+              Conectar cuenta de Google
             </Button>
           </form>
-        </GrowthCard>
-      ) : !integration.search_console_site_url || !integration.ga4_property_id ? (
-        <GrowthCard className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">Conectado como {integration.google_email}</h2>
-            <p className="mt-1 text-sm text-zinc-600">Elige qué sitio y qué propiedad quieres ver aquí.</p>
-          </div>
-          <SelectPropertiesForm
-            sites={availableProperties?.sites ?? []}
-            properties={availableProperties?.properties ?? []}
-          />
         </GrowthCard>
       ) : (
         <div className="flex flex-col gap-6">
@@ -114,38 +111,73 @@ export function GoogleIntegrationView({
               )}
             </p>
             <div className="flex items-center gap-2">
-              <form action={refreshGoogleDataAction}>
-                <Button type="submit" variant="secondary">
-                  Actualizar ahora
-                </Button>
-              </form>
+              {(hasSearchConsole || hasAnalytics) && (
+                <form action={refreshGoogleDataAction}>
+                  <Button type="submit" variant="secondary">
+                    Actualizar ahora
+                  </Button>
+                </form>
+              )}
               <form action={disconnectGoogleAction}>
                 <Button type="submit" variant="ghost" className="text-red-600 hover:bg-red-50">
-                  Desconectar
+                  Desconectar cuenta
                 </Button>
               </form>
             </div>
           </div>
 
-          {integration.search_console_data ? (
-            <SearchConsoleCard data={integration.search_console_data as unknown as SearchConsoleSummary} />
-          ) : null}
-          {integration.analytics_data ? (
-            <AnalyticsCard data={integration.analytics_data as unknown as AnalyticsSummary} />
-          ) : null}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+            <GrowthCard>
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Search Console</h2>
+                {hasSearchConsole && (
+                  <form action={clearSearchConsoleSiteAction}>
+                    <button type="submit" className="text-xs text-zinc-500 underline underline-offset-2 hover:text-red-600">
+                      Quitar
+                    </button>
+                  </form>
+                )}
+              </div>
+              {hasSearchConsole && integration.search_console_data ? (
+                <SearchConsoleMetrics data={integration.search_console_data as unknown as SearchConsoleSummary} />
+              ) : hasSearchConsole ? (
+                <p className="text-sm text-zinc-500">Sincronizando…</p>
+              ) : (
+                <SelectSearchConsoleSiteForm sites={availableProperties?.sites ?? []} />
+              )}
+            </GrowthCard>
+
+            <GrowthCard>
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Google Analytics</h2>
+                {hasAnalytics && (
+                  <form action={clearAnalyticsPropertyAction}>
+                    <button type="submit" className="text-xs text-zinc-500 underline underline-offset-2 hover:text-red-600">
+                      Quitar
+                    </button>
+                  </form>
+                )}
+              </div>
+              {hasAnalytics && integration.analytics_data ? (
+                <AnalyticsMetrics data={integration.analytics_data as unknown as AnalyticsSummary} />
+              ) : hasAnalytics ? (
+                <p className="text-sm text-zinc-500">Sincronizando…</p>
+              ) : (
+                <SelectAnalyticsPropertyForm properties={availableProperties?.properties ?? []} />
+              )}
+            </GrowthCard>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function SearchConsoleCard({ data }: { data: SearchConsoleSummary }) {
+function SearchConsoleMetrics({ data }: { data: SearchConsoleSummary }) {
   return (
-    <GrowthCard>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-        Search Console · últimos 28 días
-      </h2>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <>
+      <p className="mb-3 text-xs text-zinc-500">Últimos 28 días</p>
+      <div className="grid grid-cols-2 gap-4">
         <Metric label="Clics" value={data.clicks} current={data.clicks} previous={data.previousClicks} />
         <Metric
           label="Impresiones"
@@ -157,20 +189,18 @@ function SearchConsoleCard({ data }: { data: SearchConsoleSummary }) {
         <Metric label="Posición media" value={data.position.toFixed(1)} />
       </div>
 
-      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <div className="mt-5 flex flex-col gap-5">
         <TopTable title="Consultas con más clics" rows={data.topQueries.map((q) => ({ label: q.query, value: q.clicks }))} />
         <TopTable title="Páginas con más clics" rows={data.topPages.map((p) => ({ label: p.page, value: p.clicks }))} />
       </div>
-    </GrowthCard>
+    </>
   );
 }
 
-function AnalyticsCard({ data }: { data: AnalyticsSummary }) {
+function AnalyticsMetrics({ data }: { data: AnalyticsSummary }) {
   return (
-    <GrowthCard>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-        Google Analytics · últimos 28 días
-      </h2>
+    <>
+      <p className="mb-3 text-xs text-zinc-500">Últimos 28 días</p>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <Metric label="Sesiones" value={data.sessions} current={data.sessions} previous={data.previousSessions} />
         <Metric
@@ -185,7 +215,7 @@ function AnalyticsCard({ data }: { data: AnalyticsSummary }) {
       <div className="mt-5">
         <TopTable title="Canales con más sesiones" rows={data.topChannels.map((c) => ({ label: c.channel, value: c.sessions }))} />
       </div>
-    </GrowthCard>
+    </>
   );
 }
 

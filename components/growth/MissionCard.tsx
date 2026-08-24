@@ -43,6 +43,9 @@ export function MissionCard({
   const isWeekly = mission.type === "weekly";
   const template = findTemplateById(mission.template_id);
   const isVerified = Boolean(template?.auditTrigger);
+  const isGoogleSignal = Boolean(
+    mission.template_id && (mission.template_id.startsWith("gsc-") || mission.template_id.startsWith("ga4-")),
+  );
 
   function handleComplete() {
     setVerifyError(null);
@@ -87,6 +90,11 @@ export function MissionCard({
           <h3 className={cn("mt-1 font-medium text-foreground", isWeekly && "text-lg font-semibold")}>
             {mission.title}
           </h3>
+          {isGoogleSignal && (
+            <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-brand-600">
+              🔍 Basado en tus datos reales de Google
+            </span>
+          )}
           <p className="mt-1 text-sm text-zinc-600">{mission.description}</p>
           {mission.expected_impact && (
             <p className="mt-2 text-xs font-medium text-brand-600">

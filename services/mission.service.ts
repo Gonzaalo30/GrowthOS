@@ -33,7 +33,7 @@ function toInsertRow(
   };
 }
 
-async function getNextSequenceNumber(supabase: Client, businessId: string): Promise<number> {
+export async function getNextSequenceNumber(supabase: Client, businessId: string): Promise<number> {
   const { data, error } = await supabase
     .from("missions")
     .select("sequence_number")

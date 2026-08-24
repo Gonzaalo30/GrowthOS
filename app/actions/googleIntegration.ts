@@ -52,15 +52,13 @@ export async function connectGoogleAction() {
   redirect(authUrl);
 }
 
-export async function selectGooglePropertiesAction(
+export async function selectSearchConsoleSiteAction(
   _prevState: GoogleIntegrationActionState,
   formData: FormData,
 ): Promise<GoogleIntegrationActionState> {
   const siteUrl = formData.get("siteUrl");
-  const propertyId = formData.get("propertyId");
-  const propertyName = formData.get("propertyName");
-  if (typeof siteUrl !== "string" || !siteUrl || typeof propertyId !== "string" || !propertyId) {
-    return { error: "Elige un sitio de Search Console y una propiedad de Analytics." };
+  if (typeof siteUrl !== "string" || !siteUrl) {
+    return { error: "Elige un sitio de Search Console." };
   }
 
   const supabase = await createClient();
@@ -73,17 +71,74 @@ export async function selectGooglePropertiesAction(
   if (!business) redirect("/onboarding");
 
   try {
-    await googleIntegrationService.selectProperties(supabase, business.id, {
-      siteUrl,
+    await googleIntegrationService.selectSearchConsoleSite(supabase, business.id, siteUrl);
+    const integration = await googleIntegrationService.getIntegration(supabase, business.id);
+    if (integration) await googleIntegrationService.syncNow(supabase, business.id, integration);
+  } catch {
+    return { error: "No hemos podido guardar tu sitio o sincronizar los datos. Inténtalo de nuevo." };
+  }
+
+  redirect("/integraciones");
+}
+
+export async function selectAnalyticsPropertyAction(
+  _prevState: GoogleIntegrationActionState,
+  formData: FormData,
+): Promise<GoogleIntegrationActionState> {
+  const propertyId = formData.get("propertyId");
+  const propertyName = formData.get("propertyName");
+  if (typeof propertyId !== "string" || !propertyId) {
+    return { error: "Elige una propiedad de Analytics." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const business = await getActiveBusiness(supabase, user.id);
+  if (!business) redirect("/onboarding");
+
+  try {
+    await googleIntegrationService.selectAnalyticsProperty(supabase, business.id, {
       propertyId,
-      propertyName: typeof propertyName === "string" ? propertyName : propertyId,
+      propertyName: typeof propertyName === "string" && propertyName ? propertyName : propertyId,
     });
     const integration = await googleIntegrationService.getIntegration(supabase, business.id);
     if (integration) await googleIntegrationService.syncNow(supabase, business.id, integration);
   } catch {
-    return { error: "No hemos podido guardar tu selección o sincronizar los datos. Inténtalo de nuevo." };
+    return { error: "No hemos podido guardar tu propiedad o sincronizar los datos. Inténtalo de nuevo." };
   }
 
+  redirect("/integraciones");
+}
+
+export async function clearSearchConsoleSiteAction() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const business = await getActiveBusiness(supabase, user.id);
+  if (!business) redirect("/onboarding");
+
+  await googleIntegrationService.clearSearchConsoleSite(supabase, business.id);
+  redirect("/integraciones");
+}
+
+export async function clearAnalyticsPropertyAction() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const business = await getActiveBusiness(supabase, user.id);
+  if (!business) redirect("/onboarding");
+
+  await googleIntegrationService.clearAnalyticsProperty(supabase, business.id);
   redirect("/integraciones");
 }
 

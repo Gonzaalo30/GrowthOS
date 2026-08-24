@@ -101,6 +101,15 @@ export async function listAnalyticsProperties(accessToken: string): Promise<Goog
   return options;
 }
 
+export interface SearchConsoleQueryRow {
+  query: string;
+  clicks: number;
+  impressions: number;
+  position: number;
+  /** Posición en el periodo anterior (28 días previos) para la misma consulta, si apareció. */
+  previousPosition: number | null;
+}
+
 export interface SearchConsoleSummary {
   clicks: number;
   impressions: number;
@@ -108,8 +117,8 @@ export interface SearchConsoleSummary {
   position: number;
   previousClicks: number;
   previousImpressions: number;
-  topQueries: { query: string; clicks: number; impressions: number }[];
-  topPages: { page: string; clicks: number; impressions: number }[];
+  topQueries: SearchConsoleQueryRow[];
+  topPages: { page: string; clicks: number; impressions: number; position: number }[];
 }
 
 function isoDaysAgo(days: number): string {
@@ -121,7 +130,7 @@ function isoDaysAgo(days: number): string {
 export async function fetchSearchConsoleSummary(accessToken: string, siteUrl: string): Promise<SearchConsoleSummary> {
   const searchconsole = google.searchconsole({ version: "v1", auth: authedClient(accessToken) });
 
-  const [current, previous, byQuery, byPage] = await Promise.all([
+  const [current, previous, byQuery, byQueryPrevious, byPage] = await Promise.all([
     searchconsole.searchanalytics.query({
       siteUrl,
       requestBody: { startDate: isoDaysAgo(28), endDate: isoDaysAgo(1) },
@@ -134,6 +143,13 @@ export async function fetchSearchConsoleSummary(accessToken: string, siteUrl: st
       siteUrl,
       requestBody: { startDate: isoDaysAgo(28), endDate: isoDaysAgo(1), dimensions: ["query"], rowLimit: 10 },
     }),
+    // Mismo periodo anterior, por consulta — para poder calcular caídas de
+    // posición reales (no solo la posición actual, que por sí sola no dice
+    // si algo empeoró).
+    searchconsole.searchanalytics.query({
+      siteUrl,
+      requestBody: { startDate: isoDaysAgo(56), endDate: isoDaysAgo(29), dimensions: ["query"], rowLimit: 250 },
+    }),
     searchconsole.searchanalytics.query({
       siteUrl,
       requestBody: { startDate: isoDaysAgo(28), endDate: isoDaysAgo(1), dimensions: ["page"], rowLimit: 10 },
@@ -142,6 +158,11 @@ export async function fetchSearchConsoleSummary(accessToken: string, siteUrl: st
 
   const currentRow = current.data.rows?.[0];
   const previousRow = previous.data.rows?.[0];
+  const previousPositionByQuery = new Map<string, number>();
+  for (const r of byQueryPrevious.data.rows ?? []) {
+    const query = r.keys?.[0];
+    if (query && typeof r.position === "number") previousPositionByQuery.set(query, r.position);
+  }
 
   return {
     clicks: currentRow?.clicks ?? 0,
@@ -150,15 +171,21 @@ export async function fetchSearchConsoleSummary(accessToken: string, siteUrl: st
     position: currentRow?.position ?? 0,
     previousClicks: previousRow?.clicks ?? 0,
     previousImpressions: previousRow?.impressions ?? 0,
-    topQueries: (byQuery.data.rows ?? []).map((r) => ({
-      query: r.keys?.[0] ?? "",
-      clicks: r.clicks ?? 0,
-      impressions: r.impressions ?? 0,
-    })),
+    topQueries: (byQuery.data.rows ?? []).map((r) => {
+      const query = r.keys?.[0] ?? "";
+      return {
+        query,
+        clicks: r.clicks ?? 0,
+        impressions: r.impressions ?? 0,
+        position: r.position ?? 0,
+        previousPosition: previousPositionByQuery.get(query) ?? null,
+      };
+    }),
     topPages: (byPage.data.rows ?? []).map((r) => ({
       page: r.keys?.[0] ?? "",
       clicks: r.clicks ?? 0,
       impressions: r.impressions ?? 0,
+      position: r.position ?? 0,
     })),
   };
 }
@@ -170,13 +197,15 @@ export interface AnalyticsSummary {
   previousSessions: number;
   previousConversions: number;
   topChannels: { channel: string; sessions: number }[];
+  /** Páginas más visitadas de los últimos 28 días, con su tasa de rebote real. */
+  topPagesByTraffic: { path: string; sessions: number; bounceRate: number }[];
 }
 
 export async function fetchAnalyticsSummary(accessToken: string, propertyId: string): Promise<AnalyticsSummary> {
   const analyticsdata = google.analyticsdata({ version: "v1beta", auth: authedClient(accessToken) });
   const property = `properties/${propertyId}`;
 
-  const [totals, byChannel] = await Promise.all([
+  const [totals, byChannel, byPage] = await Promise.all([
     analyticsdata.properties.runReport({
       property,
       requestBody: {
@@ -197,6 +226,19 @@ export async function fetchAnalyticsSummary(accessToken: string, propertyId: str
         limit: "5",
       },
     }),
+    // Páginas con más tráfico y su tasa de rebote real — Google la calcula
+    // siempre automáticamente, sin necesitar eventos de conversión
+    // configurados (la mayoría de negocios locales no los tienen).
+    analyticsdata.properties.runReport({
+      property,
+      requestBody: {
+        dateRanges: [{ startDate: "28daysAgo", endDate: "yesterday" }],
+        dimensions: [{ name: "pagePath" }],
+        metrics: [{ name: "sessions" }, { name: "bounceRate" }],
+        orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+        limit: "10",
+      },
+    }),
   ]);
 
   const currentRow = totals.data.rows?.find((r) => r.dimensionValues?.[0]?.value === "current");
@@ -211,6 +253,11 @@ export async function fetchAnalyticsSummary(accessToken: string, propertyId: str
     topChannels: (byChannel.data.rows ?? []).map((r) => ({
       channel: r.dimensionValues?.[0]?.value ?? "",
       sessions: Number(r.metricValues?.[0]?.value ?? 0),
+    })),
+    topPagesByTraffic: (byPage.data.rows ?? []).map((r) => ({
+      path: r.dimensionValues?.[0]?.value ?? "",
+      sessions: Number(r.metricValues?.[0]?.value ?? 0),
+      bounceRate: Number(r.metricValues?.[1]?.value ?? 0),
     })),
   };
 }

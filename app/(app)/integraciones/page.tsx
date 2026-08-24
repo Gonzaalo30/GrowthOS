@@ -29,9 +29,10 @@ export default async function IntegracionesPage({
   }
 
   let integration = await getIntegration(supabase, business.id);
-  const isFullySelected = Boolean(integration?.search_console_site_url && integration?.ga4_property_id);
+  const hasSearchConsole = Boolean(integration?.search_console_site_url);
+  const hasAnalytics = Boolean(integration?.ga4_property_id);
 
-  if (integration && isFullySelected) {
+  if (integration && (hasSearchConsole || hasAnalytics)) {
     // Igual patrón que refreshGrowthScoreIfStale: si falla, se muestra el
     // último snapshot guardado en vez de romper la página.
     try {
@@ -41,8 +42,11 @@ export default async function IntegracionesPage({
     }
   }
 
+  // Se piden las opciones reales de Google mientras falte configurar
+  // cualquiera de los dos — cada bloque (Search Console / Analytics) es
+  // independiente, uno puede quedar sin configurar indefinidamente.
   let availableProperties: Awaited<ReturnType<typeof listAvailableProperties>> = null;
-  if (integration && !isFullySelected) {
+  if (integration && (!hasSearchConsole || !hasAnalytics)) {
     try {
       availableProperties = await listAvailableProperties(supabase, business.id);
     } catch {

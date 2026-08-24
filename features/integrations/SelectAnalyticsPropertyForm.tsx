@@ -3,46 +3,18 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import {
-  selectGooglePropertiesAction,
+  selectAnalyticsPropertyAction,
   type GoogleIntegrationActionState,
 } from "@/app/actions/googleIntegration";
-import type { GoogleSiteOption, GoogleAnalyticsPropertyOption } from "@/lib/googleApis";
+import type { GoogleAnalyticsPropertyOption } from "@/lib/googleApis";
 
 const initialState: GoogleIntegrationActionState = {};
 
-export function SelectPropertiesForm({
-  sites,
-  properties,
-}: {
-  sites: GoogleSiteOption[];
-  properties: GoogleAnalyticsPropertyOption[];
-}) {
-  const [state, formAction, isPending] = useActionState(selectGooglePropertiesAction, initialState);
+export function SelectAnalyticsPropertyForm({ properties }: { properties: GoogleAnalyticsPropertyOption[] }) {
+  const [state, formAction, isPending] = useActionState(selectAnalyticsPropertyAction, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <label className="text-sm font-medium text-foreground">
-        Sitio de Search Console
-        <select
-          name="siteUrl"
-          required
-          disabled={sites.length === 0}
-          className="mt-1 w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-        >
-          <option value="">Elige un sitio…</option>
-          {sites.map((s) => (
-            <option key={s.siteUrl} value={s.siteUrl}>
-              {s.siteUrl}
-            </option>
-          ))}
-        </select>
-        {sites.length === 0 && (
-          <span className="mt-1 block text-xs text-zinc-500">
-            No hemos encontrado ningún sitio verificado en tu cuenta de Search Console.
-          </span>
-        )}
-      </label>
-
+    <form action={formAction} className="flex flex-col gap-3">
       <label className="text-sm font-medium text-foreground">
         Propiedad de Google Analytics
         <select
@@ -73,8 +45,8 @@ export function SelectPropertiesForm({
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
-      <Button type="submit" disabled={isPending || sites.length === 0 || properties.length === 0} className="self-start">
-        {isPending ? "Conectando…" : "Empezar a sincronizar"}
+      <Button type="submit" disabled={isPending || properties.length === 0} className="self-start">
+        {isPending ? "Conectando…" : "Conectar Analytics"}
       </Button>
     </form>
   );

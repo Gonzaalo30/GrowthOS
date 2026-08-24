@@ -16,6 +16,7 @@ import {
 import { getTodayChest, countChestsOpened } from "@/services/chest.service";
 import { getRequestsForBusiness } from "@/services/opportunity.service";
 import { getSnapshot as getPageSpeedSnapshot } from "@/services/pageSpeed.service";
+import { ensureGoogleSignalMission } from "@/services/googleSignalMission.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
@@ -50,6 +51,17 @@ export default async function DashboardPage({
 
   let missions = await getMissionsForBusiness(supabase, business.id);
   const scoreBreakdown = await getLatestScoreBreakdown(supabase, business.id);
+
+  // Como mucho 1 misión al día basada en datos reales de Google (si el
+  // negocio tiene la integración conectada) — se genera antes de rellenar el
+  // resto del cupo diario con plantillas, para que cuente como una más del
+  // cupo en vez de sumarse aparte.
+  try {
+    await ensureGoogleSignalMission(supabase, business.id, business.plan, missions);
+    missions = await getMissionsForBusiness(supabase, business.id);
+  } catch {
+    // si falla, el dashboard sigue funcionando solo con misiones de plantilla
+  }
 
   if ((BUSINESS_TYPES as readonly string[]).includes(business.business_type)) {
     const businessType = business.business_type as BusinessType;

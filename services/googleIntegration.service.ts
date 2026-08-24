@@ -42,18 +42,38 @@ export async function saveInitialConnection(
   if (error) throw error;
 }
 
-export async function selectProperties(
+export async function selectSearchConsoleSite(supabase: Client, businessId: string, siteUrl: string) {
+  const { error } = await supabase
+    .from("google_integrations")
+    .update({ search_console_site_url: siteUrl })
+    .eq("business_id", businessId);
+  if (error) throw error;
+}
+
+export async function selectAnalyticsProperty(
   supabase: Client,
   businessId: string,
-  input: { siteUrl: string; propertyId: string; propertyName: string },
+  input: { propertyId: string; propertyName: string },
 ) {
   const { error } = await supabase
     .from("google_integrations")
-    .update({
-      search_console_site_url: input.siteUrl,
-      ga4_property_id: input.propertyId,
-      ga4_property_name: input.propertyName,
-    })
+    .update({ ga4_property_id: input.propertyId, ga4_property_name: input.propertyName })
+    .eq("business_id", businessId);
+  if (error) throw error;
+}
+
+export async function clearSearchConsoleSite(supabase: Client, businessId: string) {
+  const { error } = await supabase
+    .from("google_integrations")
+    .update({ search_console_site_url: null, search_console_data: null })
+    .eq("business_id", businessId);
+  if (error) throw error;
+}
+
+export async function clearAnalyticsProperty(supabase: Client, businessId: string) {
+  const { error } = await supabase
+    .from("google_integrations")
+    .update({ ga4_property_id: null, ga4_property_name: null, analytics_data: null })
     .eq("business_id", businessId);
   if (error) throw error;
 }
@@ -66,7 +86,7 @@ const STALE_AFTER_HOURS = 6;
  */
 export async function refreshDataIfStale(supabase: Client, businessId: string) {
   const integration = await getIntegration(supabase, businessId);
-  if (!integration || !integration.search_console_site_url || !integration.ga4_property_id) return integration;
+  if (!integration || (!integration.search_console_site_url && !integration.ga4_property_id)) return integration;
 
   const isStale =
     !integration.last_synced_at ||
@@ -76,28 +96,37 @@ export async function refreshDataIfStale(supabase: Client, businessId: string) {
   return syncNow(supabase, businessId, integration);
 }
 
+/**
+ * Sincroniza cada fuente de forma independiente: si el negocio solo tiene
+ * conectado Search Console (o solo Analytics), sincroniza solo esa, en vez de
+ * exigir las dos como antes.
+ */
 export async function syncNow(
   supabase: Client,
   businessId: string,
   integration: NonNullable<Awaited<ReturnType<typeof getIntegration>>>,
 ) {
-  if (!integration.search_console_site_url || !integration.ga4_property_id) return integration;
+  if (!integration.search_console_site_url && !integration.ga4_property_id) return integration;
 
   const refreshToken = decryptGoogleToken(integration.refresh_token_encrypted);
   const accessToken = await getFreshAccessToken(refreshToken);
 
   const [searchConsoleData, analyticsData] = await Promise.all([
-    fetchSearchConsoleSummary(accessToken, integration.search_console_site_url),
-    fetchAnalyticsSummary(accessToken, integration.ga4_property_id),
+    integration.search_console_site_url
+      ? fetchSearchConsoleSummary(accessToken, integration.search_console_site_url)
+      : Promise.resolve(null),
+    integration.ga4_property_id ? fetchAnalyticsSummary(accessToken, integration.ga4_property_id) : Promise.resolve(null),
   ]);
+
+  const update: Database["public"]["Tables"]["google_integrations"]["Update"] = {
+    last_synced_at: new Date().toISOString(),
+  };
+  if (searchConsoleData) update.search_console_data = searchConsoleData;
+  if (analyticsData) update.analytics_data = analyticsData;
 
   const { data, error } = await supabase
     .from("google_integrations")
-    .update({
-      search_console_data: searchConsoleData as unknown,
-      analytics_data: analyticsData as unknown,
-      last_synced_at: new Date().toISOString(),
-    })
+    .update(update)
     .eq("business_id", businessId)
     .select("*")
     .single();
