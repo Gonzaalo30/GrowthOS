@@ -98,13 +98,15 @@ const GROUPS: FaqGroup[] = [
 
 export default function FaqPage() {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-10 px-6 py-16">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-16 sm:py-20">
       <div className="text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Preguntas frecuentes</h1>
-        <p className="mt-3 text-zinc-600">Todo lo que necesitas saber antes de empezar.</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          Preguntas frecuentes
+        </h1>
+        <p className="mt-3 text-lg text-zinc-600">Todo lo que necesitas saber antes de empezar.</p>
       </div>
 
-      <div className="flex flex-col gap-8">
+      <div className="grid gap-x-10 gap-y-10 md:grid-cols-2">
         {GROUPS.map((group) => (
           <div key={group.title}>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
@@ -115,7 +117,7 @@ export default function FaqPage() {
         ))}
       </div>
 
-      <GrowthCard className="flex flex-col items-center gap-3 text-center">
+      <GrowthCard className="mx-auto flex w-full max-w-xl flex-col items-center gap-3 text-center">
         <p className="text-sm text-zinc-600">¿No has encontrado lo que buscabas?</p>
         <Link href="/contacto">
           <Button variant="secondary">Escríbenos</Button>

@@ -303,6 +303,14 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 3.16 — Menos vacío en desktop: fondos a sangre completa y rejillas más anchas (COMPLETADO 2026-08-24)
+El fundador vio la home (y FAQ, Cómo funciona, Casos de éxito) muy vacía en escritorio: mucho espacio en blanco entre secciones, y el contenido ocupando poco ancho de pantalla.
+- [x] **Bandas de fondo a sangre completa** en la home (`GamificationShowcase.tsx`/`GamificationShowcaseBusiness.tsx`, alternando blanco/gris con el Hero y el teaser de Growth Sprint) — la sección se percibe ocupando toda la pantalla aunque el texto siga en una columna legible, en vez de flotar en blanco.
+- [x] **Textos y tarjetas más anchos**: titulares hasta `text-6xl` en el hero, párrafos más anchos (`max-w-2xl`), tarjetas de ejemplo más grandes con sus estadísticas en rejilla en vez de lista apilada.
+- [x] **Listas de columna única pasan a rejilla en escritorio**: FAQ (2 columnas), Cómo funciona (2×2), Casos de éxito (3 columnas) — mismo contenido, pero usando el ancho real de la pantalla en vez de una columna estrecha centrada.
+- [x] `/precios` se revisó y ya usaba bien el ancho (4 tarjetas), sin cambios ahí.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios. Verificado en vivo en local a 1440×900 en home, FAQ, Cómo funciona y Casos de éxito.
+
 ## Sprint 3.15 — Metadatos Open Graph reales (COMPLETADO 2026-08-24)
 Feedback externo detectó que la web no tenía etiquetas Open Graph (og:title, og:description, og:image) ni URL canónica — al compartir un enlace por WhatsApp o LinkedIn se vería una previsualización rota o genérica. También se revisaron dos hallazgos más del mismo feedback: no hacía falta ningún cambio.
 - [x] **Metadatos reales en `app/layout.tsx`**: `metadataBase`, `openGraph` (title, description, url, siteName, locale, type) y `twitter` (summary_large_image) — aplican a toda la web como base común, ya que hoy ninguna página tiene su propio título/descripción distinto (no es una regresión, es la misma situación que ya había).

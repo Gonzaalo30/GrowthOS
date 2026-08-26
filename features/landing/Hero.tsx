@@ -47,14 +47,14 @@ export function Hero() {
   }
 
   return (
-    <section className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center">
+    <section className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center sm:py-28">
       <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">
         Análisis gratuito en segundos
       </span>
-      <h1 className="mt-6 max-w-2xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+      <h1 className="mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
         Descubre cuántas oportunidades está perdiendo tu negocio online
       </h1>
-      <p className="mt-4 max-w-xl text-lg text-zinc-600">
+      <p className="mt-5 max-w-2xl text-lg text-zinc-600 sm:text-xl">
         GrowthOS convierte cada oportunidad de mejora de tu web en una acción concreta que completas en
         minutos — o que dejas en manos de nuestro equipo.
       </p>

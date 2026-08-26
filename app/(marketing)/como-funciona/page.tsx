@@ -31,15 +31,17 @@ const STEPS = [
 
 export default function ComoFuncionaPage() {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-6 py-16">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-6 py-16 sm:py-20">
       <div className="text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Cómo funciona GrowthOS</h1>
-        <p className="mt-3 text-zinc-600">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          Cómo funciona GrowthOS
+        </h1>
+        <p className="mt-3 text-lg text-zinc-600">
           Sin dashboards técnicos que no sabes leer. Solo lo que tienes que hacer hoy.
         </p>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="grid gap-5 sm:grid-cols-2">
         {STEPS.map((s) => (
           <GrowthCard key={s.step} className="flex gap-4">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 text-sm font-semibold text-white">
@@ -54,7 +56,7 @@ export default function ComoFuncionaPage() {
       </div>
 
       <Link href="/" className="mx-auto">
-        <Button className="mt-4">Ver mi Growth Score</Button>
+        <Button className="mt-2">Ver mi Growth Score</Button>
       </Link>
     </div>
   );

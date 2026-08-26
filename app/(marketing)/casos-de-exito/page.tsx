@@ -47,18 +47,18 @@ const EXAMPLES = [
 
 export default function CasosDeExitoPage() {
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-16 sm:py-20">
       <div className="text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           Ejemplos por tipo de negocio
         </h1>
-        <p className="mt-3 text-zinc-600">
+        <p className="mt-3 text-lg text-zinc-600">
           Somos un producto nuevo, así que en vez de inventarnos testimonios, te enseñamos el tipo de
           misiones que recibirías según tu sector.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {EXAMPLES.map((example) => (
           <GrowthCard key={example.type}>
             <h2 className="font-medium text-foreground">{example.type}</h2>
