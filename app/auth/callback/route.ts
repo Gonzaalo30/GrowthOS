@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/onboarding";
+  const onError = searchParams.get("onError") ?? "/signup?error=confirmacion_fallida";
 
   if (code) {
     const supabase = await createClient();
@@ -14,5 +15,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/signup?error=confirmacion_fallida`);
+  return NextResponse.redirect(`${origin}${onError}`);
 }

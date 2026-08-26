@@ -5,11 +5,16 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { GrowthCard } from "@/components/growth/GrowthCard";
+import { GoogleSignInButton } from "@/features/auth/GoogleSignInButton";
 import { signUpAction, type SignUpState } from "@/app/actions/auth";
 
 const initialState: SignUpState = {};
 
-export function SignupForm({ domain }: { domain?: string }) {
+const ERROR_MESSAGES: Record<string, string> = {
+  google_fallido: "No hemos podido crear tu cuenta con Google. Inténtalo de nuevo.",
+};
+
+export function SignupForm({ domain, error }: { domain?: string; error?: string }) {
   const [state, formAction, isPending] = useActionState(signUpAction, initialState);
 
   if (state.success) {
@@ -32,7 +37,21 @@ export function SignupForm({ domain }: { domain?: string }) {
           : "Empieza a hacer crecer tu negocio."}
       </p>
 
-      <form action={formAction} className="mt-6 flex flex-col gap-3">
+      {error && ERROR_MESSAGES[error] && (
+        <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{ERROR_MESSAGES[error]}</p>
+      )}
+
+      <div className="mt-6">
+        <GoogleSignInButton domain={domain} returnTo="/signup" />
+      </div>
+
+      <div className="my-4 flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs text-zinc-400">o</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
+      <form action={formAction} className="flex flex-col gap-3">
         {domain && <input type="hidden" name="domain" value={domain} />}
         <Input name="name" placeholder="Tu nombre" required autoComplete="name" />
         <Input name="email" type="email" placeholder="Email" required autoComplete="email" />

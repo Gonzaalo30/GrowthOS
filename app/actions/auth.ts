@@ -77,6 +77,36 @@ export async function signUpAction(
   return { success: true };
 }
 
+/**
+ * Inicio de sesión social con Google, vía el proveedor OAuth nativo de
+ * Supabase Auth — totalmente distinto de la integración de Search
+ * Console/Analytics (esa usa su propio cliente OAuth en `lib/googleApis.ts`,
+ * con más permisos y guardando un refresh token cifrado). Aquí solo pedimos
+ * identidad básica (email/nombre) para entrar o crear cuenta.
+ */
+export async function signInWithGoogleAction(formData: FormData) {
+  const domain = String(formData.get("domain") ?? "").trim();
+  const returnTo = String(formData.get("returnTo") ?? "/login");
+  const next = domain ? `/onboarding?domain=${encodeURIComponent(domain)}` : "/dashboard";
+
+  const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const callbackUrl = new URL(`${origin}/auth/callback`);
+  callbackUrl.searchParams.set("next", next);
+  callbackUrl.searchParams.set("onError", `${returnTo}?error=google_fallido`);
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: callbackUrl.toString() },
+  });
+
+  if (error || !data.url) {
+    redirect(`${returnTo}?error=google_fallido`);
+  }
+
+  redirect(data.url);
+}
+
 export async function signOutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();
