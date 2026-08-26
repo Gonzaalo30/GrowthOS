@@ -3,7 +3,7 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { trackEvent } from "@/lib/analytics";
-import { planIdForPriceId, type PlanId } from "@/lib/plans";
+import { planIdForPriceId, agencyIncludedCapacity, type PlanId } from "@/lib/plans";
 import { OPPORTUNITIES } from "@/lib/opportunities";
 import { createNotification } from "@/services/notification.service";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -82,6 +82,63 @@ export async function POST(request: NextRequest) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const businessId = session.metadata?.business_id ?? session.client_reference_id ?? undefined;
+
+      if (session.metadata?.type === "agencia") {
+        const ownerId = session.metadata?.owner_id;
+        if (ownerId) {
+          const customerId =
+            typeof session.customer === "string" ? session.customer : (session.customer?.id ?? null);
+          const subscriptionId =
+            typeof session.subscription === "string" ? session.subscription : (session.subscription?.id ?? null);
+
+          await supabase
+            .from("profiles")
+            .update({
+              agency_stripe_customer_id: customerId,
+              agency_stripe_subscription_id: subscriptionId,
+              agency_subscription_status: "active",
+            })
+            .eq("id", ownerId);
+
+          // Los negocios actuales del owner (hasta 5, los más antiguos primero)
+          // suben a plan 'agencia' — se respetan los que ya estén en Autopilot,
+          // no se les baja de nivel silenciosamente al comprar Agencia.
+          const { data: ownedBusinesses } = await supabase
+            .from("businesses")
+            .select("id, plan, created_at")
+            .eq("owner_id", ownerId)
+            .neq("plan", "autopilot")
+            .order("created_at", { ascending: true })
+            .limit(5);
+          for (const b of ownedBusinesses ?? []) {
+            await supabase.from("businesses").update({ plan: "agencia" }).eq("id", b.id);
+          }
+
+          await createNotification(supabase, ownerId, "🏢 Tu suscripción de Agencia está activa.");
+          await trackEvent(supabase, "agency_checkout_completed", null);
+        }
+        break;
+      }
+
+      if (session.metadata?.type === "agencia_extra_slot") {
+        const ownerId = session.metadata?.owner_id;
+        if (ownerId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("agency_extra_slots")
+            .eq("id", ownerId)
+            .single();
+          const nextSlots = (profile?.agency_extra_slots ?? 0) + 1;
+          await supabase.from("profiles").update({ agency_extra_slots: nextSlots }).eq("id", ownerId);
+          await createNotification(
+            supabase,
+            ownerId,
+            `🏢 Slot extra de Agencia activado — ya puedes gestionar hasta ${agencyIncludedCapacity(nextSlots)} negocios.`,
+          );
+          await trackEvent(supabase, "agency_extra_slot_purchased", null);
+        }
+        break;
+      }
 
       if (session.metadata?.type === "opportunity") {
         const opportunity = OPPORTUNITIES.find((o) => o.id === session.metadata?.opportunity_id);
@@ -188,6 +245,25 @@ export async function POST(request: NextRequest) {
     }
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
+
+      if (subscription.metadata?.type === "agencia") {
+        const ownerId = subscription.metadata?.owner_id;
+        if (ownerId) {
+          await supabase
+            .from("profiles")
+            .update({ agency_subscription_status: "canceled" })
+            .eq("id", ownerId);
+          // Los negocios que estaban en 'agencia' vuelven a 'starter' — igual
+          // que cancelar Growth/Autopilot revierte el negocio a 'starter'.
+          await supabase
+            .from("businesses")
+            .update({ plan: "starter", subscription_status: "canceled" })
+            .eq("owner_id", ownerId)
+            .eq("plan", "agencia");
+        }
+        break;
+      }
+
       if (!subscription.metadata?.plan) break;
       const businessId = subscription.metadata?.business_id;
       if (businessId) {

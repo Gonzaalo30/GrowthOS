@@ -1,6 +1,6 @@
 import { getLevelProgress } from "@/lib/levels";
 
-export type PlanId = "starter" | "growth" | "autopilot";
+export type PlanId = "starter" | "growth" | "autopilot" | "agencia";
 
 export interface Plan {
   id: PlanId;
@@ -55,7 +55,24 @@ export const PLANS: Plan[] = [
       "Implementamos tu misión semanal todas las semanas",
     ],
   },
+  {
+    id: "agencia",
+    name: "Agencia",
+    priceCents: 9900,
+    priceEnvVar: "STRIPE_AGENCIA_PRICE_ID",
+    tagline: "Para gestores y agencias que llevan varios negocios a la vez.",
+    features: [
+      "Hasta 5 negocios con funciones Growth cada uno",
+      "Quick Wins ilimitados y reanálisis a demanda por negocio",
+      "Conecta Search Console y Analytics por cada negocio",
+      "+15€/mes por negocio adicional a partir del 5º",
+      "No incluye Autopilot",
+    ],
+  },
 ];
+
+/** Precio real del slot extra de Agencia (15€/mes), más allá de los 5 incluidos en la base. */
+export const AGENCY_EXTRA_SLOT_PRICE_CENTS = 1500;
 
 export function getPlan(id: string | null | undefined): Plan {
   return PLANS.find((p) => p.id === id) ?? PLANS[0];
@@ -75,16 +92,21 @@ export function planIdForPriceId(priceId: string | null | undefined): PlanId | n
  * se suma también en plan Gratis — a propósito no le acerca al tope de pago.
  */
 export function dailyQuickWinCap(planId: string | null | undefined, xp: number): number {
-  const base = planId === "growth" || planId === "autopilot" ? 20 : 3;
+  const base = planId === "growth" || planId === "autopilot" || planId === "agencia" ? 20 : 3;
   return base + getLevelProgress(xp).level.bonusQuickWins;
 }
 
 /** Si el plan permite reanalizar la web cuando quiera, sin esperar el ciclo de 7 días. */
 export function canRefreshOnDemand(planId: string | null | undefined): boolean {
-  return planId === "growth" || planId === "autopilot";
+  return planId === "growth" || planId === "autopilot" || planId === "agencia";
 }
 
 /** Si el plan permite conectar Google Search Console y Analytics. */
 export function canUseGoogleIntegrations(planId: string | null | undefined): boolean {
-  return planId === "growth" || planId === "autopilot";
+  return planId === "growth" || planId === "autopilot" || planId === "agencia";
+}
+
+/** Cuántos negocios puede tener un owner con suscripción de Agencia activa: 5 incluidos + slots extra comprados. */
+export function agencyIncludedCapacity(extraSlots: number): number {
+  return 5 + extraSlots;
 }

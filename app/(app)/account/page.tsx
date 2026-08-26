@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getActiveBusiness } from "@/services/business.service";
+import { getActiveBusiness, getBusinessesByOwner } from "@/services/business.service";
 import { getProfile } from "@/services/profile.service";
 import { getBillingInfo, listInvoices, type BillingInfo, type InvoiceSummary } from "@/services/billing.service";
 import { getStripe } from "@/lib/stripe";
@@ -22,8 +22,9 @@ import { SignOutOtherSessionsButton } from "@/features/account/SignOutOtherSessi
 import { listMfaFactorsAction } from "@/app/actions/mfa";
 import { InvoiceHistory } from "@/components/account/InvoiceHistory";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
+import { createAgencyExtraSlotCheckoutAction } from "@/app/actions/agency";
 import { getAchievementsForBusiness } from "@/services/achievementSummary.service";
-import { getPlan } from "@/lib/plans";
+import { getPlan, agencyIncludedCapacity } from "@/lib/plans";
 import { getLevelProgress, getLevelRingClass } from "@/lib/levels";
 
 export default async function AccountPage({
@@ -47,6 +48,13 @@ export default async function AccountPage({
 
   const hasActiveSubscription = business.subscription_status === "active";
   const currentPlan = getPlan(business.plan);
+  const hasActiveAgency = profile.agency_subscription_status === "active";
+  let agencyBusinessCount = 0;
+  if (hasActiveAgency) {
+    const ownedBusinesses = await getBusinessesByOwner(supabase, user.id);
+    agencyBusinessCount = ownedBusinesses.filter((b) => b.plan === "agencia").length;
+  }
+  const agencyCapacity = agencyIncludedCapacity(profile.agency_extra_slots);
   const mfaFactors = await listMfaFactorsAction();
   const levelProgress = getLevelProgress(business.xp);
   const achievements = await getAchievementsForBusiness(supabase, business);
@@ -147,6 +155,26 @@ export default async function AccountPage({
             </p>
           )}
         </GrowthCard>
+
+        {hasActiveAgency && (
+          <GrowthCard className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                  Plan Agencia
+                </h2>
+                <p className="mt-1 text-sm text-zinc-600">
+                  Gestionando {agencyBusinessCount} de {agencyCapacity} negocios incluidos.
+                </p>
+              </div>
+              <form action={createAgencyExtraSlotCheckoutAction}>
+                <Button type="submit" variant="secondary">
+                  Añadir slot extra
+                </Button>
+              </form>
+            </div>
+          </GrowthCard>
+        )}
 
         {billingInfo && (
           <GrowthCard>

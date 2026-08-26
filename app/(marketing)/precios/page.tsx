@@ -29,8 +29,8 @@ export default async function PreciosPage() {
         <p className="mt-3 text-zinc-600">Sin presupuestos ni sorpresas. Precio cerrado en todo.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 pt-4 sm:grid-cols-2 lg:grid-cols-4">
-        {PLANS.map((plan) => (
+      <div className="grid grid-cols-1 gap-6 pt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {PLANS.filter((plan) => plan.id !== "agencia").map((plan) => (
           <PlanCard
             key={plan.id}
             plan={plan}
@@ -39,6 +39,40 @@ export default async function PreciosPage() {
             hasActiveSubscription={hasActiveSubscription}
           />
         ))}
+
+        <GrowthCard className="flex h-full flex-col gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Agencia</h2>
+            <p className="mt-1 text-sm text-zinc-600">
+              ¿Gestionas varios negocios? Un solo precio para hasta 5 clientes.
+            </p>
+          </div>
+
+          <p className="text-3xl font-semibold text-foreground">
+            99 € <span className="text-base font-normal text-zinc-500">/ mes</span>
+          </p>
+
+          <ul className="flex flex-1 flex-col gap-2">
+            <li className="flex gap-2 text-sm text-zinc-600">
+              <span className="text-brand-500">✓</span>
+              Hasta 5 negocios con funciones Growth cada uno
+            </li>
+            <li className="flex gap-2 text-sm text-zinc-600">
+              <span className="text-brand-500">✓</span>
+              +15€/mes por negocio adicional
+            </li>
+            <li className="flex gap-2 text-sm text-zinc-600">
+              <span className="text-brand-500">✓</span>
+              No incluye Autopilot
+            </li>
+          </ul>
+
+          <Link href="/plan-agencia">
+            <Button variant="secondary" className="w-full">
+              Ver plan Agencia
+            </Button>
+          </Link>
+        </GrowthCard>
 
         <GrowthCard className="flex h-full flex-col gap-4">
           <div>
@@ -61,7 +95,7 @@ export default async function PreciosPage() {
             </li>
             <li className="flex gap-2 text-sm text-zinc-600">
               <span className="text-brand-500">✓</span>
-              Ideal si gestionas varios negocios o tienes un caso particular
+              Ideal si tienes un caso particular
             </li>
           </ul>
 

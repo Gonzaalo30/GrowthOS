@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { getProfile } from "@/services/profile.service";
+import { agencyIncludedCapacity } from "@/lib/plans";
 
 type Client = SupabaseClient<Database>;
 
@@ -69,7 +70,33 @@ export async function updateBusiness(supabase: Client, businessId: string, input
   if (error) throw error;
 }
 
+/**
+ * Si el owner tiene una suscripción de Agencia activa y todavía le queda
+ * capacidad (5 negocios incluidos + slots extra comprados), el negocio nuevo
+ * nace directamente en plan 'agencia' en vez de 'starter' — así una agencia
+ * no tiene que dar de alta cada cliente y luego subirlo de plan a mano.
+ */
+async function resolveNewBusinessPlan(supabase: Client, ownerId: string): Promise<"starter" | "agencia"> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("agency_subscription_status, agency_extra_slots")
+    .eq("id", ownerId)
+    .maybeSingle();
+  if (!profile || profile.agency_subscription_status !== "active") return "starter";
+
+  const { count } = await supabase
+    .from("businesses")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", ownerId)
+    .eq("plan", "agencia");
+
+  const capacity = agencyIncludedCapacity(profile.agency_extra_slots);
+  return (count ?? 0) < capacity ? "agencia" : "starter";
+}
+
 export async function createBusiness(supabase: Client, input: CreateBusinessInput) {
+  const plan = await resolveNewBusinessPlan(supabase, input.ownerId);
+
   const { data, error } = await supabase
     .from("businesses")
     .insert({
@@ -80,6 +107,7 @@ export async function createBusiness(supabase: Client, input: CreateBusinessInpu
       company_size: input.companySize,
       growth_score: input.growthScore,
       growth_potential: input.growthPotential,
+      plan,
     })
     .select("*")
     .single();

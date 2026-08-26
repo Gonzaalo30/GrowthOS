@@ -2,7 +2,7 @@ export type MissionType = "daily" | "weekly";
 export type MissionDifficulty = "easy" | "medium" | "hard";
 export type OpportunityRequestStatus = "pending" | "contacted" | "done";
 export type DailyChestReward = "xp" | "bonus_mission" | "template";
-export type BusinessPlan = "starter" | "growth" | "autopilot";
+export type BusinessPlan = "starter" | "growth" | "autopilot" | "agencia";
 export type DateFormat = "long" | "short_dmy" | "short_mdy";
 
 export interface Database {
@@ -18,6 +18,10 @@ export interface Database {
           date_format: DateFormat;
           active_business_id: string | null;
           is_admin: boolean;
+          agency_stripe_customer_id: string | null;
+          agency_stripe_subscription_id: string | null;
+          agency_subscription_status: string | null;
+          agency_extra_slots: number;
           created_at: string;
         };
         Insert: {
@@ -29,6 +33,10 @@ export interface Database {
           date_format?: DateFormat;
           active_business_id?: string | null;
           is_admin?: boolean;
+          agency_stripe_customer_id?: string | null;
+          agency_stripe_subscription_id?: string | null;
+          agency_subscription_status?: string | null;
+          agency_extra_slots?: number;
           created_at?: string;
         };
         Update: Partial<{
@@ -39,6 +47,10 @@ export interface Database {
           date_format: DateFormat;
           active_business_id: string | null;
           is_admin: boolean;
+          agency_stripe_customer_id: string | null;
+          agency_stripe_subscription_id: string | null;
+          agency_subscription_status: string | null;
+          agency_extra_slots: number;
         }>;
         Relationships: [];
       };
