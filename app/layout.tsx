@@ -12,10 +12,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://growth-os-smoky-eta.vercel.app";
+const title = "GrowthOS — Haz crecer tu negocio online";
+const description =
+  "Descubre cuántas oportunidades está perdiendo tu negocio online y qué hacer hoy para mejorarlo.";
+
 export const metadata: Metadata = {
-  title: "GrowthOS — Haz crecer tu negocio online",
-  description:
-    "Descubre cuántas oportunidades está perdiendo tu negocio online y qué hacer hoy para mejorarlo.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title,
+    description,
+    url: "/",
+    siteName: "GrowthOS",
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
