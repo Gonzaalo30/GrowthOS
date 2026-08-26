@@ -54,7 +54,7 @@ export default function ComoFuncionaPage() {
       </div>
 
       <Link href="/" className="mx-auto">
-        <Button className="mt-4">Analizar mi web gratis</Button>
+        <Button className="mt-4">Ver mi Growth Score</Button>
       </Link>
     </div>
   );

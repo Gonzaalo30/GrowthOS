@@ -74,7 +74,7 @@ export default function CasosDeExitoPage() {
       </div>
 
       <Link href="/" className="mx-auto">
-        <Button className="mt-2">Ver qué misiones te tocarían a ti</Button>
+        <Button className="mt-2">Ver mi Growth Score</Button>
       </Link>
     </div>
   );

@@ -88,8 +88,8 @@ export function Header() {
           >
             Iniciar sesión
           </Link>
-          <Link href="/signup">
-            <Button>Empezar gratis</Button>
+          <Link href="/">
+            <Button>Ver mi Growth Score</Button>
           </Link>
         </div>
 
@@ -150,8 +150,8 @@ export function Header() {
                 >
                   Iniciar sesión
                 </Link>
-                <Link href="/signup" onClick={() => setMenuOpen(false)}>
-                  <Button className="w-full">Empezar gratis</Button>
+                <Link href="/" onClick={() => setMenuOpen(false)}>
+                  <Button className="w-full">Ver mi Growth Score</Button>
                 </Link>
               </div>
             </div>

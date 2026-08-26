@@ -44,8 +44,10 @@ export function PlanCard({
 
       <div>
         <p className="text-3xl font-semibold text-foreground">{formatPrice(plan.priceCents)}</p>
-        {plan.priceCents > 0 && (
+        {plan.priceCents > 0 ? (
           <p className="text-xs text-zinc-500">IVA incluido · Sin permanencia, cancela cuando quieras</p>
+        ) : (
+          <p className="text-xs text-zinc-500">30 segundos · Sin tarjeta · Sin conocimientos técnicos</p>
         )}
       </div>
 
@@ -68,7 +70,7 @@ export function PlanCard({
         ) : (
           <Link href="/">
             <Button variant="secondary" className="w-full">
-              Empezar gratis
+              Ver mi Growth Score
             </Button>
           </Link>
         )
