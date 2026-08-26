@@ -295,7 +295,7 @@ export async function completeMission(
   });
   if (xpError) throw xpError;
 
-  const { error: streakError } = await supabase.rpc("register_business_activity", {
+  const { data: usedFreeze, error: streakError } = await supabase.rpc("register_business_activity", {
     p_business_id: data.business_id,
   });
   if (streakError) throw streakError;
@@ -310,6 +310,13 @@ export async function completeMission(
       supabase,
       data.business_id,
       `🔥 ¡Racha de ${updated.streak_count} días! Sigue así.`,
+    );
+  }
+  if (usedFreeze) {
+    await createNotification(
+      supabase,
+      data.business_id,
+      `🧊 Usaste un comodín para proteger tu racha de ${updated?.streak_count ?? "tu"} días — no la perdiste por un mal día.`,
     );
   }
   if (updated) {

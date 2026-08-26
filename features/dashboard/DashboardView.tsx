@@ -22,6 +22,7 @@ import { Greeting } from "@/features/dashboard/Greeting";
 import { WeeklyBrief } from "@/features/dashboard/WeeklyBrief";
 import { getLevelProgress } from "@/lib/levels";
 import { canRefreshOnDemand } from "@/lib/plans";
+import { getStreakFreezesRemaining } from "@/lib/streakFreeze";
 import type { Database } from "@/types/database.types";
 import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audit.service";
 import type { QuickAuditCheck } from "@/lib/quickAudit";
@@ -165,6 +166,15 @@ export function DashboardView({
                           )}
                           .
                         </p>
+                        {business.streak_count > 0 && (
+                          <p className="mt-0.5 text-xs text-zinc-400">
+                            🧊 {getStreakFreezesRemaining(business.streak_freeze_month, business.streak_freezes_used)}{" "}
+                            {getStreakFreezesRemaining(business.streak_freeze_month, business.streak_freezes_used) === 1
+                              ? "comodín disponible"
+                              : "comodines disponibles"}{" "}
+                            este mes si algún día se te pasa entrar
+                          </p>
+                        )}
                       </div>
                     </div>
 

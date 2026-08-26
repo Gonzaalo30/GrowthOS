@@ -63,6 +63,8 @@ export interface Database {
           loyalty_discount_available: boolean;
           loyalty_discount_used: boolean;
           plan_purchase_count: number;
+          streak_freezes_used: number;
+          streak_freeze_month: string;
           created_at: string;
         };
         Insert: {
@@ -85,6 +87,8 @@ export interface Database {
           loyalty_discount_available?: boolean;
           loyalty_discount_used?: boolean;
           plan_purchase_count?: number;
+          streak_freezes_used?: number;
+          streak_freeze_month?: string;
           created_at?: string;
         };
         Update: Partial<{
@@ -104,6 +108,8 @@ export interface Database {
           loyalty_discount_available: boolean;
           loyalty_discount_used: boolean;
           plan_purchase_count: number;
+          streak_freezes_used: number;
+          streak_freeze_month: string;
         }>;
         Relationships: [];
       };
@@ -507,7 +513,7 @@ export interface Database {
       };
       register_business_activity: {
         Args: { p_business_id: string };
-        Returns: undefined;
+        Returns: boolean;
       };
     };
     Enums: Record<string, never>;
