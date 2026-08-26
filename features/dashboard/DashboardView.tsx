@@ -17,7 +17,6 @@ import { Achievements } from "@/components/growth/Achievements";
 import { PlanBadge } from "@/components/growth/PlanBadge";
 import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
 import { DashboardTabs } from "@/components/growth/DashboardTabs";
-import { PageSpeedCard } from "@/components/growth/PageSpeedCard";
 import { Greeting } from "@/features/dashboard/Greeting";
 import { WeeklyBrief } from "@/features/dashboard/WeeklyBrief";
 import { getLevelProgress } from "@/lib/levels";
@@ -34,7 +33,6 @@ import type { SectorBenchmark } from "@/services/benchmark.service";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
-type PageSpeedSnapshot = Database["public"]["Tables"]["pagespeed_snapshots"]["Row"];
 
 export function DashboardView({
   business,
@@ -51,8 +49,9 @@ export function DashboardView({
   welcomeMissionId,
   momentum,
   weeklyBrief,
-  pageSpeedSnapshot,
   sectorBenchmark,
+  localScore,
+  hasAnalyticsConnected,
 }: {
   business: Business;
   missions: Mission[];
@@ -68,8 +67,9 @@ export function DashboardView({
   momentum: MomentumResult | null;
   weeklyBrief: WeeklyBriefData;
   welcomeMissionId?: string;
-  pageSpeedSnapshot: PageSpeedSnapshot | null;
   sectorBenchmark: SectorBenchmark | null;
+  localScore: number | null;
+  hasAnalyticsConnected: boolean;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const allDailyMissions = missions
@@ -193,15 +193,18 @@ export function DashboardView({
 
                     {scoreBreakdown && scoreBreakdown.length > 0 && (
                       <>
-                        <CategoryScores checks={scoreBreakdown} />
+                        <CategoryScores
+                          checks={scoreBreakdown}
+                          planId={business.plan}
+                          localScore={localScore}
+                          hasAnalyticsConnected={hasAnalyticsConnected}
+                        />
                         <ScoreBreakdown checks={scoreBreakdown} />
                       </>
                     )}
 
                     {canRefreshOnDemand(business.plan) && <RefreshScoreButton />}
                   </GrowthCard>
-
-                  <PageSpeedCard snapshot={pageSpeedSnapshot} />
 
                   <div>
                     <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">

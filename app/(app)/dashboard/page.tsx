@@ -15,16 +15,17 @@ import {
 } from "@/services/audit.service";
 import { getTodayChest, countChestsOpened } from "@/services/chest.service";
 import { getRequestsForBusiness } from "@/services/opportunity.service";
-import { getSnapshot as getPageSpeedSnapshot } from "@/services/pageSpeed.service";
 import { getSectorBenchmark } from "@/services/benchmark.service";
 import { ensureGoogleSignalMission } from "@/services/googleSignalMission.service";
+import { getChecklist } from "@/services/googleBusinessChecklist.service";
+import { getIntegration } from "@/services/googleIntegration.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import type { BusinessType } from "@/lib/missionTemplates";
 import { computeAchievements } from "@/lib/achievements";
 import { computeMomentumScore } from "@/lib/momentum";
 import { computeWeeklyBrief } from "@/lib/weeklyBrief";
-import { dailyQuickWinCap, getPlan } from "@/lib/plans";
+import { dailyQuickWinCap, getPlan, canUseGoogleIntegrations } from "@/lib/plans";
 import { PlanPurchaseCelebration } from "@/features/dashboard/PlanPurchaseCelebration";
 
 const CALENDAR_WEEKS = 12;
@@ -143,15 +144,6 @@ export default async function DashboardPage({
         ) ?? null)
       : null;
 
-  // Panel opcional bajo demanda: si falla al leerlo, el resto del dashboard
-  // sigue funcionando igualmente.
-  let pageSpeedSnapshot = null;
-  try {
-    pageSpeedSnapshot = await getPageSpeedSnapshot(supabase, business.id);
-  } catch {
-    // se muestra como "todavía no analizado" en vez de romper la página
-  }
-
   // Benchmark sectorial real: solo se calcula y se muestra si hay suficientes
   // negocios reales de ese tipo (ver MIN_SAMPLE_SIZE en benchmark.service.ts)
   // — con pocos datos sería un número inventado, no un benchmark de verdad.
@@ -160,6 +152,35 @@ export default async function DashboardPage({
     sectorBenchmark = await getSectorBenchmark(supabase, business.business_type, business.id);
   } catch {
     // se oculta el benchmark en vez de romper la página
+  }
+
+  // Puntuación "Local"/"Conversión" del desglose por área: solo tiene sentido
+  // consultarlas si el plan da acceso a las integraciones de Google — si no,
+  // el componente ya las muestra como "de pago" sin necesitar estos datos.
+  let localScore: number | null = null;
+  let hasAnalyticsConnected = false;
+  if (canUseGoogleIntegrations(business.plan)) {
+    try {
+      const checklist = await getChecklist(supabase, business.id);
+      if (checklist) {
+        const items = [
+          checklist.has_complete_hours,
+          checklist.has_enough_photos,
+          checklist.has_correct_category,
+          checklist.has_contact_info,
+          checklist.responds_to_reviews,
+        ];
+        localScore = Math.round((items.filter(Boolean).length / items.length) * 100);
+      }
+    } catch {
+      // se muestra como "conecta tu ficha" en vez de romper la página
+    }
+    try {
+      const integration = await getIntegration(supabase, business.id);
+      hasAnalyticsConnected = Boolean(integration?.ga4_property_id);
+    } catch {
+      // se muestra como "conecta" en vez de romper la página
+    }
   }
 
   return (
@@ -186,8 +207,9 @@ export default async function DashboardPage({
         welcomeMissionId={bienvenida}
         momentum={momentum}
         weeklyBrief={weeklyBrief}
-        pageSpeedSnapshot={pageSpeedSnapshot}
         sectorBenchmark={sectorBenchmark}
+        localScore={localScore}
+        hasAnalyticsConnected={hasAnalyticsConnected}
       />
     </>
   );

@@ -181,6 +181,14 @@ function mostImagesAreSized(html: string): boolean {
   return sized.length / imgTags.length >= 0.5;
 }
 
+/** Heurística: entre una muestra de imágenes, ¿la mayoría declara un texto alternativo no vacío? */
+function mostImagesHaveAlt(html: string): boolean {
+  const imgTags = [...html.matchAll(/<img\s[^>]*>/gi)].slice(0, MAX_IMAGES_TO_SAMPLE).map((m) => m[0]);
+  if (imgTags.length === 0) return true;
+  const withAlt = imgTags.filter((tag) => /\salt=["'][^"']+["']/i.test(tag));
+  return withAlt.length / imgTags.length >= 0.5;
+}
+
 export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
   const httpsResult = await safeFetchText(`https://${domain}`);
   const result = httpsResult ?? (await safeFetchText(`http://${domain}`));
@@ -206,6 +214,8 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
   const hasFavicon = /<link[^>]+rel=["'](?:shortcut icon|icon)["']/i.test(result.html);
   const hasCompression = /\b(gzip|br)\b/i.test(result.headers.get("content-encoding") ?? "");
   const imagesSized = mostImagesAreSized(result.html);
+  const imagesHaveAlt = mostImagesHaveAlt(result.html);
+  const hasCanonical = /<link[^>]+rel=["']canonical["']/i.test(result.html);
 
   const origin = new URL(result.usedUrl).origin;
   const sampledLinks = extractInternalLinks(result.html, origin, MAX_LINKS_TO_CHECK);
@@ -345,6 +355,24 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
         ? "La mayoría de tus imágenes declaran su tamaño, así que no deberían provocar saltos al cargar la página."
         : "Varias imágenes no declaran ancho y alto — pueden hacer que el contenido \"salte\" mientras la página carga.",
       category: "velocidad",
+    },
+    {
+      id: "canonical",
+      label: "URL canónica",
+      passed: hasCanonical,
+      detail: hasCanonical
+        ? "Tu página declara cuál es su URL canónica, evitando confundir a Google con contenido duplicado."
+        : "No encontramos una URL canónica declarada — sin ella, Google puede repartir tu posicionamiento entre varias versiones de la misma página.",
+      category: "seo",
+    },
+    {
+      id: "imageAlt",
+      label: "Texto alternativo en imágenes",
+      passed: imagesHaveAlt,
+      detail: imagesHaveAlt
+        ? "La mayoría de tus imágenes tienen texto alternativo, lo que ayuda a Google y a la accesibilidad de tu web."
+        : "Varias imágenes no tienen texto alternativo (\"alt\") — Google no puede entender qué muestran, y tampoco los lectores de pantalla.",
+      category: "seo",
     },
   ];
 

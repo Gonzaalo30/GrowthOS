@@ -68,7 +68,8 @@ export function GoogleIntegrationView({
       <div>
         <h1 className="text-xl font-semibold text-foreground">Analítica de Google</h1>
         <p className="mt-1 text-sm text-zinc-600">
-          Tus datos reales de Google Search Console y Google Analytics, sin salir de GrowthOS.
+          Conecta tu Search Console, tu Analytics y el checklist de tu ficha de Google Business — tus datos
+          reales, sin salir de GrowthOS.
         </p>
         {!locked && (
           <p className="mt-2 text-xs text-zinc-500">
@@ -86,8 +87,9 @@ export function GoogleIntegrationView({
         <GrowthCard glow className="flex flex-col items-center gap-3 py-10 text-center">
           <h2 className="text-lg font-semibold text-foreground">Disponible en el plan Growth y Autopilot</h2>
           <p className="max-w-md text-sm text-zinc-600">
-            Conecta tu Search Console y tu Analytics y consulta tus métricas reales de SEO y tráfico directamente
-            aquí, sin abrir los dashboards de Google. Estás en el plan {plan.name}.
+            Conecta tu Search Console, tu Analytics y el checklist de tu ficha de Google Business, y consulta tus
+            métricas reales de SEO, tráfico y presencia local directamente aquí, sin abrir los dashboards de
+            Google. Estás en el plan {plan.name}.
           </p>
           <Link href="/precios">
             <Button type="button" className="mt-1">
@@ -246,13 +248,14 @@ export function GoogleIntegrationView({
           <div className="mt-4">
             <GoogleBusinessChecklistForm checklist={checklist ?? null} />
           </div>
+          <GoogleSetupHelp type="google_business" />
         </GrowthCard>
       )}
     </div>
   );
 }
 
-function GoogleSetupHelp({ type }: { type: "search_console" | "analytics" }) {
+function GoogleSetupHelp({ type }: { type: "search_console" | "analytics" | "google_business" }) {
   const content =
     type === "search_console"
       ? {
@@ -262,15 +265,55 @@ function GoogleSetupHelp({ type }: { type: "search_console" | "analytics" }) {
             "Añade tu web como propiedad (con el dominio completo, ej. tuweb.com).",
             "Verifica que eres el dueño — la forma más simple suele ser subir un archivo HTML o añadir una etiqueta a tu web.",
           ],
+          buyLink: (
+            <>
+              ¿Prefieres que lo hagamos nosotros por ti?{" "}
+              <Link href="/marketplace" className="font-medium text-brand-600 underline underline-offset-2">
+                Te lo configuramos por un precio cerrado en el Centro de Mejoras
+              </Link>
+              .
+            </>
+          ),
         }
-      : {
-          title: "¿No tienes Google Analytics todavía?",
-          steps: [
-            "Entra en analytics.google.com con tu cuenta de Google.",
-            "Crea una cuenta y una propiedad para tu negocio.",
-            "Pega el fragmento de código que te da Google en tu web (o pide ayuda si no sabes tocar el código).",
-          ],
-        };
+      : type === "analytics"
+        ? {
+            title: "¿No tienes Google Analytics todavía?",
+            steps: [
+              "Entra en analytics.google.com con tu cuenta de Google.",
+              "Crea una cuenta y una propiedad para tu negocio.",
+              "Pega el fragmento de código que te da Google en tu web (o pide ayuda si no sabes tocar el código).",
+            ],
+            buyLink: (
+              <>
+                ¿Prefieres que lo hagamos nosotros por ti?{" "}
+                <Link href="/marketplace" className="font-medium text-brand-600 underline underline-offset-2">
+                  Te lo configuramos por un precio cerrado en el Centro de Mejoras
+                </Link>
+                .
+              </>
+            ),
+          }
+        : {
+            title: "¿No tienes ficha de Google Business todavía?",
+            steps: [
+              "Entra en business.google.com con tu cuenta de Google.",
+              "Busca el nombre y la dirección de tu negocio — si no aparece, créala como negocio nuevo.",
+              "Rellena categoría, horario, teléfono y web, y verifica la ficha (Google suele enviar un código por correo postal o teléfono).",
+            ],
+            buyLink: (
+              <>
+                ¿No sabes cómo hacerlo, o prefieres que nos encarguemos nosotros? Si ya tienes ficha, te la{" "}
+                <Link href="/marketplace" className="font-medium text-brand-600 underline underline-offset-2">
+                  optimizamos por un precio cerrado
+                </Link>
+                . Si todavía no tienes ninguna, te la{" "}
+                <Link href="/marketplace" className="font-medium text-brand-600 underline underline-offset-2">
+                  creamos desde cero
+                </Link>
+                .
+              </>
+            ),
+          };
 
   return (
     <details className="mt-4 rounded-lg border border-border bg-surface px-3 py-2">
@@ -280,13 +323,7 @@ function GoogleSetupHelp({ type }: { type: "search_console" | "analytics" }) {
           <li key={i}>{step}</li>
         ))}
       </ol>
-      <p className="mt-2 text-xs text-zinc-500">
-        ¿Prefieres que lo hagamos nosotros por ti?{" "}
-        <Link href="/marketplace" className="font-medium text-brand-600 underline underline-offset-2">
-          Te lo configuramos por un precio cerrado en el Centro de Mejoras
-        </Link>
-        .
-      </p>
+      <p className="mt-2 text-xs text-zinc-500">{content.buyLink}</p>
     </details>
   );
 }

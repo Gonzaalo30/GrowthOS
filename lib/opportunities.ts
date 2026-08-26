@@ -36,10 +36,21 @@ export const OPPORTUNITIES: Opportunity[] = [
     id: "google-business",
     title: "Optimizar ficha de Google Business",
     description:
-      "Revisamos y completamos tu ficha al completo: categorías, atributos, horarios, fotos y descripción, para que aparezcas mejor en búsquedas locales.",
+      "Ya tienes ficha: revisamos y completamos categorías, atributos, horarios, fotos y descripción, para que aparezcas mejor en búsquedas locales.",
     priceCents: 14900,
     pricing: "one_time",
     expectedImpact: "Más apariciones en búsquedas cercanas a ti",
+    implementationTime: "2-3 días laborables",
+    category: "google",
+  },
+  {
+    id: "google-business-create",
+    title: "Crear tu ficha de Google Business desde cero",
+    description:
+      "Si tu negocio todavía no tiene ficha de Google Business, te la damos de alta y la dejamos completa: categoría, horarios, fotos y descripción.",
+    priceCents: 12900,
+    pricing: "one_time",
+    expectedImpact: "Empiezas a aparecer en Google Maps y en búsquedas locales",
     implementationTime: "2-3 días laborables",
     category: "google",
   },

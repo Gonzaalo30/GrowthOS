@@ -43,6 +43,7 @@ export const PLANS: Plan[] = [
       "Quick Wins ilimitados al día",
       "Reanaliza tu web cuando quieras, sin esperar 7 días",
       "Conecta tu Search Console y Analytics reales para misiones más personalizadas",
+      "Checklist real de tu ficha de Google Business, con misiones por cada cosa que falte",
       "Insignia Growth en tu perfil",
     ],
   },
@@ -68,7 +69,7 @@ export const PLANS: Plan[] = [
     features: [
       "Hasta 5 negocios con funciones Growth cada uno",
       "Quick Wins ilimitados y reanálisis a demanda por negocio",
-      "Conecta Search Console y Analytics por cada negocio",
+      "Conecta Search Console y Analytics, y el checklist de ficha de Google Business, por cada negocio",
       "+15€/mes por negocio adicional a partir del 5º",
       "No incluye Autopilot",
     ],

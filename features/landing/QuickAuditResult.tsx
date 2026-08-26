@@ -48,7 +48,11 @@ export async function QuickAuditResult({ domain }: { domain: string }) {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
           Puntuación por área
         </h2>
-        <CategoryScores checks={result.checks} />
+        <CategoryScores
+          checks={result.checks}
+          planId={null}
+          lockedHref={`/signup?domain=${encodeURIComponent(domain)}`}
+        />
       </GrowthCard>
 
       <GrowthCard>

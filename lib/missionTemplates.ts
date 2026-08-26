@@ -252,6 +252,47 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     tip: "Revisa primero los enlaces del menú y del pie de página — son los que más se pulsan y los que más se olvidan.",
   },
   {
+    id: "daily-add-h1",
+    title: "Añade un encabezado principal (H1) a tu página",
+    description:
+      "Ese encabezado le dice a Google (y a quien entra en tu web) de qué trata la página en una frase clara.",
+    difficulty: "easy",
+    timeEstimateMinutes: 5,
+    xpReward: 10,
+    expectedImpact: "Google entiende mejor de qué trata tu página",
+    category: "seo",
+    priority: "alta",
+    appliesTo: "all",
+    auditTrigger: "h1",
+    tutorial: [
+      "Entra en el editor de tu web y localiza el título grande de tu página principal.",
+      "Comprueba que ese título esté marcado como \"Encabezado 1\" o \"H1\" (no solo un texto grande sin etiqueta).",
+      "Si no existe, añade uno con qué eres + dónde estás. Ejemplo: \"Clínica Dental Sonrisa en Madrid Centro\".",
+      "Usa solo un H1 por página — el resto de títulos van como H2 o H3.",
+    ],
+    tip: "El H1 no tiene que ser idéntico al título SEO de la pestaña — puede ser algo más natural y descriptivo para quien ya está leyendo tu web.",
+  },
+  {
+    id: "daily-add-canonical",
+    title: "Añade una URL canónica a tu página principal",
+    description:
+      "Si tu web es accesible desde varias direcciones (con y sin \"www\", con barra final...), esta etiqueta le dice a Google cuál es la versión oficial.",
+    difficulty: "medium",
+    timeEstimateMinutes: 8,
+    xpReward: 10,
+    expectedImpact: "Evitas repartir tu posicionamiento entre varias versiones de la misma página",
+    category: "seo",
+    priority: "media",
+    appliesTo: "all",
+    auditTrigger: "canonical",
+    tutorial: [
+      "Si usas WordPress, un plugin de SEO (Yoast, RankMath) añade la URL canónica automáticamente por ti.",
+      "Si no, pide a quien gestione tu web que añada `<link rel=\"canonical\" href=\"tu-url-completa\">` dentro del `<head>` de cada página.",
+      "Usa siempre la misma versión (con o sin \"www\", con o sin barra final) en todas las páginas.",
+    ],
+    tip: "Es un cambio técnico pequeño pero fácil de olvidar al migrar de web o cambiar de dominio — revísalo también entonces.",
+  },
+  {
     id: "daily-update-hours",
     title: "Actualiza el horario en tu ficha de Google",
     description:
@@ -427,6 +468,26 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     tip: "Usa las palabras exactas que usa el cliente al preguntar, no como tú lo explicarías internamente.",
   },
   {
+    id: "daily-keyword-insert",
+    title: "Incluye tu palabra clave principal en tu página",
+    description:
+      "Piensa en lo que escribiría un cliente en Google para encontrarte (ej. \"fisioterapeuta en Valencia\") y asegúrate de que esas palabras aparecen de verdad en tu web.",
+    difficulty: "medium",
+    timeEstimateMinutes: 10,
+    xpReward: 10,
+    expectedImpact: "Más relevancia para las búsquedas que de verdad te traen clientes",
+    category: "seo",
+    priority: "media",
+    appliesTo: "all",
+    tutorial: [
+      "Elige la palabra o frase que un cliente real escribiría en Google para encontrarte (tu servicio + tu ciudad o zona).",
+      "Comprueba que aparece en el título de tu página, en el encabezado principal (H1) y en el primer párrafo visible.",
+      "Inclúyela también, si tiene sentido, en el texto alternativo de alguna imagen relevante.",
+      "No la repitas de forma forzada — una o dos veces de forma natural es suficiente, Google penaliza el abuso.",
+    ],
+    tip: "Sé específico: \"fontanero urgente en Sevilla\" funciona mejor que solo \"fontanero\", porque compites con muchas menos webs.",
+  },
+  {
     id: "daily-google-map-check",
     title: "Comprueba que el mapa de tu ficha señala el sitio correcto",
     description: "Un pin mal colocado manda clientes al sitio equivocado, sobre todo en coche.",
@@ -494,6 +555,7 @@ export const DAILY_MISSION_TEMPLATES: MissionTemplate[] = [
     category: "seo",
     priority: "baja",
     appliesTo: "all",
+    auditTrigger: "imageAlt",
     tutorial: [
       "En el editor de tu web, selecciona una imagen (empieza por la de portada).",
       "Busca el campo \"Texto alternativo\" o \"Alt text\" en sus propiedades.",
