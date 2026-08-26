@@ -6,6 +6,7 @@ const INCLUDED = [
   "Implementamos tus 3 misiones diarias cada día, sin que tengas que tocar nada",
   "Implementamos tu misión semanal de alto impacto",
   "Tú sigues viendo el progreso y el XP en tu dashboard, como si lo hicieras tú mismo",
+  "Compatible con WordPress, Shopify, Wix y sitios a medida",
   "Cancela cuando quieras, sin permanencia",
 ];
 

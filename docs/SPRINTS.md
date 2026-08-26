@@ -303,6 +303,12 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 3.17 — Compatibilidad de plataforma explícita (Autopilot y Centro de Mejoras) (COMPLETADO 2026-08-24)
+Feedback externo señaló un vacío real: nada en la web dice con qué plataformas (WordPress, Shopify, Wix, a medida) es compatible Autopilot o el Centro de Mejoras — un dueño de Wix no sabría si le sirve, y eso genera preguntas de preventa evitables. Se confirmó con el fundador antes de escribir nada (nunca se inventa): pide el acceso que corresponda según la plataforma real del cliente, y no tiene ninguna plataforma estándar que no pueda tocar hoy.
+- [x] Nueva pregunta en FAQ ("Cómo funciona"): "¿Con qué plataformas sois compatibles?" — respuesta real confirmada por el fundador.
+- [x] Misma idea reforzada en los puntos de conversión donde ya se menciona pedir accesos: `/precios` (Mejoras a la carta), `/marketplace` (Centro de Mejoras) y `/plan-autopilot`.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios. Verificado en vivo en local que la pregunta nueva aparece en `/faq`.
+
 ## Sprint 3.16 — Menos vacío en desktop: fondos a sangre completa y rejillas más anchas (COMPLETADO 2026-08-24)
 El fundador vio la home (y FAQ, Cómo funciona, Casos de éxito) muy vacía en escritorio: mucho espacio en blanco entre secciones, y el contenido ocupando poco ancho de pantalla.
 - [x] **Bandas de fondo a sangre completa** en la home (`GamificationShowcase.tsx`/`GamificationShowcaseBusiness.tsx`, alternando blanco/gris con el Hero y el teaser de Growth Sprint) — la sección se percibe ocupando toda la pantalla aunque el texto siga en una columna legible, en vez de flotar en blanco.

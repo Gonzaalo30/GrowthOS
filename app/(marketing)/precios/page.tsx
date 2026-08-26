@@ -86,7 +86,8 @@ export default async function PreciosPage() {
         <p className="mb-4 text-xs text-zinc-500">
           Tras la compra, uno de nuestros expertos te contacta por email o teléfono en menos de 24-48h
           laborables para pedirte los accesos necesarios (a tu web, tu ficha de Google, hosting, etc.) y
-          ponerse manos a la obra. Precios con IVA incluido.
+          ponerse manos a la obra — compatible con WordPress, Shopify, Wix y sitios a medida. Precios con
+          IVA incluido.
         </p>
         <div className="flex flex-col gap-3">
           {OPPORTUNITIES.map((item) => (

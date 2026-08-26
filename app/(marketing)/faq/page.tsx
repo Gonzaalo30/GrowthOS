@@ -48,6 +48,11 @@ const GROUPS: FaqGroup[] = [
           "Mejoras con precio cerrado (sin presupuestos ni sorpresas) para cuando una misión requiere trabajo técnico y prefieres que la hagamos nosotros en vez de hacerla tú.",
       },
       {
+        question: "¿Con qué plataformas sois compatibles (Autopilot y Centro de Mejoras)?",
+        answer:
+          "Trabajamos con WordPress, Shopify, Wix y sitios a medida. Cuando toca implementar algo por ti, te pedimos el acceso que corresponda a tu caso (usuario de administrador, FTP, etc.) — no hay una plataforma que no podamos tocar.",
+      },
+      {
         question: "¿Cada cuánto se actualiza mi Growth Score?",
         answer:
           "Automáticamente cada 7 días. Si estás en el plan Growth o Autopilot, puedes reanalizar tu web cuando quieras desde el dashboard, sin esperar al ciclo automático.",
