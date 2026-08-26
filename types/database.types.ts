@@ -458,6 +458,28 @@ export interface Database {
         Update: Partial<{ status: OpportunityRequestStatus }>;
         Relationships: [];
       };
+      growth_sprint_requests: {
+        Row: {
+          id: string;
+          business_id: string | null;
+          name: string;
+          email: string;
+          details: string;
+          status: OpportunityRequestStatus;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          business_id?: string | null;
+          name: string;
+          email: string;
+          details: string;
+          status?: OpportunityRequestStatus;
+          created_at?: string;
+        };
+        Update: Partial<{ status: OpportunityRequestStatus }>;
+        Relationships: [];
+      };
       notifications: {
         Row: {
           id: string;

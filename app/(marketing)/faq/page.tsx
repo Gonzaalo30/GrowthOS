@@ -40,7 +40,7 @@ const GROUPS: FaqGroup[] = [
       {
         question: "¿Qué es un Quick Win?",
         answer:
-          "Una misión diaria de 1-5 minutos, elegida priorizando los problemas reales que detectamos en tu web. Al completarla ganas XP, y algunas se verifican de verdad volviendo a analizar tu web antes de darlas por hechas.",
+          "Una misión diaria de 1-5 minutos, elegida priorizando las oportunidades de mejora más importantes que detectamos en tu web. Al completarla ganas XP, y algunas se verifican de verdad volviendo a analizar tu web antes de darlas por hechas.",
       },
       {
         question: "¿Qué es el Centro de Mejoras?",

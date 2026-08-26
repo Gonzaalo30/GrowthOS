@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { PlanCheckoutButton } from "@/features/billing/PlanCheckoutButton";
 
@@ -42,8 +43,11 @@ export default function PlanAutopilotPage() {
           <PlanCheckoutButton planId="autopilot" label="Suscribirme por 99 €/mes" />
         </div>
         <p className="mt-3 text-xs text-zinc-500">
-          No incluye Growth Sprints (proyectos grandes, se cotizan aparte). Necesitas una cuenta
-          creada para suscribirte.
+          No incluye{" "}
+          <Link href="/growth-sprint" className="underline underline-offset-2 hover:text-foreground">
+            Growth Sprints
+          </Link>{" "}
+          (proyectos grandes, se cotizan aparte). Necesitas una cuenta creada para suscribirte.
         </p>
       </GrowthCard>
     </div>

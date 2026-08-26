@@ -55,7 +55,8 @@ export function Hero() {
         Descubre cuántas oportunidades está perdiendo tu negocio online
       </h1>
       <p className="mt-4 max-w-xl text-lg text-zinc-600">
-        Sin tecnicismos. Te decimos exactamente qué hacer hoy para conseguir más clientes.
+        GrowthOS convierte cada oportunidad de mejora de tu web en una acción concreta que completas en
+        minutos — o que dejas en manos de nuestro equipo.
       </p>
 
       <div className="mt-10 flex w-full max-w-md flex-col items-center gap-3">
