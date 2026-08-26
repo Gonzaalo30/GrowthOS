@@ -16,6 +16,7 @@ import {
 import { getTodayChest, countChestsOpened } from "@/services/chest.service";
 import { getRequestsForBusiness } from "@/services/opportunity.service";
 import { getSnapshot as getPageSpeedSnapshot } from "@/services/pageSpeed.service";
+import { getSectorBenchmark } from "@/services/benchmark.service";
 import { ensureGoogleSignalMission } from "@/services/googleSignalMission.service";
 import { DashboardView } from "@/features/dashboard/DashboardView";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
@@ -151,6 +152,16 @@ export default async function DashboardPage({
     // se muestra como "todavía no analizado" en vez de romper la página
   }
 
+  // Benchmark sectorial real: solo se calcula y se muestra si hay suficientes
+  // negocios reales de ese tipo (ver MIN_SAMPLE_SIZE en benchmark.service.ts)
+  // — con pocos datos sería un número inventado, no un benchmark de verdad.
+  let sectorBenchmark = null;
+  try {
+    sectorBenchmark = await getSectorBenchmark(supabase, business.business_type, business.id);
+  } catch {
+    // se oculta el benchmark en vez de romper la página
+  }
+
   return (
     <>
       {planPurchaseParam === "success" && business.plan !== "starter" && (
@@ -176,6 +187,7 @@ export default async function DashboardPage({
         momentum={momentum}
         weeklyBrief={weeklyBrief}
         pageSpeedSnapshot={pageSpeedSnapshot}
+        sectorBenchmark={sectorBenchmark}
       />
     </>
   );

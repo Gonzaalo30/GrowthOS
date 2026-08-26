@@ -30,6 +30,7 @@ import type { Achievement } from "@/lib/achievements";
 import type { MomentumResult } from "@/lib/momentum";
 import type { WeeklyBrief as WeeklyBriefData } from "@/lib/weeklyBrief";
 import type { DateFormat } from "@/types/database.types";
+import type { SectorBenchmark } from "@/services/benchmark.service";
 
 type Business = Database["public"]["Tables"]["businesses"]["Row"];
 type Mission = Database["public"]["Tables"]["missions"]["Row"];
@@ -51,6 +52,7 @@ export function DashboardView({
   momentum,
   weeklyBrief,
   pageSpeedSnapshot,
+  sectorBenchmark,
 }: {
   business: Business;
   missions: Mission[];
@@ -67,6 +69,7 @@ export function DashboardView({
   weeklyBrief: WeeklyBriefData;
   welcomeMissionId?: string;
   pageSpeedSnapshot: PageSpeedSnapshot | null;
+  sectorBenchmark: SectorBenchmark | null;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const allDailyMissions = missions
@@ -166,6 +169,13 @@ export function DashboardView({
                           )}
                           .
                         </p>
+                        {sectorBenchmark && (
+                          <p className="mt-0.5 text-xs text-zinc-500">
+                            La media real de {business.business_type.toLowerCase()}s en GrowthOS es{" "}
+                            <span className="font-medium text-foreground">{sectorBenchmark.averageScore}</span>{" "}
+                            (sobre {sectorBenchmark.sampleSize} negocios).
+                          </p>
+                        )}
                         {business.streak_count > 0 && (
                           <p className="mt-0.5 text-xs text-zinc-400">
                             🧊 {getStreakFreezesRemaining(business.streak_freeze_month, business.streak_freezes_used)}{" "}
