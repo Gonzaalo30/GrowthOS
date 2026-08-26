@@ -44,7 +44,9 @@ export function PlanCard({
 
       <div>
         <p className="text-3xl font-semibold text-foreground">{formatPrice(plan.priceCents)}</p>
-        {plan.priceCents > 0 && <p className="text-xs text-zinc-500">IVA incluido</p>}
+        {plan.priceCents > 0 && (
+          <p className="text-xs text-zinc-500">IVA incluido · Sin permanencia, cancela cuando quieras</p>
+        )}
       </div>
 
       <ul className="flex flex-1 flex-col gap-2">

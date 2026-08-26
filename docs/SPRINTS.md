@@ -303,6 +303,12 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 4.29 — Señal de confianza real: garantía de cancelación en los planes (COMPLETADO 2026-08-24)
+Feedback externo pedía compensar la falta de testimonios (producto nuevo) con señales de confianza reales — sin inventar nunca testimonios ni logos falsos. Se comprobaron los números reales de producción (8 negocios, 16 misiones completadas, 13 análisis, 2 compras) y se decidió con el fundador no mostrarlos todavía por ser demasiado pequeños; también se descartó un bloque de "así lo usamos nosotros mismos" porque el fundador aclaró que todavía no usa el producto en un negocio real.
+- [x] **"Sin permanencia, cancela cuando quieras"** añadido junto al precio en `PlanCard.tsx` (Growth y Autopilot) — ya era cierto y estaba en `/terminos`, solo faltaba mostrarlo cerca del precio/CTA.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios. Verificado en vivo en local que aparece en las tarjetas de Growth y Autopilot en `/precios`.
+- **Descartado explícitamente por ahora**: números de uso real (demasiado pequeños todavía) y bloque de dogfooding (no es cierto todavía) — revisar más adelante cuando haya uso real que mostrar.
+
 ## Sprint 4.28 — Más notificaciones reales del loop de gamificación (COMPLETADO 2026-08-24)
 El fundador confirmó que el "loop" de recompensa constante (Quick Wins → XP → racha → cofre → oportunidad → compra) ya vivía de verdad en el dashboard, no en la landing — y pidió ampliar las notificaciones para avisar de más momentos reales del propio loop, empezando por subir de nivel.
 - [x] **Subir de nivel** (`services/mission.service.ts`, `app/actions/chest.ts`): al completar una misión o abrir el cofre diario con recompensa de XP, si el XP ganado cruza de verdad un umbral de nivel (`getLevelProgress` antes/después), se notifica "🚀 ¡Subiste a nivel X!" — sin coste extra de consultas, reutilizando datos ya leídos.
