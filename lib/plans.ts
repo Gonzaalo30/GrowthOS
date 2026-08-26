@@ -11,6 +11,8 @@ export interface Plan {
   tagline: string;
   features: string[];
   recommended?: boolean;
+  /** Si existe, el plan también se puede pagar anual con descuento (-20%, 2 meses gratis). */
+  annual?: { priceCents: number; priceEnvVar: string };
 }
 
 export const PLANS: Plan[] = [
@@ -35,6 +37,7 @@ export const PLANS: Plan[] = [
     priceEnvVar: "STRIPE_GROWTH_PRICE_ID",
     tagline: "Para quien quiere ir más rápido haciéndolo él mismo.",
     recommended: true,
+    annual: { priceCents: 27800, priceEnvVar: "STRIPE_GROWTH_ANNUAL_PRICE_ID" },
     features: [
       "Todo lo del plan Gratis",
       "Quick Wins ilimitados al día",
@@ -49,6 +52,7 @@ export const PLANS: Plan[] = [
     priceCents: 9900,
     priceEnvVar: "STRIPE_AUTOPILOT_PRICE_ID",
     tagline: "Para cuando no tienes tiempo de tocar nada. Lo hacemos nosotros.",
+    annual: { priceCents: 95000, priceEnvVar: "STRIPE_AUTOPILOT_ANNUAL_PRICE_ID" },
     features: [
       "Todo lo del plan Growth",
       "Implementamos hasta 4 Quick Wins diarios por semana",
@@ -82,6 +86,7 @@ export function planIdForPriceId(priceId: string | null | undefined): PlanId | n
   if (!priceId) return null;
   for (const plan of PLANS) {
     if (plan.priceEnvVar && process.env[plan.priceEnvVar] === priceId) return plan.id;
+    if (plan.annual?.priceEnvVar && process.env[plan.annual.priceEnvVar] === priceId) return plan.id;
   }
   return null;
 }

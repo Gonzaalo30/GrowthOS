@@ -39,10 +39,11 @@ export default async function GrowthSprintPage() {
       </div>
 
       <GrowthCard className="flex flex-col items-center gap-4 text-center">
-        <p className="text-3xl font-semibold text-foreground">Desde 1.500 €</p>
+        <p className="text-3xl font-semibold text-foreground">Desde 1.500 € · pago único</p>
         <p className="text-sm text-zinc-600">
           El alcance real (qué se toca y cuánto trabajo lleva) depende de tu situación — por eso no tiene un
-          precio cerrado como el resto del Centro de Mejoras.
+          precio cerrado como el resto del Centro de Mejoras. No es una suscripción: se paga una vez, no
+          cada mes.
         </p>
         <div className="flex flex-wrap justify-center gap-2">
           {AREAS.map((area) => (

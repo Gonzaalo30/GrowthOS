@@ -16,13 +16,17 @@ export function PlanCard({
   isLoggedIn,
   currentPlanId,
   hasActiveSubscription,
+  interval = "monthly",
 }: {
   plan: Plan;
   isLoggedIn: boolean;
   currentPlanId?: PlanId;
   hasActiveSubscription: boolean;
+  interval?: "monthly" | "annual";
 }) {
   const isCurrent = currentPlanId === plan.id;
+  const useAnnual = interval === "annual" && Boolean(plan.annual);
+  const monthlyEquivalentCents = useAnnual ? Math.round(plan.annual!.priceCents / 12) : null;
 
   return (
     <GrowthCard
@@ -43,9 +47,24 @@ export function PlanCard({
       </div>
 
       <div>
-        <p className="text-3xl font-semibold text-foreground">{formatPrice(plan.priceCents)}</p>
+        {useAnnual ? (
+          <>
+            <p className="text-3xl font-semibold text-foreground">
+              {(monthlyEquivalentCents! / 100).toLocaleString("es-ES")} €{" "}
+              <span className="text-base font-normal text-zinc-500">/ mes</span>
+            </p>
+            <p className="text-xs text-zinc-500">
+              {(plan.annual!.priceCents / 100).toLocaleString("es-ES")} €/año, facturado de una vez ·
+              ahorras un 20% frente al mensual
+            </p>
+          </>
+        ) : (
+          <p className="text-3xl font-semibold text-foreground">{formatPrice(plan.priceCents)}</p>
+        )}
         {plan.priceCents > 0 ? (
-          <p className="text-xs text-zinc-500">IVA incluido · Sin permanencia, cancela cuando quieras</p>
+          <p className="text-xs text-zinc-500">
+            IVA incluido · {useAnnual ? "Cancela la renovación cuando quieras" : "Sin permanencia, cancela cuando quieras"}
+          </p>
         ) : (
           <p className="text-xs text-zinc-500">30 segundos · Sin tarjeta · Sin conocimientos técnicos</p>
         )}
@@ -81,7 +100,11 @@ export function PlanCard({
           </Button>
         </form>
       ) : (
-        <PlanCheckoutButton planId={plan.id} label={`Empezar con ${plan.name}`} />
+        <PlanCheckoutButton
+          planId={plan.id}
+          label={`Empezar con ${plan.name}`}
+          interval={useAnnual ? "annual" : "monthly"}
+        />
       )}
     </GrowthCard>
   );

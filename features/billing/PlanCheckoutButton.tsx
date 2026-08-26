@@ -7,9 +7,17 @@ import type { PlanId } from "@/lib/plans";
 
 const initialState: CheckoutState = {};
 
-export function PlanCheckoutButton({ planId, label }: { planId: PlanId; label: string }) {
+export function PlanCheckoutButton({
+  planId,
+  label,
+  interval = "monthly",
+}: {
+  planId: PlanId;
+  label: string;
+  interval?: "monthly" | "annual";
+}) {
   const [state, formAction, isPending] = useActionState(
-    createPlanCheckoutAction.bind(null, planId),
+    createPlanCheckoutAction.bind(null, planId, interval),
     initialState,
   );
 

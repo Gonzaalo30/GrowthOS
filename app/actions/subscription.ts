@@ -13,6 +13,7 @@ export interface CheckoutState {
 
 export async function createPlanCheckoutAction(
   planId: PlanId,
+  interval: "monthly" | "annual",
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- useActionState exige esta firma aunque no se use el estado previo
   _prevState: CheckoutState,
 ): Promise<CheckoutState> {
@@ -30,7 +31,9 @@ export async function createPlanCheckoutAction(
   const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
-  const priceId = process.env[plan.priceEnvVar];
+  const useAnnual = interval === "annual" && Boolean(plan.annual);
+  const priceEnvVar = useAnnual ? plan.annual!.priceEnvVar : plan.priceEnvVar;
+  const priceId = process.env[priceEnvVar];
   if (!priceId) {
     return { error: `El plan ${plan.name} todavía no está disponible para suscripción. Vuelve pronto.` };
   }
