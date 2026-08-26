@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { getNextSequenceNumber } from "@/services/mission.service";
 import { GOOGLE_BUSINESS_CHECKLIST } from "@/lib/googleBusinessChecklist";
+import { createNotification } from "@/services/notification.service";
 
 type Client = SupabaseClient<Database>;
 type MissionRow = Database["public"]["Tables"]["missions"]["Row"];
@@ -20,6 +21,7 @@ export async function ensureGoogleBusinessMissions(
   existingMissions: MissionRow[],
 ) {
   const existingTemplateIds = new Set(existingMissions.map((m) => m.template_id).filter(Boolean));
+  let createdCount = 0;
 
   for (const item of GOOGLE_BUSINESS_CHECKLIST) {
     if (checklist[item.field]) continue;
@@ -39,5 +41,14 @@ export async function ensureGoogleBusinessMissions(
       sequence_number: sequenceNumber,
     });
     if (error) throw error;
+    createdCount += 1;
+  }
+
+  if (createdCount > 0) {
+    await createNotification(
+      supabase,
+      businessId,
+      `🏪 ${createdCount} ${createdCount === 1 ? "misión nueva" : "misiones nuevas"} para mejorar tu ficha de Google Business.`,
+    );
   }
 }

@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { trackEvent } from "@/lib/analytics";
 import { planIdForPriceId, type PlanId } from "@/lib/plans";
 import { OPPORTUNITIES } from "@/lib/opportunities";
+import { createNotification } from "@/services/notification.service";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 
@@ -113,6 +114,9 @@ export async function POST(request: NextRequest) {
           }
           if (Object.keys(loyaltyUpdate).length > 0) {
             await supabase.from("businesses").update(loyaltyUpdate).eq("id", businessId);
+            if (loyaltyUpdate.loyalty_discount_available) {
+              await createNotification(supabase, businessId, "🎁 Has ganado un 5% de descuento para tu próxima compra.");
+            }
           }
           await trackEvent(supabase, "opportunity_purchased", businessId, { opportunityId: opportunity.id });
         }
@@ -136,6 +140,9 @@ export async function POST(request: NextRequest) {
           })
           .eq("id", businessId);
         await incrementPlanPurchaseCount(supabase, businessId);
+        if (loyaltyUpdate.loyalty_discount_available) {
+          await createNotification(supabase, businessId, "🎁 Has ganado un 5% de descuento para tu próxima compra.");
+        }
         await trackEvent(supabase, "checkout_completed", businessId, { plan });
       }
       break;

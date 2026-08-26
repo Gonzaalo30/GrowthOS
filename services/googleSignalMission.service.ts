@@ -4,6 +4,7 @@ import { getIntegration } from "@/services/googleIntegration.service";
 import { getNextSequenceNumber } from "@/services/mission.service";
 import { detectBestSignal } from "@/lib/googleSignalMissions";
 import { canUseGoogleIntegrations } from "@/lib/plans";
+import { createNotification } from "@/services/notification.service";
 import type { SearchConsoleSummary, AnalyticsSummary } from "@/lib/googleApis";
 
 type Client = SupabaseClient<Database>;
@@ -61,4 +62,6 @@ export async function ensureGoogleSignalMission(
     sequence_number: sequenceNumber,
   });
   if (error) throw error;
+
+  await createNotification(supabase, businessId, `🔍 Nueva misión basada en tus datos reales de Google: ${signal.title}`);
 }

@@ -9,6 +9,7 @@ import {
 } from "@/lib/missionTemplates";
 import type { QuickAuditResult } from "@/lib/quickAudit";
 import { createNotification } from "@/services/notification.service";
+import { getLevelProgress } from "@/lib/levels";
 
 type Client = SupabaseClient<Database>;
 type MissionRow = Database["public"]["Tables"]["missions"]["Row"];
@@ -301,7 +302,7 @@ export async function completeMission(
 
   const { data: updated } = await supabase
     .from("businesses")
-    .select("streak_count")
+    .select("streak_count, xp")
     .eq("id", data.business_id)
     .maybeSingle();
   if (updated?.streak_count === 7 || updated?.streak_count === 30) {
@@ -310,6 +311,13 @@ export async function completeMission(
       data.business_id,
       `🔥 ¡Racha de ${updated.streak_count} días! Sigue así.`,
     );
+  }
+  if (updated) {
+    const levelBefore = getLevelProgress(updated.xp - xpAwarded).level;
+    const levelAfter = getLevelProgress(updated.xp).level;
+    if (levelAfter.name !== levelBefore.name) {
+      await createNotification(supabase, data.business_id, `🚀 ¡Subiste a nivel ${levelAfter.name}!`);
+    }
   }
 
   return { xpAwarded, multiplierApplied };

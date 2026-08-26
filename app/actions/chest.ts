@@ -5,9 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveBusiness } from "@/services/business.service";
 import { getMissionsForBusiness, addBonusDailyMission } from "@/services/mission.service";
 import { getTodayChest, rollChestReward, recordChestOpen } from "@/services/chest.service";
-import { getLevelNumber } from "@/lib/levels";
+import { getLevelNumber, getLevelProgress } from "@/lib/levels";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
 import { getTemplatesForBusinessType, getTemplateById } from "@/lib/copyTemplates";
+import { createNotification } from "@/services/notification.service";
 import type { BusinessType } from "@/lib/missionTemplates";
 
 export interface OpenChestResult {
@@ -50,6 +51,11 @@ export async function openDailyChestAction(): Promise<OpenChestResult> {
     });
     if (error) throw error;
     await recordChestOpen(supabase, business.id, "xp", reward.xp);
+    const levelBefore = getLevelProgress(business.xp).level;
+    const levelAfter = getLevelProgress(business.xp + reward.xp).level;
+    if (levelAfter.name !== levelBefore.name) {
+      await createNotification(supabase, business.id, `🚀 ¡Subiste a nivel ${levelAfter.name}!`);
+    }
     revalidatePath("/dashboard");
     return { alreadyOpened: false, rewardType: "xp", xpAwarded: reward.xp };
   }

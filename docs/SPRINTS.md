@@ -303,6 +303,14 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 4.28 — Más notificaciones reales del loop de gamificación (COMPLETADO 2026-08-24)
+El fundador confirmó que el "loop" de recompensa constante (Quick Wins → XP → racha → cofre → oportunidad → compra) ya vivía de verdad en el dashboard, no en la landing — y pidió ampliar las notificaciones para avisar de más momentos reales del propio loop, empezando por subir de nivel.
+- [x] **Subir de nivel** (`services/mission.service.ts`, `app/actions/chest.ts`): al completar una misión o abrir el cofre diario con recompensa de XP, si el XP ganado cruza de verdad un umbral de nivel (`getLevelProgress` antes/después), se notifica "🚀 ¡Subiste a nivel X!" — sin coste extra de consultas, reutilizando datos ya leídos.
+- [x] **Nueva misión basada en datos reales de Google** (`services/googleSignalMission.service.ts`): notificación cuando se genera una misión real de Search Console/Analytics.
+- [x] **Nuevas misiones del checklist de Sello Local** (`services/googleBusinessMission.service.ts`): un aviso agrupado ("X misiones nuevas...") al guardar el checklist, en vez de uno por cada ítem.
+- [x] **5% de fidelidad ganado** (webhook de Stripe): aviso real en el momento exacto en que se concede el descuento tras la primera compra.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios.
+
 ## Sprint 3.12 — Landing con más gancho: hero reescrito, gamificación visible, y Growth Sprint real (COMPLETADO 2026-08-24)
 El fundador recibió feedback externo sobre la landing (frase del hero poco diferenciadora, la gamificación no se percibía desde fuera, el producto de alto precio escondido, y demasiado tono de "error/problema") y pidió implementarlo todo. El "Growth Sprint" ya se mencionaba de pasada en `como-funciona` y `plan-autopilot` desde antes, pero no existía como producto real — se creó de cero en vez de solo ponerlo en la web.
 - [x] **Frase del hero reescrita**: de "Sin tecnicismos..." a "GrowthOS convierte cada oportunidad de mejora de tu web en una acción concreta que completas en minutos — o que dejas en manos de nuestro equipo" — explica el modelo (Quick Wins tú mismo vs. Autopilot) en la primera frase.
