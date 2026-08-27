@@ -2,6 +2,7 @@ import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { FaqAccordion, type FaqItem } from "@/features/faq/FaqAccordion";
+import { Reveal } from "@/components/motion/Reveal";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -136,13 +137,13 @@ export default function FaqPage() {
       </div>
 
       <div className="grid gap-x-10 gap-y-10 md:grid-cols-2">
-        {GROUPS.map((group) => (
-          <div key={group.title}>
+        {GROUPS.map((group, i) => (
+          <Reveal key={group.title} delay={i * 0.08}>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
               {group.title}
             </h2>
             <FaqAccordion items={group.items} />
-          </div>
+          </Reveal>
         ))}
       </div>
 

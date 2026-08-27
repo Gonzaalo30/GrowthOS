@@ -21,7 +21,7 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
             <button
               type="button"
               onClick={() => setOpenIndex(open ? null : i)}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left outline-none transition-colors hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
             >
               <span className="text-sm font-medium text-foreground">{item.question}</span>
               <span className={cn("shrink-0 text-zinc-500 transition-transform", open && "rotate-45")}>

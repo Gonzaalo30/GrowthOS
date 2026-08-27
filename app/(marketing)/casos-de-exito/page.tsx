@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
+import { Reveal } from "@/components/motion/Reveal";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -67,17 +68,19 @@ export default function CasosDeExitoPage() {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {EXAMPLES.map((example) => (
-          <GrowthCard key={example.type}>
-            <h2 className="font-medium text-foreground">{example.type}</h2>
-            <ul className="mt-2 flex flex-col gap-1.5">
-              {example.missions.map((mission) => (
-                <li key={mission} className="text-sm text-zinc-600">
-                  · {mission}
-                </li>
-              ))}
-            </ul>
-          </GrowthCard>
+        {EXAMPLES.map((example, i) => (
+          <Reveal key={example.type} delay={i * 0.06}>
+            <GrowthCard interactive className="h-full">
+              <h2 className="font-medium text-foreground">{example.type}</h2>
+              <ul className="mt-2 flex flex-col gap-1.5">
+                {example.missions.map((mission) => (
+                  <li key={mission} className="text-sm text-zinc-600">
+                    · {mission}
+                  </li>
+                ))}
+              </ul>
+            </GrowthCard>
+          </Reveal>
         ))}
       </div>
 

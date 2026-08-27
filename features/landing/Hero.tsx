@@ -2,9 +2,21 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { motion, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { normalizeDomain } from "@/lib/utils";
+
+// Entrada escalonada al cargar (no al hacer scroll, ya está por encima del
+// pliegue): el contenedor retrasa un poco a cada hijo directo.
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
+const item: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
 
 const TRUST_ITEMS = [
   {
@@ -47,19 +59,30 @@ export function Hero() {
   }
 
   return (
-    <section className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center sm:py-24">
-      <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">
+    <motion.section
+      variants={container}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center sm:py-24"
+    >
+      <motion.span
+        variants={item}
+        className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600"
+      >
         Análisis gratuito en segundos
-      </span>
-      <h1 className="mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+      </motion.span>
+      <motion.h1
+        variants={item}
+        className="mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+      >
         Descubre cuántas oportunidades está perdiendo tu negocio online
-      </h1>
-      <p className="mt-5 max-w-2xl text-lg text-zinc-600 sm:text-xl">
+      </motion.h1>
+      <motion.p variants={item} className="mt-5 max-w-2xl text-lg text-zinc-600 sm:text-xl">
         GrowthOS convierte cada oportunidad de mejora de tu web en una acción concreta que completas en
         minutos — o que dejas en manos de nuestro equipo.
-      </p>
+      </motion.p>
 
-      <div className="mt-10 flex w-full max-w-md flex-col items-center gap-3">
+      <motion.div variants={item} className="mt-10 flex w-full max-w-md flex-col items-center gap-3">
         <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:flex-row">
           <Input
             type="text"
@@ -75,14 +98,14 @@ export function Hero() {
         </form>
 
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-zinc-500">
-          {TRUST_ITEMS.map((item) => (
-            <span key={item.label} className="inline-flex items-center gap-1.5">
-              {item.icon}
-              {item.label}
+          {TRUST_ITEMS.map((trustItem) => (
+            <span key={trustItem.label} className="inline-flex items-center gap-1.5">
+              {trustItem.icon}
+              {trustItem.label}
             </span>
           ))}
         </div>
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }

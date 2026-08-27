@@ -84,7 +84,7 @@ export default async function PreciosPage() {
         </p>
         <div className="flex flex-col gap-3">
           {OPPORTUNITIES.map((item) => (
-            <GrowthCard key={item.id} className="flex items-center justify-between gap-3">
+            <GrowthCard key={item.id} interactive className="flex items-center justify-between gap-3">
               <span className="text-sm font-medium text-foreground">{item.title}</span>
               <span className="whitespace-nowrap text-sm font-semibold text-brand-600">
                 {formatOpportunityPrice(item.priceCents, item.pricing, item.priceIsFrom)}

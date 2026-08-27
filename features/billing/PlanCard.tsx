@@ -30,6 +30,7 @@ export function PlanCard({
 
   return (
     <GrowthCard
+      interactive
       className={cn(
         "relative flex h-full flex-col gap-4",
         plan.recommended && "border-2 border-brand-400 shadow-md",

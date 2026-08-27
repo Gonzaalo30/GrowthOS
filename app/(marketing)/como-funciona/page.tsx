@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
+import { Reveal } from "@/components/motion/Reveal";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -50,16 +51,18 @@ export default function ComoFuncionaPage() {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        {STEPS.map((s) => (
-          <GrowthCard key={s.step} className="flex gap-4">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 text-sm font-semibold text-white">
-              {s.step}
-            </span>
-            <div>
-              <h2 className="font-medium text-foreground">{s.title}</h2>
-              <p className="mt-1 text-sm text-zinc-600">{s.description}</p>
-            </div>
-          </GrowthCard>
+        {STEPS.map((s, i) => (
+          <Reveal key={s.step} delay={i * 0.08}>
+            <GrowthCard interactive className="flex h-full gap-4">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 text-sm font-semibold text-white">
+                {s.step}
+              </span>
+              <div>
+                <h2 className="font-medium text-foreground">{s.title}</h2>
+                <p className="mt-1 text-sm text-zinc-600">{s.description}</p>
+              </div>
+            </GrowthCard>
+          </Reveal>
         ))}
       </div>
 
