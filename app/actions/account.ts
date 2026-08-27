@@ -89,9 +89,13 @@ export async function updateAvatarAction(_prevState: AccountState, formData: For
 }
 
 export async function updatePasswordAction(_prevState: AccountState, formData: FormData): Promise<AccountState> {
+  const currentPassword = String(formData.get("currentPassword") ?? "");
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
+  if (!currentPassword) {
+    return { error: "Introduce tu contraseña actual." };
+  }
   if (password.length < 8) {
     return { error: "La contraseña debe tener al menos 8 caracteres." };
   }
@@ -103,7 +107,17 @@ export async function updatePasswordAction(_prevState: AccountState, formData: F
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Tu sesión ha caducado, inicia sesión de nuevo." };
+  if (!user?.email) return { error: "Tu sesión ha caducado, inicia sesión de nuevo." };
+
+  // Supabase no tiene un endpoint dedicado para "verificar la contraseña
+  // actual" — reautenticar con signInWithPassword es la forma real de
+  // confirmarla antes de dejar cambiarla, sin lo cual bastaría con dejar la
+  // sesión abierta para robar la cuenta cambiando la contraseña sin saberla.
+  const { error: reauthError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+  if (reauthError) return { error: "La contraseña actual no es correcta." };
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: "No hemos podido cambiar tu contraseña. Inténtalo de nuevo." };

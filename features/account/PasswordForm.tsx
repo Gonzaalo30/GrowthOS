@@ -13,6 +13,16 @@ export function PasswordForm() {
   return (
     <form action={formAction} className="flex flex-col gap-3">
       <label className="text-sm font-medium text-foreground">
+        Contraseña actual
+        <Input
+          name="currentPassword"
+          type="password"
+          required
+          autoComplete="current-password"
+          className="mt-1"
+        />
+      </label>
+      <label className="text-sm font-medium text-foreground">
         Nueva contraseña
         <Input
           name="password"

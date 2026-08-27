@@ -303,6 +303,13 @@ El fundador propuso un "Oráculo de IA" que cruzaba datos de Search Console/Anal
 - [x] Nueva página `/integraciones`, enlazada en la navegación principal y en el Cmd+K. `eslint`, `tsc --noEmit` y `next build` limpios.
 - [x] **Verificado en vivo de extremo a extremo con la cuenta real del fundador**: credenciales OAuth creadas en Google Cloud (Google Auth Platform), migración `0019` aplicada, desplegado en Vercel (`growth-os-smoky-eta.vercel.app`) con las 3 variables de entorno también puestas ahí, y conexión real completada — Google redirige, pide login/consentimiento, y vuelve a GrowthOS con la cuenta conectada.
 
+## Sprint 4.41 — Exigir la contraseña actual para cambiarla desde Mi cuenta (COMPLETADO 2026-08-27)
+El formulario de "Cambiar contraseña" en Mi cuenta (distinto del de recuperación del Sprint 4.40 — este es para quien ya tiene sesión iniciada) solo pedía la contraseña nueva dos veces, sin verificar la actual. El fundador pidió exigirla también: sin esto, bastaría con dejar una sesión abierta sin vigilar para que cualquiera cambiase la contraseña y se quedase con la cuenta.
+- [x] **`updatePasswordAction`** (`app/actions/account.ts`): antes de cambiar la contraseña, reautentica con `supabase.auth.signInWithPassword()` usando el email real de la sesión y la contraseña actual introducida — es la única forma real de verificarla que ofrece Supabase (no hay un endpoint dedicado solo para comprobar). Si no coincide, error claro y no se toca nada.
+- [x] Campo "Contraseña actual" añadido en `features/account/PasswordForm.tsx`, antes de los dos campos de la nueva.
+- [x] `eslint`, `tsc --noEmit` y `next build` limpios.
+- **Pendiente de confirmar en vivo, no lo puedo hacer yo**: la página `/account` exige sesión real iniciada, así que no he podido probarlo de extremo a extremo en el navegador — verificado por lectura de código y build limpio. Pendiente de que el fundador lo pruebe con su cuenta real (contraseña actual correcta cambia bien; contraseña actual incorrecta debe dar error y no cambiar nada).
+
 ## Sprint 4.40 — Recuperar contraseña (COMPLETADO 2026-08-27)
 Hueco funcional real detectado durante una revisión general: quien se registró con email/contraseña (no con Google) y la olvidaba, no tenía ninguna forma de recuperar su cuenta. El fundador confirmó que era prioritario.
 - [x] **`requestPasswordResetAction`** (`app/actions/auth.ts`): llama a `supabase.auth.resetPasswordForEmail()` y responde siempre con "éxito" exista o no la cuenta con ese email — evita que el formulario se use para comprobar qué cuentas están registradas.
