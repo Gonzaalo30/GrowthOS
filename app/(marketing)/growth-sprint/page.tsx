@@ -2,6 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/services/profile.service";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { GrowthSprintForm } from "@/features/billing/GrowthSprintForm";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Growth Sprint",
+  description:
+    "Una intervención intensiva en SEO, velocidad, presencia local y conversión, coordinada por nuestro equipo. Desde 1.500€, pago único, alcance a medida de tu negocio.",
+  path: "/growth-sprint",
+});
 
 const AREAS = ["SEO", "Velocidad", "Local", "Conversión"];
 

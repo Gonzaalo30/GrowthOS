@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { LegalPage, LegalSection } from "@/features/legal/LegalPage";
 import { LEGAL_INFO } from "@/lib/legalInfo";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Aviso legal",
+  description: "Identificación del titular de GrowthOS y condiciones legales del sitio.",
+  path: "/aviso-legal",
+});
 
 export default function AvisoLegalPage() {
   return (

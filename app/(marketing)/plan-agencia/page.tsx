@@ -2,6 +2,14 @@ import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { createAgencyCheckoutAction } from "@/app/actions/agency";
 import { getPlan, AGENCY_EXTRA_SLOT_PRICE_CENTS } from "@/lib/plans";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Plan Agencia",
+  description:
+    "Para gestores y agencias de marketing local: hasta 5 negocios con funciones Growth bajo una sola cuenta, desde 99€/mes. Cada cliente con su propio Growth Score y sus propias misiones.",
+  path: "/plan-agencia",
+});
 
 const ERROR_MESSAGES: Record<string, string> = {
   no_configurado: "Esta funcionalidad todavía no está disponible. Vuelve pronto.",

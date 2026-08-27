@@ -1,5 +1,12 @@
 import Link from "next/link";
 import { LegalPage, LegalSection } from "@/features/legal/LegalPage";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Política de cookies",
+  description: "Qué cookies usa GrowthOS y cómo puedes gestionarlas o desactivarlas.",
+  path: "/cookies",
+});
 
 export default function CookiesPage() {
   return (

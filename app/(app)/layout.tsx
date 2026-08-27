@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getBusinessesByOwner } from "@/services/business.service";
 import { getUnreadNotifications } from "@/services/notification.service";
@@ -5,6 +6,13 @@ import { getProfile } from "@/services/profile.service";
 import { AppHeader } from "@/features/app/AppHeader";
 import { MobileBottomNav } from "@/features/app/MobileBottomNav";
 import { CommandPalette } from "@/features/app/CommandPalette";
+
+// Todo lo que cuelga de este layout exige sesión iniciada — Google no puede
+// renderizarlo de todas formas, pero lo marcamos explícito para no depender
+// solo de robots.txt (por si alguna URL queda enlazada desde fuera).
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/services/profile.service";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { ContactForm } from "@/features/contact/ContactForm";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Contacto",
+  description: "¿Tienes dudas sobre GrowthOS? Escríbenos y te contestamos directamente.",
+  path: "/contacto",
+});
 
 export default async function ContactoPage() {
   const supabase = await createClient();

@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { LegalPage, LegalSection } from "@/features/legal/LegalPage";
 import { LEGAL_INFO } from "@/lib/legalInfo";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Términos y condiciones",
+  description: "Condiciones de uso del servicio GrowthOS: planes, pagos, cancelación y responsabilidades.",
+  path: "/terminos",
+});
 
 export default function TerminosPage() {
   return (

@@ -1,4 +1,12 @@
 import { LoginForm } from "@/features/auth/LoginForm";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Inicia sesión",
+  description: "Entra en tu cuenta de GrowthOS para ver tu Growth Score y tus misiones de hoy.",
+  path: "/login",
+  noIndex: true,
+});
 
 export default async function LoginPage({
   searchParams,

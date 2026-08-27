@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { PlanCheckoutButton } from "@/features/billing/PlanCheckoutButton";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Plan Autopilot",
+  description:
+    "Implementamos por ti tus misiones diarias y semanales de mejora web — sin que tengas que tocar nada. 99€/mes, sin permanencia, compatible con WordPress, Shopify, Wix y sitios a medida.",
+  path: "/plan-autopilot",
+});
 
 const INCLUDED = [
   "Implementamos tus 3 misiones diarias cada día, sin que tengas que tocar nada",

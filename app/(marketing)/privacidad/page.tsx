@@ -1,5 +1,12 @@
 import { LegalPage, LegalSection } from "@/features/legal/LegalPage";
 import { LEGAL_INFO } from "@/lib/legalInfo";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Política de privacidad",
+  description: "Cómo tratamos tus datos personales en GrowthOS: qué recogemos, para qué, y tus derechos.",
+  path: "/privacidad",
+});
 
 export default function PrivacidadPage() {
   return (

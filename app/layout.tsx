@@ -19,7 +19,10 @@ const description =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title,
+  title: {
+    default: title,
+    template: "%s | GrowthOS",
+  },
   description,
   alternates: {
     canonical: "/",
@@ -39,13 +42,31 @@ export const metadata: Metadata = {
   },
 };
 
+// Datos reales únicamente: sin logo (no hay un asset cuadrado real todavía,
+// mejor omitirlo que forzar uno con la forma equivocada) ni redes sociales
+// (sin perfiles reales que enlazar todavía) — solo lo que existe de verdad.
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "GrowthOS",
+  url: siteUrl,
+  description,
+  email: "hola@gonzalomarketinglab.com",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-surface-muted">{children}</body>
+      <body className="min-h-full flex flex-col bg-surface-muted">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

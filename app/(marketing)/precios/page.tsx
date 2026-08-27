@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/Button";
 import { PricingPlans } from "@/features/billing/PricingPlans";
 import { PLANS } from "@/lib/plans";
 import { OPPORTUNITIES } from "@/lib/opportunities";
+import { pageMetadata, SITE_URL } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Precios",
+  description:
+    "Precio cerrado y sin sorpresas: plan Gratis, Growth (29€/mes), Autopilot (99€/mes) y Agencia. Además, mejoras sueltas de SEO, velocidad y conversión con precio fijo.",
+  path: "/precios",
+});
 
 function formatOpportunityPrice(cents: number, pricing: "one_time" | "monthly", priceIsFrom?: boolean) {
   const amount = `${(cents / 100).toLocaleString("es-ES")} €`;
@@ -22,8 +30,30 @@ export default async function PreciosPage() {
   const business = user ? await getActiveBusiness(supabase, user.id) : null;
   const hasActiveSubscription = business?.subscription_status === "active";
 
+  // Ofertas reales de los planes de pago, tal cual se cobran — nada de
+  // precios "desde" inventados ni planes que no existen todavía.
+  const offersJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "GrowthOS",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    offers: PLANS.filter((plan) => plan.priceCents > 0).map((plan) => ({
+      "@type": "Offer",
+      name: plan.name,
+      price: (plan.priceCents / 100).toFixed(2),
+      priceCurrency: "EUR",
+      description: plan.tagline,
+      url: `${SITE_URL}/precios`,
+    })),
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(offersJsonLd) }}
+      />
       <div className="text-center">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">Precios</h1>
         <p className="mt-3 text-zinc-600">Sin presupuestos ni sorpresas. Precio cerrado en todo.</p>

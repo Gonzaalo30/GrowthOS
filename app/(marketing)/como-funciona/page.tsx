@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Cómo funciona",
+  description:
+    "Analiza tu web gratis, recibe tu Growth Score y misiones diarias de 1-5 minutos sin jerga técnica. Así funciona GrowthOS paso a paso.",
+  path: "/como-funciona",
+});
 
 const STEPS = [
   {

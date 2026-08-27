@@ -2,6 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/services/profile.service";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { CustomPlanForm } from "@/features/billing/CustomPlanForm";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Plan Personalizado",
+  description:
+    "¿No sabes qué plan de GrowthOS te conviene? Cuéntanos tu situación y tu presupuesto y te decimos qué encaja mejor, sin compromiso.",
+  path: "/plan-personalizado",
+});
 
 export default async function PlanPersonalizadoPage() {
   const supabase = await createClient();

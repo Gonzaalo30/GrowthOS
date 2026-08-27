@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Ejemplos por tipo de negocio",
+  description:
+    "Clínicas, restaurantes, inmobiliarias, talleres y ecommerce: mira el tipo de misiones diarias que recibirías en GrowthOS según tu sector.",
+  path: "/casos-de-exito",
+});
 
 const EXAMPLES = [
   {

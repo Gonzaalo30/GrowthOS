@@ -2,6 +2,14 @@ import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { FaqAccordion, type FaqItem } from "@/features/faq/FaqAccordion";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Preguntas frecuentes",
+  description:
+    "Qué es GrowthOS, cómo analizamos tu web, qué es un Quick Win, precios y planes, y cómo protegemos tus datos. Todo lo que necesitas saber antes de empezar.",
+  path: "/faq",
+});
 
 interface FaqGroup {
   title: string;
@@ -102,8 +110,24 @@ const GROUPS: FaqGroup[] = [
 ];
 
 export default function FaqPage() {
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: GROUPS.flatMap((group) =>
+      group.items.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    ),
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-16 sm:py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="text-center">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           Preguntas frecuentes
