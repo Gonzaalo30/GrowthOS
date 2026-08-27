@@ -36,6 +36,18 @@ export function getLevelNumber(xp: number): number {
   return idx + 1;
 }
 
+export type ChestTier = "base" | "mid" | "high";
+
+/**
+ * Tramo de probabilidades del cofre diario según el nivel (1-10) — mejores
+ * probabilidades y más XP a partir del nivel 5, y otra vez del nivel 8. Única
+ * fuente de verdad: la usan tanto `chest.service.ts` (para tirar la
+ * recompensa real) como cualquier vista que explique los niveles al usuario.
+ */
+export function getChestTier(level: number): ChestTier {
+  return level >= 8 ? "high" : level >= 5 ? "mid" : "base";
+}
+
 export interface LevelProgress {
   level: Level;
   next: Level | null;

@@ -3,6 +3,7 @@ import { LevelBadge } from "@/components/growth/LevelBadge";
 import { StreakBadge } from "@/components/growth/StreakBadge";
 import { XPBar } from "@/components/growth/XPBar";
 import { Reveal } from "@/components/motion/Reveal";
+import { LevelsPreviewLink } from "@/components/growth/LevelsExplorer";
 import { getLevelProgress } from "@/lib/levels";
 
 // Ejemplo ilustrativo (no son datos de ningún usuario real) para enseñar
@@ -28,6 +29,9 @@ export function GamificationShowcase() {
             Cada mejora que haces hace avanzar tu negocio y tu progreso dentro de GrowthOS — con niveles,
             racha y logros reales, no una lista de tareas más.
           </p>
+          <div className="mt-4">
+            <LevelsPreviewLink />
+          </div>
         </Reveal>
 
         <Reveal delay={0.15} className="w-full lg:justify-self-end">

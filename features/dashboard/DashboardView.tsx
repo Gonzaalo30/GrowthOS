@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ScoreCircle } from "@/components/growth/ScoreCircle";
 import { MissionCard } from "@/components/growth/MissionCard";
 import { GrowthCard } from "@/components/growth/GrowthCard";
-import { LevelBadge } from "@/components/growth/LevelBadge";
+import { LevelsExplorer } from "@/components/growth/LevelsExplorer";
 import { XPBar } from "@/components/growth/XPBar";
 import { MomentumScore } from "@/components/growth/MomentumScore";
 import { StreakBadge } from "@/components/growth/StreakBadge";
@@ -158,7 +158,7 @@ export function DashboardView({
                       <div className="text-center sm:text-left">
                         <div className="flex flex-col items-center gap-2 sm:flex-row">
                           <h1 className="text-lg font-semibold text-foreground">{business.domain}</h1>
-                          <LevelBadge level={levelProgress.level} />
+                          <LevelsExplorer level={levelProgress.level} />
                           <StreakBadge days={business.streak_count} />
                           <PlanBadge planId={business.plan} />
                         </div>

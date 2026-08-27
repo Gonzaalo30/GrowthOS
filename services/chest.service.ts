@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
+import { getChestTier } from "@/lib/levels";
 
 type Client = SupabaseClient<Database>;
 
@@ -33,7 +34,7 @@ const XP_REWARD_OPTIONS: Record<"base" | "mid" | "high", number[]> = {
 export function rollChestReward(
   level: number,
 ): { type: "xp"; xp: number } | { type: "bonus_mission" } | { type: "template" } {
-  const tier = level >= 8 ? "high" : level >= 5 ? "mid" : "base";
+  const tier = getChestTier(level);
   const odds = tier === "high" ? { xp: 0.65, bonusMission: 0.95 } : tier === "mid" ? { xp: 0.6, bonusMission: 0.92 } : { xp: 0.5, bonusMission: 0.8 };
 
   const roll = Math.random();

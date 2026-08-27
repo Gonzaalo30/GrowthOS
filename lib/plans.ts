@@ -40,7 +40,7 @@ export const PLANS: Plan[] = [
     annual: { priceCents: 27800, priceEnvVar: "STRIPE_GROWTH_ANNUAL_PRICE_ID" },
     features: [
       "Todo lo del plan Gratis",
-      "Quick Wins ilimitados al día",
+      "Quick Wins ilimitados al día — sube de nivel mucho más rápido",
       "Reanaliza tu web cuando quieras, sin esperar 7 días",
       "Conecta tu Search Console y Analytics reales para misiones más personalizadas",
       "Checklist real de tu ficha de Google Business, con misiones por cada cosa que falte",
@@ -68,7 +68,7 @@ export const PLANS: Plan[] = [
     tagline: "Para gestores y agencias que llevan varios negocios a la vez.",
     features: [
       "Hasta 5 negocios con funciones Growth cada uno",
-      "Quick Wins ilimitados y reanálisis a demanda por negocio",
+      "Quick Wins ilimitados y reanálisis a demanda por negocio — sube de nivel mucho más rápido",
       "Conecta Search Console y Analytics, y el checklist de ficha de Google Business, por cada negocio",
       "+15€/mes por negocio adicional a partir del 5º",
       "No incluye Autopilot",
