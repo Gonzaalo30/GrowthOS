@@ -47,7 +47,7 @@ export function Hero() {
   }
 
   return (
-    <section className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center sm:py-28">
+    <section className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center sm:py-24">
       <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">
         Análisis gratuito en segundos
       </span>

@@ -17,18 +17,18 @@ export function GamificationShowcaseBusiness() {
 
   return (
     <div className="w-full bg-surface-muted">
-      <section className="mx-auto flex w-full max-w-5xl flex-col items-center gap-10 px-6 py-20 text-center sm:py-28">
+      <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-14 text-center sm:py-20 lg:grid-cols-2 lg:gap-16 lg:text-left">
         <div>
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Resultados reales para tu negocio, semana a semana.
           </h2>
-          <p className="mt-3 max-w-2xl text-lg text-zinc-600">
+          <p className="mt-3 text-lg text-zinc-600 lg:max-w-md">
             Cada mejora que haces queda registrada — para que veas de verdad cuánto has avanzado, no solo
             una lista de tareas más.
           </p>
         </div>
 
-        <GrowthCard glow className="w-full max-w-lg text-left">
+        <GrowthCard glow className="w-full max-w-lg text-left lg:justify-self-end">
           <div className="grid grid-cols-2 gap-4">
             {EXAMPLE_STATS.map((stat) => (
               <div key={stat.label}>

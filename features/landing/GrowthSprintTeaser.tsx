@@ -6,17 +6,17 @@ const AREAS = ["SEO", "Velocidad", "Local", "Conversión"];
 
 export function GrowthSprintTeaser() {
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-col items-center gap-8 px-6 py-20 text-center sm:py-28">
+    <section className="mx-auto grid w-full max-w-6xl items-center gap-10 px-6 py-14 text-center sm:py-20 lg:grid-cols-2 lg:gap-16 lg:text-left">
       <div>
         <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           Cuando una mejora ya no es suficiente
         </h2>
-        <p className="mt-3 max-w-2xl text-lg text-zinc-600">
+        <p className="mt-3 text-lg text-zinc-600 lg:max-w-md">
           GrowthOS detecta cuándo tu negocio necesita algo más que pequeños ajustes.
         </p>
       </div>
 
-      <GrowthCard glow className="flex w-full max-w-lg flex-col items-center gap-3 text-center">
+      <GrowthCard glow className="flex w-full max-w-lg flex-col items-center gap-3 text-center lg:justify-self-end">
         <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">
           Growth Sprint
         </span>
