@@ -107,6 +107,65 @@ export async function signInWithGoogleAction(formData: FormData) {
   redirect(data.url);
 }
 
+export interface RequestPasswordResetState {
+  success?: boolean;
+  error?: string;
+}
+
+/**
+ * Siempre responde con "éxito" (nunca revela si el email existe o no en el
+ * sistema) — evita que este formulario se use para comprobar qué cuentas
+ * están registradas.
+ */
+export async function requestPasswordResetAction(
+  _prevState: RequestPasswordResetState,
+  formData: FormData,
+): Promise<RequestPasswordResetState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) {
+    return { error: "Introduce tu email." };
+  }
+
+  const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const next = encodeURIComponent("/restablecer-contrasena");
+
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=${next}`,
+  });
+
+  return { success: true };
+}
+
+export interface UpdatePasswordState {
+  error?: string;
+}
+
+export async function updatePasswordAction(
+  _prevState: UpdatePasswordState,
+  formData: FormData,
+): Promise<UpdatePasswordState> {
+  const password = String(formData.get("password") ?? "");
+  if (password.length < 8) {
+    return { error: "La contraseña debe tener al menos 8 caracteres." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // Sin sesión (enlace caducado o ya usado): de vuelta a pedir uno nuevo,
+  // no tiene sentido mostrar el formulario de contraseña sin nada que actualizar.
+  if (!user) redirect("/recuperar-contrasena?error=enlace_caducado");
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    return { error: "No hemos podido actualizar tu contraseña. Inténtalo de nuevo." };
+  }
+
+  redirect("/dashboard?password=actualizada");
+}
+
 export async function signOutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();

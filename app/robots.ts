@@ -14,6 +14,8 @@ const DISALLOWED = [
   "/login",
   "/signup",
   "/verificar-2fa",
+  "/recuperar-contrasena",
+  "/restablecer-contrasena",
   "/analisis",
   "/api/",
   "/auth/",

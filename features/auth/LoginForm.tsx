@@ -45,6 +45,9 @@ export function LoginForm({ error }: { error?: string }) {
           required
           autoComplete="current-password"
         />
+        <Link href="/recuperar-contrasena" className="-mt-1 self-end text-xs text-brand-600 hover:underline">
+          ¿Olvidaste tu contraseña?
+        </Link>
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
         <Button type="submit" disabled={isPending} className="mt-2 w-full">
           {isPending ? "Entrando…" : "Entrar"}
