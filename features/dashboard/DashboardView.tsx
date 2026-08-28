@@ -17,6 +17,7 @@ import { Achievements } from "@/components/growth/Achievements";
 import { PlanBadge } from "@/components/growth/PlanBadge";
 import { RefreshScoreButton } from "@/components/growth/RefreshScoreButton";
 import { DashboardTabs } from "@/components/growth/DashboardTabs";
+import { GuidedTour } from "@/components/tour/GuidedTour";
 import { Greeting } from "@/features/dashboard/Greeting";
 import { WeeklyBrief } from "@/features/dashboard/WeeklyBrief";
 import { getLevelProgress } from "@/lib/levels";
@@ -153,7 +154,10 @@ export function DashboardView({
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
                 <div className="flex flex-col gap-6 lg:col-span-2">
                   <GrowthCard glow className="flex flex-col gap-6">
-                    <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+                    <div
+                      id="tour-dashboard-score"
+                      className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between"
+                    >
                       <ScoreCircle score={business.growth_score} potential={business.growth_potential} />
                       <div className="text-center sm:text-left">
                         <div className="flex flex-col items-center gap-2 sm:flex-row">
@@ -206,7 +210,7 @@ export function DashboardView({
                     {canRefreshOnDemand(business.plan) && <RefreshScoreButton />}
                   </GrowthCard>
 
-                  <div>
+                  <div id="tour-dashboard-quickwins">
                     <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
                       Quick Wins de hoy
                     </h2>
@@ -258,7 +262,7 @@ export function DashboardView({
         ]}
       />
 
-      <Link href="/marketplace">
+      <Link href="/marketplace" id="tour-dashboard-marketplace">
         <GrowthCard className="flex items-center justify-between transition-all hover:-translate-y-0.5 hover:border-brand-400 hover:shadow-md">
           <div>
             <h2 className="font-medium text-foreground">Centro de Mejoras</h2>
@@ -267,6 +271,30 @@ export function DashboardView({
           <span className="text-brand-600">→</span>
         </GrowthCard>
       </Link>
+
+      <GuidedTour
+        storageKey="growthos_tour_dashboard"
+        steps={[
+          {
+            targetId: "tour-dashboard-score",
+            title: "Tu Growth Score",
+            description:
+              "Tu puntuación real sobre 100, con tu nivel, racha y plan justo al lado. Se actualiza sola cada 7 días.",
+          },
+          {
+            targetId: "tour-dashboard-quickwins",
+            title: "Tus Quick Wins de hoy",
+            description:
+              "Misiones diarias de 1-5 minutos elegidas para tu negocio. Complétalas para ganar XP y subir de nivel.",
+          },
+          {
+            targetId: "tour-dashboard-marketplace",
+            title: "Centro de Mejoras",
+            description:
+              "Si alguna misión requiere trabajo técnico, aquí puedes pedir que la implementemos nosotros por un precio cerrado.",
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { motion, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { GuidedTour } from "@/components/tour/GuidedTour";
 import { normalizeDomain } from "@/lib/utils";
 
 // Entrada escalonada al cargar (no al hacer scroll, ya está por encima del
@@ -85,6 +86,7 @@ export function Hero() {
       <motion.div variants={item} className="mt-10 flex w-full max-w-md flex-col items-center gap-3">
         <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:flex-row">
           <Input
+            id="tour-domain-input"
             type="text"
             required
             placeholder="tuclinica.com"
@@ -106,6 +108,18 @@ export function Hero() {
           ))}
         </div>
       </motion.div>
+
+      <GuidedTour
+        storageKey="growthos_tour_home"
+        steps={[
+          {
+            targetId: "tour-domain-input",
+            title: "Empieza por aquí",
+            description:
+              "Escribe el dominio de tu negocio (por ejemplo, tuclinica.com) y pulsa \"Ver mi Growth Score\" para analizarlo gratis en segundos.",
+          },
+        ]}
+      />
     </motion.section>
   );
 }
