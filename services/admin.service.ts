@@ -63,3 +63,66 @@ export async function getAutopilotBusinessesOverview(supabase: Client): Promise<
   overviews.sort((a, b) => Number(b.isTopLevel) - Number(a.isTopLevel));
   return overviews;
 }
+
+export interface AdminUserOverview {
+  userId: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  createdAt: string;
+  businesses: {
+    id: string;
+    domain: string;
+    plan: string;
+    growthScore: number;
+    subscriptionStatus: string;
+  }[];
+}
+
+/**
+ * Todos los usuarios registrados con sus negocios reales — para el panel de
+ * admin. Necesita el cliente con service role (`createAdminClient`): las
+ * políticas de RLS de `profiles`/`businesses` solo dejan ver las filas
+ * propias, así que con el cliente normal esto devolvería como mucho la
+ * cuenta del propio admin, nunca la de un cliente real.
+ */
+export async function getAllUsersOverview(adminClient: Client): Promise<AdminUserOverview[]> {
+  const [{ data: profiles, error: profilesError }, { data: businesses, error: businessesError }] =
+    await Promise.all([
+      adminClient
+        .from("profiles")
+        .select("id, name, email, is_admin, created_at")
+        .order("created_at", { ascending: false }),
+      adminClient.from("businesses").select("id, owner_id, domain, plan, growth_score, subscription_status"),
+    ]);
+  if (profilesError) throw profilesError;
+  if (businessesError) throw businessesError;
+
+  return (profiles ?? []).map((profile) => ({
+    userId: profile.id,
+    name: profile.name,
+    email: profile.email,
+    isAdmin: profile.is_admin,
+    createdAt: profile.created_at,
+    businesses: (businesses ?? [])
+      .filter((b) => b.owner_id === profile.id)
+      .map((b) => ({
+        id: b.id,
+        domain: b.domain,
+        plan: b.plan,
+        growthScore: b.growth_score,
+        subscriptionStatus: b.subscription_status,
+      })),
+  }));
+}
+
+/**
+ * Deja constancia real de cada vez que el admin entra como un usuario —
+ * nunca en silencio, para poder rendir cuentas de un acceso así.
+ */
+export async function logImpersonation(adminClient: Client, adminId: string, targetUserId: string) {
+  const { error } = await adminClient
+    .from("admin_impersonation_log")
+    .insert({ admin_id: adminId, target_user_id: targetUserId });
+  if (error) throw error;
+}

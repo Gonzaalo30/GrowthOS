@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getProfile } from "@/services/profile.service";
 import { getAutopilotBusinessesOverview, WEEKLY_ADMIN_LIMIT } from "@/services/admin.service";
 import { GrowthCard } from "@/components/growth/GrowthCard";
@@ -15,7 +17,11 @@ export default async function AdminAutopilotPage() {
   const profile = await getProfile(supabase, user.id);
   if (!profile.is_admin) redirect("/dashboard");
 
-  const businesses = await getAutopilotBusinessesOverview(supabase);
+  // Cliente con service role: las políticas de RLS de `businesses` solo
+  // dejan ver las filas propias del usuario autenticado, así que con el
+  // cliente normal esto nunca vería negocios de clientes reales, solo el
+  // del propio admin si lo tuviera en plan Autopilot.
+  const businesses = await getAutopilotBusinessesOverview(createAdminClient());
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-12">
@@ -25,6 +31,9 @@ export default async function AdminAutopilotPage() {
           Marca una misión como implementada cuando hayas hecho el trabajo real en la web del cliente —
           suma XP y racha de verdad en su cuenta, igual que si la hubiera completado él mismo.
         </p>
+        <Link href="/admin/usuarios" className="mt-1 inline-block text-xs text-brand-600 underline underline-offset-2">
+          Ver todos los usuarios registrados →
+        </Link>
       </div>
 
       {businesses.length === 0 ? (

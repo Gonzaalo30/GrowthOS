@@ -467,6 +467,22 @@ export interface Database {
         Update: Partial<{ read_at: string | null }>;
         Relationships: [];
       };
+      admin_impersonation_log: {
+        Row: {
+          id: string;
+          admin_id: string;
+          target_user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          admin_id: string;
+          target_user_id: string;
+          created_at?: string;
+        };
+        Update: Partial<{ admin_id: string; target_user_id: string }>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
