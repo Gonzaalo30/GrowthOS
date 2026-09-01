@@ -4,12 +4,8 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { PlanCheckoutButton } from "@/features/billing/PlanCheckoutButton";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
+import { priceWithIVA, formatEuros } from "@/lib/tax";
 import type { Plan, PlanId } from "@/lib/plans";
-
-function formatPrice(cents: number) {
-  if (cents === 0) return "Gratis";
-  return `${(cents / 100).toLocaleString("es-ES")} € / mes`;
-}
 
 export function PlanCard({
   plan,
@@ -52,19 +48,32 @@ export function PlanCard({
           <>
             <p className="text-3xl font-semibold text-foreground">
               {(monthlyEquivalentCents! / 100).toLocaleString("es-ES")} €{" "}
-              <span className="text-base font-normal text-zinc-500">/ mes</span>
+              <span className="text-base font-normal text-zinc-500">+ IVA / mes</span>
             </p>
             <p className="text-xs text-zinc-500">
-              {(plan.annual!.priceCents / 100).toLocaleString("es-ES")} €/año, facturado de una vez ·
-              ahorras un 20% frente al mensual
+              {formatEuros(plan.annual!.priceCents)} + IVA al año ({formatEuros(priceWithIVA(plan.annual!.priceCents))}{" "}
+              con IVA), facturado de una vez · ahorras un 20% frente al mensual
             </p>
           </>
         ) : (
-          <p className="text-3xl font-semibold text-foreground">{formatPrice(plan.priceCents)}</p>
+          <>
+            <p className="text-3xl font-semibold text-foreground">
+              {plan.priceCents === 0 ? (
+                "Gratis"
+              ) : (
+                <>
+                  {formatEuros(plan.priceCents)} <span className="text-base font-normal text-zinc-500">+ IVA / mes</span>
+                </>
+              )}
+            </p>
+            {plan.priceCents > 0 && (
+              <p className="text-xs text-zinc-500">{formatEuros(priceWithIVA(plan.priceCents))} al mes con IVA</p>
+            )}
+          </>
         )}
         {plan.priceCents > 0 ? (
           <p className="text-xs text-zinc-500">
-            IVA incluido · {useAnnual ? "Cancela la renovación cuando quieras" : "Sin permanencia, cancela cuando quieras"}
+            {useAnnual ? "Cancela la renovación cuando quieras" : "Sin permanencia, cancela cuando quieras"}
           </p>
         ) : (
           <p className="text-xs text-zinc-500">30 segundos · Sin tarjeta · Sin conocimientos técnicos</p>

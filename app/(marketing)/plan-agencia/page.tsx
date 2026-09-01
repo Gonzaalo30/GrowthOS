@@ -2,12 +2,13 @@ import { GrowthCard } from "@/components/growth/GrowthCard";
 import { Button } from "@/components/ui/Button";
 import { createAgencyCheckoutAction } from "@/app/actions/agency";
 import { getPlan, AGENCY_EXTRA_SLOT_PRICE_CENTS } from "@/lib/plans";
+import { priceWithIVA, formatEuros } from "@/lib/tax";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
   title: "Plan Agencia",
   description:
-    "Para gestores y agencias de marketing local: hasta 5 negocios con funciones Growth bajo una sola cuenta, desde 99€/mes. Cada cliente con su propio Growth Score y sus propias misiones.",
+    "Para gestores y agencias de marketing local: hasta 5 negocios con funciones Growth bajo una sola cuenta, desde 99€/mes + IVA. Cada cliente con su propio Growth Score y sus propias misiones.",
   path: "/plan-agencia",
 });
 
@@ -23,7 +24,8 @@ export default async function PlanAgenciaPage({
 }) {
   const { error } = await searchParams;
   const plan = getPlan("agencia");
-  const extraSlotPrice = (AGENCY_EXTRA_SLOT_PRICE_CENTS / 100).toLocaleString("es-ES");
+  const extraSlotPrice = formatEuros(AGENCY_EXTRA_SLOT_PRICE_CENTS);
+  const extraSlotPriceWithIVA = formatEuros(priceWithIVA(AGENCY_EXTRA_SLOT_PRICE_CENTS));
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-6 py-16">
@@ -46,11 +48,11 @@ export default async function PlanAgenciaPage({
 
       <GrowthCard className="text-center">
         <p className="text-4xl font-semibold text-foreground">
-          {(plan.priceCents / 100).toLocaleString("es-ES")} €{" "}
-          <span className="text-base font-normal text-zinc-500">/ mes</span>
+          {formatEuros(plan.priceCents)} <span className="text-base font-normal text-zinc-500">+ IVA / mes</span>
         </p>
+        <p className="mt-1 text-sm text-zinc-500">{formatEuros(priceWithIVA(plan.priceCents))} al mes con IVA.</p>
         <p className="mt-1 text-sm text-zinc-500">
-          Hasta 5 negocios incluidos · IVA incluido · Sin permanencia, cancela cuando quieras
+          Hasta 5 negocios incluidos · Sin permanencia, cancela cuando quieras
         </p>
 
         <ul className="mt-6 flex flex-col gap-2 text-left">
@@ -71,7 +73,8 @@ export default async function PlanAgenciaPage({
         </div>
         <p className="mt-3 text-xs text-zinc-500">
           ¿Más de 5 negocios? Añade slots extra desde &quot;Mi cuenta&quot; una vez tengas Agencia activa,
-          a {extraSlotPrice} €/mes cada uno. Necesitas una cuenta creada para suscribirte.
+          a {extraSlotPrice} + IVA/mes cada uno ({extraSlotPriceWithIVA} con IVA). Necesitas una cuenta
+          creada para suscribirte.
         </p>
       </GrowthCard>
     </div>

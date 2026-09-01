@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { PlanCard } from "@/features/billing/PlanCard";
 import { Reveal } from "@/components/motion/Reveal";
 import { cn } from "@/lib/utils";
+import { priceWithIVA, formatEuros } from "@/lib/tax";
 import type { Plan, PlanId } from "@/lib/plans";
 
 export function PricingPlans({
@@ -72,9 +73,14 @@ export function PricingPlans({
             </div>
 
             <p className="text-3xl font-semibold text-foreground">
-              {agenciaPlan ? (agenciaPlan.priceCents / 100).toLocaleString("es-ES") : "99"} €{" "}
-              <span className="text-base font-normal text-zinc-500">/ mes</span>
+              {agenciaPlan ? formatEuros(agenciaPlan.priceCents) : "99 €"}{" "}
+              <span className="text-base font-normal text-zinc-500">+ IVA / mes</span>
             </p>
+            {agenciaPlan && (
+              <p className="-mt-3 text-xs text-zinc-500">
+                {formatEuros(priceWithIVA(agenciaPlan.priceCents))} al mes con IVA
+              </p>
+            )}
 
             <ul className="flex flex-1 flex-col gap-2">
               {(agenciaPlan?.features ?? []).map((feature) => (

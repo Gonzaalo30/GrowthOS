@@ -105,7 +105,7 @@ export default async function MarketplacePage({
         Cómo funciona: compras la mejora → nuestro equipo te contacta por email o teléfono para pedirte
         los accesos necesarios → la implementamos. Compatible con WordPress, Shopify, Wix y sitios a
         medida. Las mejoras mensuales se pueden cancelar cuando quieras desde &quot;Gestionar
-        suscripción&quot; en Mi cuenta. Precios con IVA incluido.
+        suscripción&quot; en Mi cuenta. Precios + IVA.
       </p>
 
       <OpportunityList opportunities={OPPORTUNITIES} purchasedIds={purchasedIds} />

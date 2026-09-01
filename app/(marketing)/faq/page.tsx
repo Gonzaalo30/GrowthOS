@@ -74,7 +74,7 @@ const GROUPS: FaqGroup[] = [
       {
         question: "¿Cuánto cuesta GrowthOS?",
         answer:
-          "Tienes un plan Gratis para empezar, Growth a 29€/mes, Autopilot a 99€/mes, y un plan Personalizado para encargos más grandes. Todos los detalles están en la página de precios.",
+          "Tienes un plan Gratis para empezar, Growth a 29€/mes + IVA, Autopilot a 99€/mes + IVA, y un plan Personalizado para encargos más grandes. Todos los detalles están en la página de precios.",
       },
       {
         question: "¿Puedo cambiar o cancelar mi plan cuando quiera?",

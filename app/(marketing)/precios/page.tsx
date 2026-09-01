@@ -6,17 +6,18 @@ import { Button } from "@/components/ui/Button";
 import { PricingPlans } from "@/features/billing/PricingPlans";
 import { PLANS } from "@/lib/plans";
 import { OPPORTUNITIES } from "@/lib/opportunities";
+import { priceWithIVA } from "@/lib/tax";
 import { pageMetadata, SITE_URL } from "@/lib/seo";
 
 export const metadata = pageMetadata({
   title: "Precios",
   description:
-    "Precio cerrado y sin sorpresas: plan Gratis, Growth (29€/mes), Autopilot (99€/mes) y Agencia. Además, mejoras sueltas de SEO, velocidad y conversión con precio fijo.",
+    "Precio cerrado y sin sorpresas: plan Gratis, Growth (29€/mes + IVA), Autopilot (99€/mes + IVA) y Agencia. Además, mejoras sueltas de SEO, velocidad y conversión con precio fijo.",
   path: "/precios",
 });
 
 function formatOpportunityPrice(cents: number, pricing: "one_time" | "monthly", priceIsFrom?: boolean) {
-  const amount = `${(cents / 100).toLocaleString("es-ES")} €`;
+  const amount = `${(cents / 100).toLocaleString("es-ES")} € + IVA`;
   const withCadence = pricing === "monthly" ? `${amount}/mes` : amount;
   return priceIsFrom ? `Desde ${withCadence}` : withCadence;
 }
@@ -41,9 +42,11 @@ export default async function PreciosPage() {
     offers: PLANS.filter((plan) => plan.priceCents > 0).map((plan) => ({
       "@type": "Offer",
       name: plan.name,
-      price: (plan.priceCents / 100).toFixed(2),
+      // Precio real que se cobra (base + 21% IVA) — lib/plans.ts guarda el
+      // precio base, no el total, así que aquí sí hace falta el cálculo.
+      price: (priceWithIVA(plan.priceCents) / 100).toFixed(2),
       priceCurrency: "EUR",
-      description: plan.tagline,
+      description: `${plan.tagline} (precio con IVA incluido)`,
       url: `${SITE_URL}/precios`,
     })),
   };
@@ -79,8 +82,8 @@ export default async function PreciosPage() {
         <p className="mb-4 text-xs text-zinc-500">
           Tras la compra, uno de nuestros expertos te contacta por email o teléfono en menos de 24-48h
           laborables para pedirte los accesos necesarios (a tu web, tu ficha de Google, hosting, etc.) y
-          ponerse manos a la obra — compatible con WordPress, Shopify, Wix y sitios a medida. Precios con
-          IVA incluido.
+          ponerse manos a la obra — compatible con WordPress, Shopify, Wix y sitios a medida. Precios +
+          IVA.
         </p>
         <div className="flex flex-col gap-3">
           {OPPORTUNITIES.map((item) => (

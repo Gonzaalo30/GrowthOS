@@ -24,7 +24,8 @@ import { InvoiceHistory } from "@/components/account/InvoiceHistory";
 import { createBillingPortalSessionAction } from "@/app/actions/subscription";
 import { createAgencyExtraSlotCheckoutAction } from "@/app/actions/agency";
 import { getAchievementsForBusiness } from "@/services/achievementSummary.service";
-import { getPlan, agencyIncludedCapacity } from "@/lib/plans";
+import { getPlan, agencyIncludedCapacity, AGENCY_EXTRA_SLOT_PRICE_CENTS } from "@/lib/plans";
+import { formatEuros } from "@/lib/tax";
 import { getLevelProgress, getLevelRingClass } from "@/lib/levels";
 
 export default async function AccountPage({
@@ -169,7 +170,7 @@ export default async function AccountPage({
               </div>
               <form action={createAgencyExtraSlotCheckoutAction}>
                 <Button type="submit" variant="secondary">
-                  Añadir slot extra
+                  Añadir slot extra ({formatEuros(AGENCY_EXTRA_SLOT_PRICE_CENTS)} + IVA/mes)
                 </Button>
               </form>
             </div>

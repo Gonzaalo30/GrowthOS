@@ -2,11 +2,13 @@ import Link from "next/link";
 import { GrowthCard } from "@/components/growth/GrowthCard";
 import { PlanCheckoutButton } from "@/features/billing/PlanCheckoutButton";
 import { pageMetadata } from "@/lib/seo";
+import { getPlan } from "@/lib/plans";
+import { priceWithIVA, formatEuros } from "@/lib/tax";
 
 export const metadata = pageMetadata({
   title: "Plan Autopilot",
   description:
-    "Implementamos por ti tus misiones diarias y semanales de mejora web — sin que tengas que tocar nada. 99€/mes, sin permanencia, compatible con WordPress, Shopify, Wix y sitios a medida.",
+    "Implementamos por ti tus misiones diarias y semanales de mejora web — sin que tengas que tocar nada. 99€/mes + IVA, sin permanencia, compatible con WordPress, Shopify, Wix y sitios a medida.",
   path: "/plan-autopilot",
 });
 
@@ -19,6 +21,8 @@ const INCLUDED = [
 ];
 
 export default function PlanAutopilotPage() {
+  const plan = getPlan("autopilot");
+
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-6 px-6 py-16">
       <div className="text-center">
@@ -35,8 +39,9 @@ export default function PlanAutopilotPage() {
 
       <GrowthCard className="text-center">
         <p className="text-4xl font-semibold text-foreground">
-          99 € <span className="text-base font-normal text-zinc-500">/ mes</span>
+          {formatEuros(plan.priceCents)} <span className="text-base font-normal text-zinc-500">+ IVA / mes</span>
         </p>
+        <p className="mt-1 text-sm text-zinc-500">{formatEuros(priceWithIVA(plan.priceCents))} al mes con IVA.</p>
         <p className="mt-1 text-sm text-zinc-500">Sin permanencia. Cancela cuando quieras.</p>
 
         <ul className="mt-6 flex flex-col gap-2 text-left">
@@ -49,7 +54,7 @@ export default function PlanAutopilotPage() {
         </ul>
 
         <div className="mt-6">
-          <PlanCheckoutButton planId="autopilot" label="Suscribirme por 99 €/mes" />
+          <PlanCheckoutButton planId="autopilot" label={`Suscribirme por ${formatEuros(plan.priceCents)}/mes + IVA`} />
         </div>
         <p className="mt-3 text-xs text-zinc-500">
           No incluye{" "}

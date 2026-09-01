@@ -24,6 +24,9 @@ export async function createOpportunityCheckoutAction(opportunityId: string) {
   const isMonthly = opportunity.pricing === "monthly";
   const loyaltyCouponId = process.env.STRIPE_LOYALTY_COUPON_ID;
   const applyLoyaltyDiscount = business.loyalty_discount_available && Boolean(loyaltyCouponId);
+  // Los precios de lib/opportunities.ts son base (sin IVA) — el 21% se añade
+  // aquí de verdad en el cobro, no solo en el texto de la web.
+  const ivaTaxRateId = process.env.STRIPE_IVA_TAX_RATE_ID;
 
   let sessionUrl: string | null;
   try {
@@ -42,6 +45,7 @@ export async function createOpportunityCheckoutAction(opportunityId: string) {
             ...(isMonthly ? { recurring: { interval: "month" as const } } : {}),
           },
           quantity: 1,
+          ...(ivaTaxRateId ? { tax_rates: [ivaTaxRateId] } : {}),
         },
       ],
       success_url: `${origin}/marketplace?compra=exito&item=${opportunity.id}`,

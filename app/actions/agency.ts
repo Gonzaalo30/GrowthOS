@@ -25,13 +25,18 @@ export async function createAgencyCheckoutAction() {
   }
 
   const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  // El precio de lib/plans.ts es base (sin IVA) — el 21% se añade aquí de
+  // verdad en el cobro, no solo en el texto de la web.
+  const ivaTaxRateId = process.env.STRIPE_IVA_TAX_RATE_ID;
 
   let sessionUrl: string | null;
   try {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        { price: priceId, quantity: 1, ...(ivaTaxRateId ? { tax_rates: [ivaTaxRateId] } : {}) },
+      ],
       success_url: `${origin}/dashboard?plan=success`,
       cancel_url: `${origin}/plan-agencia?canceled=1`,
       client_reference_id: user.id,
@@ -78,13 +83,16 @@ export async function createAgencyExtraSlotCheckoutAction() {
   }
 
   const origin = (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const ivaTaxRateId = process.env.STRIPE_IVA_TAX_RATE_ID;
 
   let sessionUrl: string | null;
   try {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        { price: priceId, quantity: 1, ...(ivaTaxRateId ? { tax_rates: [ivaTaxRateId] } : {}) },
+      ],
       success_url: `${origin}/onboarding?nuevo=1&agencia_slot=success`,
       cancel_url: `${origin}/account?canceled=1`,
       client_reference_id: user.id,

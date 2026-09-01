@@ -42,13 +42,18 @@ export async function createPlanCheckoutAction(
 
   const loyaltyCouponId = process.env.STRIPE_LOYALTY_COUPON_ID;
   const applyLoyaltyDiscount = business.loyalty_discount_available && Boolean(loyaltyCouponId);
+  // Los precios de lib/plans.ts son base (sin IVA) — el 21% se añade aquí de
+  // verdad en el cobro, no solo en el texto de la web.
+  const ivaTaxRateId = process.env.STRIPE_IVA_TAX_RATE_ID;
 
   let sessionUrl: string | null;
   try {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        { price: priceId, quantity: 1, ...(ivaTaxRateId ? { tax_rates: [ivaTaxRateId] } : {}) },
+      ],
       success_url: `${origin}/dashboard?plan=success`,
       cancel_url: `${origin}/precios?canceled=1`,
       client_reference_id: business.id,

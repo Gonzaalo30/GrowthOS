@@ -7,7 +7,7 @@ import { createOpportunityCheckoutAction } from "@/app/actions/opportunities";
 import { OPPORTUNITY_CATEGORY_LABELS, type Opportunity } from "@/lib/opportunities";
 
 function formatPrice(opportunity: Opportunity) {
-  const amount = `${(opportunity.priceCents / 100).toLocaleString("es-ES")} €`;
+  const amount = `${(opportunity.priceCents / 100).toLocaleString("es-ES")} € + IVA`;
   const withCadence = opportunity.pricing === "monthly" ? `${amount}/mes` : amount;
   return opportunity.priceIsFrom ? `Desde ${withCadence}` : withCadence;
 }

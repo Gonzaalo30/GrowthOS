@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PLANS } from "@/lib/plans";
+import { priceWithIVA } from "@/lib/tax";
 import { SITE_URL } from "@/lib/seo";
 
 // Convención llms.txt (llmstxt.org): un resumen real y conciso del producto,
@@ -12,7 +13,9 @@ export async function GET() {
 
   const planLines = PLANS.map((plan) => {
     const price =
-      plan.priceCents === 0 ? "gratis" : `${(plan.priceCents / 100).toLocaleString("es-ES")} €/mes`;
+      plan.priceCents === 0
+        ? "gratis"
+        : `${(plan.priceCents / 100).toLocaleString("es-ES")} €/mes + IVA, ${(priceWithIVA(plan.priceCents) / 100).toLocaleString("es-ES")} €/mes con IVA`;
     return `- **${plan.name}** (${price}): ${plan.tagline}`;
   }).join("\n");
 
@@ -20,11 +23,11 @@ export async function GET() {
 
 > GrowthOS analiza automáticamente la web de un negocio local (SSL, título, meta descripción, encabezados, velocidad, enlaces rotos, datos estructurados y más) y genera un Growth Score sobre 100 junto con misiones diarias concretas de 1-5 minutos para mejorarlo — sin jerga técnica. Gamifica el progreso con XP, niveles y racha, y ofrece un plan "Autopilot" en el que el equipo implementa las misiones por el cliente.
 
-## Planes (precios reales, IVA incluido)
+## Planes (precios reales, + IVA)
 
 ${planLines}
 
-También hay un "Growth Sprint" (desde 1.500€, pago único) para intervenciones intensivas y a medida cuando una mejora suelta no es suficiente, y un Centro de Mejoras con mejoras sueltas de precio cerrado (SEO técnico, velocidad, seguridad, conversión).
+También hay un "Growth Sprint" (desde 1.500€ + IVA, pago único) para intervenciones intensivas y a medida cuando una mejora suelta no es suficiente, y un Centro de Mejoras con mejoras sueltas de precio cerrado + IVA (SEO técnico, velocidad, seguridad, conversión).
 
 ## Páginas principales
 

@@ -29,7 +29,7 @@ export function GrowthSprintTeaser() {
           <p className="text-sm text-zinc-600">
             Una intervención intensiva para solucionar varios frentes de crecimiento de forma coordinada.
           </p>
-          <p className="text-2xl font-semibold text-foreground">Desde 1.500 € · pago único</p>
+          <p className="text-2xl font-semibold text-foreground">Desde 1.500 € + IVA · pago único</p>
           <div className="flex flex-wrap justify-center gap-2">
             {AREAS.map((area) => (
               <span
