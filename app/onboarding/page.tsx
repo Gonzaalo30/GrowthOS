@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// completeOnboardingAction dispara la auditoría profunda vía `after()` (ver
+// triggerDeepAudit) — necesita el máximo real disponible en Vercel Hobby
+// para que le dé tiempo a lanzar los 4 pasos antes de que la función se cierre.
+export const maxDuration = 60;
+
 export default async function OnboardingPage({
   searchParams,
 }: {

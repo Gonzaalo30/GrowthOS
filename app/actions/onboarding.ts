@@ -10,6 +10,7 @@ import {
   addBonusDailyMission,
 } from "@/services/mission.service";
 import { recordGrowthScoreBaseline } from "@/services/audit.service";
+import { triggerDeepAudit } from "@/lib/deepAuditTrigger";
 import { normalizeDomain } from "@/lib/utils";
 import { runQuickAudit, growthPotentialLabel } from "@/lib/quickAudit";
 import { BUSINESS_TYPES } from "@/lib/businessTypes";
@@ -60,6 +61,15 @@ export async function completeOnboardingAction(
 
   await seedMissionsForBusiness(supabase, business.id, businessType, audit);
   await recordGrowthScoreBaseline(supabase, business.id, business.growth_score, audit.unreachable ? [] : audit.checks);
+  // El primer Growth Score (arriba) es del análisis rápido, para que el alta
+  // se sienta instantánea — justo después se dispara ya la auditoría
+  // profunda real (multi-página, PageSpeed, responsive) en segundo plano,
+  // sin bloquear la redirección al dashboard.
+  try {
+    await triggerDeepAudit(supabase, business.id, business.domain);
+  } catch {
+    // si no se pudo disparar ahora, el ciclo automático de 7 días la recogerá
+  }
   // El negocio recién creado pasa a ser el activo, para que el dashboard al
   // que redirige lo muestre a él (relevante sobre todo al añadir un segundo
   // negocio, no solo el primero).

@@ -30,6 +30,11 @@ import { PlanPurchaseCelebration } from "@/features/dashboard/PlanPurchaseCelebr
 
 const CALENDAR_WEEKS = 12;
 
+// Cuando toca disparar la auditoría profunda (ver refreshGrowthScoreIfStale
+// más abajo), se dispara vía `after()` — esta página necesita el máximo real
+// disponible en Vercel Hobby para que le dé tiempo a lanzar los 4 pasos.
+export const maxDuration = 60;
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -43,14 +48,14 @@ export default async function DashboardPage({
 
   if (!user) redirect("/signup");
 
-  let business = await getActiveBusiness(supabase, user.id);
+  const business = await getActiveBusiness(supabase, user.id);
   if (!business) redirect("/onboarding");
 
-  const scoreRefresh = await refreshGrowthScoreIfStale(supabase, business.id, business.domain);
-  if (scoreRefresh.refreshed) {
-    business = await getActiveBusiness(supabase, user.id);
-    if (!business) redirect("/onboarding");
-  }
+  // Nunca ejecuta el análisis aquí dentro — como mucho dispara la auditoría
+  // profunda en segundo plano (ver services/audit.service.ts) y sigue con el
+  // render inmediatamente, con los datos que ya había. El estado real
+  // ("analizando" o no) lo lee DashboardView directamente de `business`.
+  await refreshGrowthScoreIfStale(supabase, business);
 
   let missions = await getMissionsForBusiness(supabase, business.id);
   const scoreBreakdown = await getLatestScoreBreakdown(supabase, business.id);
@@ -191,7 +196,6 @@ export default async function DashboardPage({
       <DashboardView
         business={business}
         missions={missions}
-        scoreRefresh={scoreRefresh}
         scoreBreakdown={scoreBreakdown}
         profileName={profile.name}
         dailyCounts={Object.fromEntries(dailyCounts)}

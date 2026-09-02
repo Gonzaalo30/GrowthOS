@@ -21,7 +21,11 @@ export function RefreshScoreButton() {
   }
 
   if (done) {
-    return <p className="text-xs text-emerald-600">Analizado. Tu Growth Score está al día.</p>;
+    return (
+      <p className="text-xs text-emerald-600">
+        Analizando tu web a fondo — puede tardar unos minutos, te avisamos cuando termine.
+      </p>
+    );
   }
 
   return (
@@ -32,7 +36,7 @@ export function RefreshScoreButton() {
         disabled={isPending}
         className="text-xs font-medium text-brand-600 underline decoration-dotted underline-offset-2 hover:text-brand-700 disabled:opacity-50"
       >
-        {isPending ? "Analizando…" : "Reanalizar ahora"}
+        {isPending ? "Iniciando…" : "Reanalizar ahora"}
       </button>
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>

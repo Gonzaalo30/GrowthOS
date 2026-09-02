@@ -25,8 +25,8 @@ export async function forceRefreshGrowthScoreAction(): Promise<ForceRefreshResul
     return { success: false, error: "Reanalizar cuando quieras es una ventaja de los planes Growth y Autopilot." };
   }
 
-  const result = await forceRefreshGrowthScore(supabase, business.id, business.domain);
-  if (!result.refreshed) {
+  const result = await forceRefreshGrowthScore(supabase, business);
+  if (!result.triggered) {
     return { success: false, error: "No hemos podido analizar tu web ahora mismo. Inténtalo de nuevo en un momento." };
   }
 

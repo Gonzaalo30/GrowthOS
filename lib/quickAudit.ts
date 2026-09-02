@@ -8,6 +8,8 @@ export interface QuickAuditCheck {
   passed: boolean;
   detail: string;
   category: ScoreCategory;
+  /** URL de la página a la que pertenece este check, si no es la principal (auditoría profunda multi-página). */
+  pageUrl?: string;
 }
 
 export interface QuickAuditResult {
@@ -42,7 +44,8 @@ function isPrivateAddress(address: string): boolean {
   return true;
 }
 
-async function isSafeHost(url: string): Promise<boolean> {
+/** Exportado para que `lib/deepAudit.ts` reutilice la misma protección contra SSRF al pedir el sitemap y páginas internas. */
+export async function isSafeHost(url: string): Promise<boolean> {
   try {
     const hostname = new URL(url).hostname;
     const { address } = await lookup(hostname);
@@ -52,7 +55,8 @@ async function isSafeHost(url: string): Promise<boolean> {
   }
 }
 
-async function safeFetchText(
+/** Exportado para que `lib/deepAudit.ts` reutilice la misma descarga segura (protección SSRF, tope de tamaño) para el sitemap y páginas internas. */
+export async function safeFetchText(
   url: string,
 ): Promise<{ html: string; usedUrl: string; elapsedMs: number; headers: Headers } | null> {
   if (!(await isSafeHost(url))) return null;
@@ -171,7 +175,10 @@ function extractTag(html: string, regex: RegExp): string | null {
   return match ? match[1].trim() : null;
 }
 
-const MAX_IMAGES_TO_SAMPLE = 8;
+// 8 imágenes bastaban para una comprobación orientativa rápida, pero el
+// fundador pidió una nota más medible: analiza prácticamente todas las
+// imágenes reales de la página en vez de una muestra pequeña.
+const MAX_IMAGES_TO_SAMPLE = 40;
 
 /** Heurística (no un Lighthouse real): entre una muestra de imágenes, ¿la mayoría declara ancho y alto? */
 function mostImagesAreSized(html: string): boolean {
@@ -189,6 +196,84 @@ function mostImagesHaveAlt(html: string): boolean {
   return withAlt.length / imgTags.length >= 0.5;
 }
 
+/**
+ * Las 6 comprobaciones de contenido que tienen sentido por página (no son
+ * señales de todo el sitio como SSL o robots.txt) — se usan tanto para la
+ * página principal aquí como, sin duplicar nada, para cada página del
+ * rastreo del sitemap en la auditoría profunda (`lib/deepAudit.ts`).
+ */
+export function buildPageSeoChecks(html: string, pageUrl?: string): QuickAuditCheck[] {
+  const title = extractTag(html, /<title[^>]*>([^<]*)<\/title>/i);
+  const description = extractTag(html, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i);
+  const hasH1 = /<h1[^>]*>[^<]+<\/h1>/i.test(html);
+  const hasSchema = /<script[^>]+type=["']application\/ld\+json["']/i.test(html) || /itemscope/i.test(html);
+  const hasCanonical = /<link[^>]+rel=["']canonical["']/i.test(html);
+  const imagesHaveAlt = mostImagesHaveAlt(html);
+
+  return [
+    {
+      id: "title",
+      label: "Título de la página",
+      passed: Boolean(title && title.length >= 10 && title.length <= 65),
+      detail: title
+        ? `Título actual: "${title}"`
+        : "No encontramos un título claro. Google lo usa como primera impresión de tu negocio.",
+      category: "seo",
+      pageUrl,
+    },
+    {
+      id: "description",
+      label: "Descripción para buscadores",
+      passed: Boolean(description && description.length >= 50),
+      detail: description
+        ? "Tienes una descripción que Google puede mostrar en los resultados de búsqueda."
+        : "Falta una descripción que explique tu negocio en los resultados de Google.",
+      category: "seo",
+      pageUrl,
+    },
+    {
+      id: "h1",
+      label: "Encabezado principal",
+      passed: hasH1,
+      detail: hasH1
+        ? "Tu página tiene un encabezado principal claro."
+        : "No encontramos un encabezado principal que resuma de qué trata tu página.",
+      category: "seo",
+      pageUrl,
+    },
+    {
+      id: "schema",
+      label: "Datos estructurados (Schema)",
+      passed: hasSchema,
+      detail: hasSchema
+        ? "Tu web incluye información estructurada que ayuda a Google a entenderla mejor."
+        : "Google no encuentra información estructurada sobre tu negocio (nombre, dirección, horario).",
+      category: "seo",
+      pageUrl,
+    },
+    {
+      id: "canonical",
+      label: "URL canónica",
+      passed: hasCanonical,
+      detail: hasCanonical
+        ? "Tu página declara cuál es su URL canónica, evitando confundir a Google con contenido duplicado."
+        : "No encontramos una URL canónica declarada — sin ella, Google puede repartir tu posicionamiento entre varias versiones de la misma página.",
+      category: "seo",
+      pageUrl,
+    },
+    {
+      id: "imageAlt",
+      label: "Texto alternativo en imágenes",
+      passed: imagesHaveAlt,
+      detail: imagesHaveAlt
+        ? "La mayoría de tus imágenes tienen texto alternativo, lo que ayuda a Google y a la accesibilidad de tu web."
+        : "Varias imágenes no tienen texto alternativo (\"alt\") — Google no puede entender qué muestran, y tampoco los lectores de pantalla.",
+      category: "seo",
+      pageUrl,
+    },
+  ];
+}
+
 export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
   const httpsResult = await safeFetchText(`https://${domain}`);
   const result = httpsResult ?? (await safeFetchText(`http://${domain}`));
@@ -203,19 +288,10 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
   }
 
   const hasSsl = httpsResult !== null;
-  const title = extractTag(result.html, /<title[^>]*>([^<]*)<\/title>/i);
-  const description = extractTag(
-    result.html,
-    /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i,
-  );
-  const hasH1 = /<h1[^>]*>[^<]+<\/h1>/i.test(result.html);
   const hasViewport = /<meta[^>]+name=["']viewport["']/i.test(result.html);
-  const hasSchema = /<script[^>]+type=["']application\/ld\+json["']/i.test(result.html) || /itemscope/i.test(result.html);
   const hasFavicon = /<link[^>]+rel=["'](?:shortcut icon|icon)["']/i.test(result.html);
   const hasCompression = /\b(gzip|br)\b/i.test(result.headers.get("content-encoding") ?? "");
   const imagesSized = mostImagesAreSized(result.html);
-  const imagesHaveAlt = mostImagesHaveAlt(result.html);
-  const hasCanonical = /<link[^>]+rel=["']canonical["']/i.test(result.html);
 
   const origin = new URL(result.usedUrl).origin;
   const sampledLinks = extractInternalLinks(result.html, origin, MAX_LINKS_TO_CHECK);
@@ -237,33 +313,7 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
         : "Tu web no responde de forma segura (https). Los navegadores avisan a los visitantes de esto.",
       category: "confianza",
     },
-    {
-      id: "title",
-      label: "Título de la página",
-      passed: Boolean(title && title.length >= 10 && title.length <= 65),
-      detail: title
-        ? `Título actual: "${title}"`
-        : "No encontramos un título claro. Google lo usa como primera impresión de tu negocio.",
-      category: "seo",
-    },
-    {
-      id: "description",
-      label: "Descripción para buscadores",
-      passed: Boolean(description && description.length >= 50),
-      detail: description
-        ? "Tienes una descripción que Google puede mostrar en los resultados de búsqueda."
-        : "Falta una descripción que explique tu negocio en los resultados de Google.",
-      category: "seo",
-    },
-    {
-      id: "h1",
-      label: "Encabezado principal",
-      passed: hasH1,
-      detail: hasH1
-        ? "Tu página tiene un encabezado principal claro."
-        : "No encontramos un encabezado principal que resuma de qué trata tu página.",
-      category: "seo",
-    },
+    ...buildPageSeoChecks(result.html),
     {
       id: "mobile",
       label: "Adaptada a móvil",
@@ -272,15 +322,6 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
         ? "Tu web está preparada para verse bien en el móvil."
         : "Tu web podría no verse bien en el móvil, donde llegan la mayoría de tus clientes.",
       category: "velocidad",
-    },
-    {
-      id: "schema",
-      label: "Datos estructurados (Schema)",
-      passed: hasSchema,
-      detail: hasSchema
-        ? "Tu web incluye información estructurada que ayuda a Google a entenderla mejor."
-        : "Google no encuentra información estructurada sobre tu negocio (nombre, dirección, horario).",
-      category: "seo",
     },
     {
       id: "robots",
@@ -355,24 +396,6 @@ export async function runQuickAudit(domain: string): Promise<QuickAuditResult> {
         ? "La mayoría de tus imágenes declaran su tamaño, así que no deberían provocar saltos al cargar la página."
         : "Varias imágenes no declaran ancho y alto — pueden hacer que el contenido \"salte\" mientras la página carga.",
       category: "velocidad",
-    },
-    {
-      id: "canonical",
-      label: "URL canónica",
-      passed: hasCanonical,
-      detail: hasCanonical
-        ? "Tu página declara cuál es su URL canónica, evitando confundir a Google con contenido duplicado."
-        : "No encontramos una URL canónica declarada — sin ella, Google puede repartir tu posicionamiento entre varias versiones de la misma página.",
-      category: "seo",
-    },
-    {
-      id: "imageAlt",
-      label: "Texto alternativo en imágenes",
-      passed: imagesHaveAlt,
-      detail: imagesHaveAlt
-        ? "La mayoría de tus imágenes tienen texto alternativo, lo que ayuda a Google y a la accesibilidad de tu web."
-        : "Varias imágenes no tienen texto alternativo (\"alt\") — Google no puede entender qué muestran, y tampoco los lectores de pantalla.",
-      category: "seo",
     },
   ];
 

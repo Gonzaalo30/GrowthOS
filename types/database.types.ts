@@ -77,6 +77,10 @@ export interface Database {
           plan_purchase_count: number;
           streak_freezes_used: number;
           streak_freeze_month: string;
+          growth_score_status: string;
+          growth_score_pending: unknown | null;
+          growth_score_pending_steps: string[];
+          growth_score_analyzing_since: string | null;
           created_at: string;
         };
         Insert: {
@@ -101,6 +105,10 @@ export interface Database {
           plan_purchase_count?: number;
           streak_freezes_used?: number;
           streak_freeze_month?: string;
+          growth_score_status?: string;
+          growth_score_pending?: unknown | null;
+          growth_score_pending_steps?: string[];
+          growth_score_analyzing_since?: string | null;
           created_at?: string;
         };
         Update: Partial<{
@@ -122,6 +130,10 @@ export interface Database {
           plan_purchase_count: number;
           streak_freezes_used: number;
           streak_freeze_month: string;
+          growth_score_status: string;
+          growth_score_pending: unknown | null;
+          growth_score_pending_steps: string[];
+          growth_score_analyzing_since: string | null;
         }>;
         Relationships: [];
       };

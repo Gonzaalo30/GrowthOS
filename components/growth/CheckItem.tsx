@@ -13,7 +13,12 @@ export function CheckItem({ check }: { check: QuickAuditCheck }) {
         {check.passed ? "✓" : "!"}
       </span>
       <div>
-        <p className="text-sm font-medium text-foreground">{check.label}</p>
+        <p className="text-sm font-medium text-foreground">
+          {check.label}
+          {check.pageUrl && (
+            <span className="ml-2 truncate text-xs font-normal text-zinc-400">{check.pageUrl}</span>
+          )}
+        </p>
         <p className="text-sm text-zinc-600">{check.detail}</p>
       </div>
     </div>

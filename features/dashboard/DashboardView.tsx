@@ -6,7 +6,6 @@ import { LevelsExplorer } from "@/components/growth/LevelsExplorer";
 import { XPBar } from "@/components/growth/XPBar";
 import { MomentumScore } from "@/components/growth/MomentumScore";
 import { StreakBadge } from "@/components/growth/StreakBadge";
-import { ScoreCelebration } from "@/components/growth/ScoreCelebration";
 import { ScoreBreakdown } from "@/components/growth/ScoreBreakdown";
 import { CategoryScores } from "@/components/growth/CategoryScores";
 import { GrowthCalendar } from "@/components/growth/GrowthCalendar";
@@ -24,7 +23,7 @@ import { getLevelProgress } from "@/lib/levels";
 import { canRefreshOnDemand } from "@/lib/plans";
 import { getStreakFreezesRemaining } from "@/lib/streakFreeze";
 import type { Database } from "@/types/database.types";
-import type { GrowthScoreRefreshResult, GrowthScorePoint } from "@/services/audit.service";
+import type { GrowthScorePoint } from "@/services/audit.service";
 import type { QuickAuditCheck } from "@/lib/quickAudit";
 import type { Achievement } from "@/lib/achievements";
 import type { MomentumResult } from "@/lib/momentum";
@@ -38,7 +37,6 @@ type Mission = Database["public"]["Tables"]["missions"]["Row"];
 export function DashboardView({
   business,
   missions,
-  scoreRefresh,
   scoreBreakdown,
   profileName,
   dailyCounts,
@@ -56,7 +54,6 @@ export function DashboardView({
 }: {
   business: Business;
   missions: Mission[];
-  scoreRefresh?: GrowthScoreRefreshResult;
   scoreBreakdown?: QuickAuditCheck[] | null;
   profileName: string;
   dailyCounts: Record<string, number>;
@@ -98,10 +95,7 @@ export function DashboardView({
   const levelProgress = getLevelProgress(business.xp);
   const canLevelUpToday =
     levelProgress.next !== null && business.xp + xpAvailableToday >= levelProgress.next.minXp;
-  const scoreDelta =
-    scoreRefresh?.refreshed && scoreRefresh.previousScore !== null
-      ? scoreRefresh.currentScore - scoreRefresh.previousScore
-      : 0;
+  const isAnalyzing = business.growth_score_status === "analyzing";
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-12">
@@ -139,7 +133,18 @@ export function DashboardView({
         </div>
       )}
 
-      {scoreDelta > 0 && <ScoreCelebration delta={scoreDelta} />}
+      {isAnalyzing && (
+        <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-800">
+          <span className="animate-spin text-lg" aria-hidden>
+            🔄
+          </span>
+          <p>
+            Analizando tu web a fondo (hasta 20 páginas de tu sitemap, velocidad real en móvil y
+            escritorio, y adaptabilidad real a tablet y móvil) — puede tardar unos minutos, te avisamos
+            cuando termine.
+          </p>
+        </div>
+      )}
 
       {canLevelUpToday && levelProgress.next && (
         <MascotMessage message={`Hoy puedes subir al nivel ${levelProgress.next.name} si completas tus Quick Wins.`} />

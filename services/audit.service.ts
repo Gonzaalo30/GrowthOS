@@ -1,16 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
-import { runQuickAudit, growthPotentialLabel, type QuickAuditCheck } from "@/lib/quickAudit";
-import { createNotification } from "@/services/notification.service";
+import type { QuickAuditCheck } from "@/lib/quickAudit";
+import { triggerDeepAudit } from "@/lib/deepAuditTrigger";
+import { isAnalyzingStale } from "@/lib/deepAuditCoordinator";
 
 type Client = SupabaseClient<Database>;
+type BusinessRow = Database["public"]["Tables"]["businesses"]["Row"];
 
 const REFRESH_INTERVAL_DAYS = 7;
 
 export interface GrowthScoreRefreshResult {
-  refreshed: boolean;
-  previousScore: number | null;
-  currentScore: number;
+  /** true si esta visita acaba de disparar una auditoría profunda nueva — no si ya ha terminado, eso llega por notificación. */
+  triggered: boolean;
 }
 
 export async function recordGrowthScoreBaseline(
@@ -21,101 +22,60 @@ export async function recordGrowthScoreBaseline(
 ) {
   const { error } = await supabase
     .from("growth_score_history")
-    .insert({ business_id: businessId, score, checks });
+    .insert({ business_id: businessId, score, checks: checks as unknown as never });
   if (error) throw error;
 }
 
 /**
- * Si han pasado 7+ días desde el último análisis guardado, vuelve a analizar el
- * dominio y actualiza el Growth Score. Si no, no hace nada (evita golpear el
- * dominio del negocio en cada visita al dashboard).
+ * Si han pasado 7+ días desde el último análisis guardado (o el anterior
+ * quedó atascado, ver `isAnalyzingStale`), dispara una auditoría profunda
+ * real en segundo plano — nunca ejecuta el análisis dentro de esta llamada,
+ * así que nunca bloquea la carga del dashboard. El resultado final (score
+ * actualizado, con las comprobaciones multi-página, PageSpeed y responsive
+ * reales) llega vía notificación cuando termina — ver
+ * `lib/deepAuditCoordinator.ts`.
  */
 export async function refreshGrowthScoreIfStale(
   supabase: Client,
-  businessId: string,
-  domain: string,
+  business: Pick<BusinessRow, "id" | "domain" | "growth_score_status" | "growth_score_analyzing_since">,
 ): Promise<GrowthScoreRefreshResult> {
+  const alreadyAnalyzing =
+    business.growth_score_status === "analyzing" && !isAnalyzingStale(business.growth_score_analyzing_since);
+  if (alreadyAnalyzing) {
+    return { triggered: false };
+  }
+
   const { data: history, error } = await supabase
     .from("growth_score_history")
-    .select("score, recorded_at")
-    .eq("business_id", businessId)
+    .select("recorded_at")
+    .eq("business_id", business.id)
     .order("recorded_at", { ascending: false })
     .limit(1);
-
   if (error) throw error;
 
   const last = history?.[0];
-  const currentScoreFallback = last?.score ?? 0;
-
   if (last) {
     const daysSinceLast = (Date.now() - new Date(last.recorded_at).getTime()) / (1000 * 60 * 60 * 24);
     if (daysSinceLast < REFRESH_INTERVAL_DAYS) {
-      return { refreshed: false, previousScore: null, currentScore: currentScoreFallback };
+      return { triggered: false };
     }
   }
 
-  return runAndPersistAudit(supabase, businessId, domain, last?.score ?? null, currentScoreFallback);
+  await triggerDeepAudit(supabase, business.id, business.domain);
+  return { triggered: true };
 }
 
 /**
  * Reanaliza ya, sin esperar el ciclo de 7 días — reservado a planes de pago
- * (Growth/Autopilot). Es el mismo análisis real, solo que el usuario decide
- * cuándo, en vez de esperar al ciclo automático.
+ * (Growth/Autopilot). Es la misma auditoría profunda real, solo que el
+ * usuario decide cuándo en vez de esperar al ciclo automático.
  */
 export async function forceRefreshGrowthScore(
   supabase: Client,
-  businessId: string,
-  domain: string,
+  business: Pick<BusinessRow, "id" | "domain">,
 ): Promise<GrowthScoreRefreshResult> {
-  const { data: history, error } = await supabase
-    .from("growth_score_history")
-    .select("score, recorded_at")
-    .eq("business_id", businessId)
-    .order("recorded_at", { ascending: false })
-    .limit(1);
-  if (error) throw error;
-
-  const last = history?.[0];
-  return runAndPersistAudit(supabase, businessId, domain, last?.score ?? null, last?.score ?? 0);
-}
-
-async function runAndPersistAudit(
-  supabase: Client,
-  businessId: string,
-  domain: string,
-  previousScore: number | null,
-  fallbackScore: number,
-): Promise<GrowthScoreRefreshResult> {
-  const audit = await runQuickAudit(domain);
-  if (audit.unreachable) {
-    // No penalizamos ni actualizamos si el dominio no respondió esta vez.
-    return { refreshed: false, previousScore: null, currentScore: fallbackScore };
-  }
-
-  const { error: updateError } = await supabase
-    .from("businesses")
-    .update({ growth_score: audit.score, growth_potential: growthPotentialLabel(audit.score) })
-    .eq("id", businessId);
-  if (updateError) throw updateError;
-
-  const { error: insertError } = await supabase
-    .from("growth_score_history")
-    .insert({ business_id: businessId, score: audit.score, checks: audit.checks });
-  if (insertError) throw insertError;
-
-  if (previousScore !== null && audit.score > previousScore) {
-    await createNotification(
-      supabase,
-      businessId,
-      `🎉 Tu Growth Score subió de ${previousScore} a ${audit.score}.`,
-    );
-  }
-
-  return {
-    refreshed: true,
-    previousScore,
-    currentScore: audit.score,
-  };
+  await triggerDeepAudit(supabase, business.id, business.domain);
+  return { triggered: true };
 }
 
 export interface GrowthScorePoint {
